@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-18 (Session 3)_
+_Last updated: 2026-09-19 (Session 4)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,7 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 3 — Variables & primitive types (delivered 2026-09-18, awaiting exercises). Lesson 2 closed (Challenge + Quiz Q1–3 skipped).
+Lesson 3 — Variables & primitive types. Ex1 reviewed (9/12). **Awaiting: 3 follow-up predictions, Ex2 SubscriptionBilling, Ex3 MetricsReport, Quiz.** Lesson 2 closed (Challenge + Quiz Q1–3 skipped).
 
 Note: learner chose to move on without answering the Lesson 1 re-check questions. Those ideas (compile vs launch vs run time; artifacts vs source) are folded into Lesson 2 Ex3 + Quiz as spaced revision — verify there.
 
@@ -27,13 +27,15 @@ Note: learner chose to move on without answering the Lesson 1 re-check questions
 | Topic | Status | Evidence |
 |---|---|---|
 | 1.1 Anatomy: class, `main`, statements, comments, packages, imports, naming | Practiced | L2 Ex2: packaged build/run correct; explained classpath + FQN errors mostly correctly (named NoClassDefFoundError as generic mismatch) |
-| 1.2 Variables, primitives, `var`, casting, overflow | Introduced | Lesson 3 delivered |
+| 1.2 Variables, primitives, `var`, casting, overflow | Introduced | L3 Ex1 9/12: integer division + overflow ✅; casting & char ❌ |
 | 1.3–1.7 | Not Started | |
 
 ### Phases 2–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
+- **Casting vs overflow (L3)** — confuses "narrowing cast truncates the fraction" with "overflow wraps". Believes `(int) 9.99` overflows. Re-check with follow-up predictions before Lesson 4.
+- **`char` is a number (L3)** — `'A'` = 65; `char + int` → `int`; casting back gives a char.
 - **Compile-time vs run-time boundary** — improving: L2 Ex3 correctly identified a launch-time error and why. Still to show: *why javac can't catch* launch-time issues (entry point = launcher convention, not a language rule). Lesson 3 adds a 4th category: silent wrong results (overflow, integer division).
 - **Reading error messages precisely** — Ex 3a: reported "file not found" (ran `javac Hello.java` after renaming) instead of the intended error; didn't notice the mismatch.
 - **Artifacts vs source** — didn't know why `.class` runs without `.java`, or why `java Hello.java` leaves no `.class`. (Improving: L2 Ex2 Q4 correctly reasoned the package name is stored inside the .class.)
@@ -52,7 +54,8 @@ Not Started (see `roadmap.md`).
 | 2026-09-18 | L2 Ex2 Packaged program | ✅ | Q3 reasoning correct (JVM looks for out/App.class). Q4 right idea (name baked into .class); error was NoClassDefFoundError, not ClassNotFoundException. Code for step 5 clean. |
 | 2026-09-18 | L2 Ex3 Broken OrderSummary | ✅ code / ⚠️ report | Fixed all 6 bugs, correct 3 rounds, launch-time reasoning correct. Report listed only 3 of 6 problems; no pre-compile list. |
 | 2026-09-18 | L2 Challenge + Quiz | Skipped | Q4 partly covered by Ex3 answer |
-| — | L3 exercises (predictions, SubscriptionBilling, broken MetricsReport, type-choice challenge, quiz) | Pending | |
+| 2026-09-19 | L3 Ex1 Predictions | 9/12 | ✅ int division, %, round, overflow, `L` fix. ❌ `(int) 9.99` → said overflow −10 (it truncates to 9). ❌ `10 / 0.0` → said 0.0 (Infinity). ❓ `'A'+2` right idea, no value; `(char)('A'+2)` idk. `-9/4` right value, rule unknown. |
+| — | L3 Ex2, Ex3, Challenge, Quiz | Pending | |
 
 ## Assessments
 - None yet.
