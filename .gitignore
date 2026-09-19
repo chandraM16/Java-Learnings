@@ -1,0 +1,6 @@
+# Compiled output
+out/
+*.class
+
+# macOS
+.DS_Store

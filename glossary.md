@@ -2,14 +2,25 @@
 
 Alphabetical. One or two lines each. Added as terms are introduced.
 
+- **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **`ArrayIndexOutOfBoundsException`** — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
+- **`BigDecimal`** — Standard-library class for exact decimal arithmetic; used for money. (Covered later.)
 - **Bytecode** — The instruction set of the JVM, stored in `.class` files. Produced by `javac`, platform-independent.
 - **Bytecode verifier** — JVM step that checks loaded bytecode is well-formed and type-safe before executing it.
+- **Casting** — Explicitly converting a value to another type: `(int) 3.99`. Narrowing casts can lose data.
 - **`ClassCastException`** — Runtime exception when casting an object to a type it isn't. Proof that Java checks types at runtime too.
 - **Class file (`.class`)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
+- **`ClassNotFoundException`** — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
+- **Classpath (`-cp`)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
+- **Entry point** — The method the launcher calls first: `main`.
+- **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
 - **GraalVM Native Image** — Tool that compiles Java ahead-of-time into a native executable: fast startup, low memory, reduced runtime dynamism.
+- **Identifier** — A name you give to a package, class, method, or variable.
+- **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
+- **Javadoc** — `/** ... */` doc comments on classes/methods; rendered by IDEs and the `javadoc` tool.
 - **`JAVA_HOME`** — Environment variable pointing to the JDK install directory; used by Maven, Gradle, IDEs.
 - **JDK (Java Development Kit)** — Everything needed to develop Java: JVM + standard library + tools (`javac`, `jshell`, `jar`, `javap`…).
 - **JIT (Just-In-Time) compiler** — Part of the JVM that compiles frequently executed ("hot") bytecode into native machine code at runtime.
@@ -17,7 +28,18 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **JRE (Java Runtime Environment)** — JVM + standard library, enough to run programs. Oracle no longer ships one separately, but vendors (e.g. Temurin) still publish JRE builds.
 - **JShell** — Java's REPL (since Java 9). Like typing `node` with no arguments.
 - **JVM (Java Virtual Machine)** — The runtime that loads, verifies, and executes bytecode, and manages memory.
+- **Literal** — A value written directly in code: `42`, `42L`, `3.14`, `'A'`, `true`, `"text"`.
 - **LTS (Long-Term Support)** — A Java release supported for years by vendors. Current: 25 (previous: 21, 17, 11, 8).
+- **Narrowing conversion** — Converting to a smaller/less precise type (double → int, long → int). Requires an explicit cast.
+- **`NoClassDefFoundError`** — JVM error when a class definition can't be loaded, e.g. a `.class` file found but its internal name doesn't match (`wrong name`), or a class present at compile time is missing at run time.
 - **OpenJDK** — The open-source reference implementation of Java. Most distributions (Temurin, Corretto, Zulu, Oracle) are builds of it.
+- **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
+- **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
+- **Package-private** — The default visibility when no modifier is written: accessible only within the same package.
+- **Primitive type** — One of Java's 8 built-in value types (`byte short int long float double char boolean`). Holds the value directly, not a reference to an object.
+- **Reference type** — Any non-primitive type (classes, interfaces, arrays, `String`). A variable of this type holds a reference to an object.
 - **Source-file mode** — `java File.java`: compiles in memory and runs without writing `.class` files.
 - **Standard library (JDK class library)** — Built-in packages like `java.lang`, `java.util`, `java.time`, `java.net.http`.
+- **`static`** — Belongs to the class itself rather than to an instance; usable without creating an object. (Deep dive: Phase 2.)
+- **Type inference (`var`)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
+- **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.

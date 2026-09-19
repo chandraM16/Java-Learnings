@@ -53,6 +53,12 @@ Hello.java  --javac-->  Hello.class (bytecode)  --java (JVM)-->  runs
 ## Production images
 - Build stage: JDK (needs `javac`, Maven). Runtime stage: **JRE-only image** or a **`jlink`** custom runtime → smaller image, fewer tools for an attacker, less to patch.
 
+## JShell (REPL)
+- `jshell` to start, `/exit` to quit. Semicolons optional, no class needed.
+- Bare expressions get auto-named vars: `7 / 2` → `$1 ==> 3`.
+- Useful commands: `/vars`, `/methods`, `/imports`, `/list`, `/edit`, `/help`. Tab completion works (try `"abc".` + Tab).
+- Use for: checking an API, quick experiments, predicting behaviour. Not for: real programs.
+
 ## Node comparison (mental bridge)
 | Node | Java |
 |---|---|
@@ -78,3 +84,103 @@ public class Hello {
 - Homebrew: `brew install openjdk@25` (or a distribution such as Temurin via `brew install --cask temurin@25`).
 - Verify: `java -version`, `javac -version`.
 - `JAVA_HOME` points tools (Maven, IDEs) at a specific JDK. On macOS: `/usr/libexec/java_home -v 25`.
+
+# Phase 1 — Fundamentals
+
+## Anatomy of a Java program
+```java
+package com.chandan.ledger;          // 1. package (optional, but always used in real code) — must be first statement
+
+import java.time.LocalDate;          // 2. imports
+
+public class App {                   // 3. type declaration; public class name == file name
+    public static void main(String[] args) {   // 4. entry point
+        System.out.println("Today: " + LocalDate.now());   // 5. statements end with ;
+    }
+}
+```
+- Everything lives inside a type (class/interface/enum/record). No free-floating functions or variables.
+- Blocks use `{}`; statements end with `;` (no ASI like JS — a missing `;` is a compile error).
+- One file may contain several classes, but **at most one `public` top-level class**, named like the file.
+
+## `main` method, piece by piece
+- `public` — launcher can call it from outside. `static` — runs without creating an object. `void` — returns nothing (exit code via `System.exit(n)`). `String[] args` — CLI arguments.
+- Canonical form: `public static void main(String[] args)` — use this in real code.
+- Java 25 launcher also accepts non-`private`, non-static, no-arg `main` (e.g. `void main()`), mainly for scripts/learning. A `private main` → "Main method not found" at **launch** time (compiles fine!).
+
+## Packages
+- Namespace for classes, like a folder-based module path. Convention: reversed domain, lowercase → `com.acme.orders`.
+- Directory must mirror package: `com/acme/orders/OrderSummary.java`.
+- **Fully qualified name (FQN)**: `com.acme.orders.OrderSummary` — this is the class's real identity.
+- Compile: `javac -d out src/com/acme/orders/OrderSummary.java` → `out/com/acme/orders/OrderSummary.class`.
+- Run: `java -cp out com.acme.orders.OrderSummary` (classpath root + FQN). `java -cp out OrderSummary` → `ClassNotFoundException` (no `out/OrderSummary.class` exists).
+- The FQN is **stored inside the `.class` file**. Running `java App` from inside `out/com/chandan/ledger/` finds `./App.class`, but its real name is `com/chandan/ledger/App` → `NoClassDefFoundError (wrong name: …)`.
+  - `ClassNotFoundException` = "no such file found for that name". `NoClassDefFoundError (wrong name)` = "found a file, but it's a different class".
+- Why: avoids name collisions (your `User` vs a library's `User`), groups related code, enables package-private visibility.
+
+## Imports
+- `import` is **only a naming shortcut** — nothing is loaded or executed (unlike JS `import`, which runs the module).
+- `java.lang.*` (String, System, Math, Integer…) is imported automatically.
+- Without import you can use the FQN: `java.time.LocalDate.now()`.
+- Prefer single-type imports over wildcards (`java.util.*`) — clearer, avoids ambiguity.
+
+## Comments
+- `// line`, `/* block */`, `/** Javadoc */` (documentation for public APIs, rendered by IDEs/`javadoc` tool).
+
+## Naming conventions (followed by the whole ecosystem — Spring relies on some)
+| Thing | Style | Example |
+|---|---|---|
+| Package | lowercase, dot-separated | `com.acme.orders` |
+| Class / interface / enum / record | PascalCase noun | `OrderService`, `PaymentStatus` |
+| Method | camelCase verb | `calculateTotal()`, `isEligibleForRefund()` |
+| Variable / parameter | camelCase | `orderId` |
+| Constant (`static final`) | UPPER_SNAKE_CASE | `MAX_RETRIES` |
+- Booleans: `isX`/`hasX`/`canX`. Acronyms: `HttpClient`, `userId` (not `HTTPClient`, `userID`) — common modern style.
+
+## How javac reports errors
+- Errors come in **stages**: syntax (parse) errors first → fix → then symbol/type errors appear → fix → then launch/run-time errors.
+- Fixing "all" errors may reveal new ones. Always fix the **first** error first; later errors can be side effects.
+- Three layers seen so far: **compile-time** (javac), **launch-time** (JVM can't find class / main), **run-time** (exceptions while executing).
+
+## Variables & primitive types
+- Two kinds of types: **primitives** (the value itself, 8 fixed types, lowercase) and **references** (point to objects: `String`, `LocalDate`, arrays, your classes).
+| Type | Size | Range / notes | Use for |
+|---|---|---|---|
+| `byte` | 8 bit | −128..127 | raw binary data |
+| `short` | 16 bit | ±32k | rarely used |
+| `int` | 32 bit | ±2.1 billion (`Integer.MAX_VALUE` = 2,147,483,647) | default whole number: counts, indexes |
+| `long` | 64 bit | ±9.2 × 10^18 | IDs, timestamps (ms), byte sizes, money in minor units |
+| `float` | 32 bit | ~7 digits | almost never (graphics/ML) |
+| `double` | 64 bit | ~15–16 digits | measurements, ratios, averages — **never money** |
+| `char` | 16 bit | one UTF-16 code unit, numeric (`'A' + 1` = 66) | single characters |
+| `boolean` | — | `true`/`false` only, **not a number** | flags |
+- Declare: `int count = 0;` · constant local: `final int maxRetries = 3;`
+- **Definite assignment**: a local variable must be assigned before it's read, or it's a compile error ("might not have been initialized"). (JShell is lenient here — test with javac.)
+- Literals: `42` (int), `42L` (long), `3.14` (double), `3.14f` (float), `'A'` (char), `1_000_000` (underscores for readability), `0xFF`, `0b1010`.
+- `var`: **compile-time** inference for local variables. Type is fixed forever after (`var n = 10; n = 2.5;` → error). Needs an initializer. Not dynamic typing — not JS `let`.
+
+## Arithmetic rules
+- `int op int` → `int`. **Integer division truncates toward zero**: `7 / 2` = 3, `-7 / 2` = −3. `%` takes the sign of the left operand: `-7 % 2` = −1.
+- Mixed types → **widened** to the larger type: `7 / 2.0` = 3.5. `byte`/`short`/`char` are promoted to `int` in arithmetic (`short s = s + 1` fails; `s += 1` compiles — compound assignment casts implicitly).
+- Order matters: `10 / 3 * 3` = 9. `completed / total * 100` with ints → 0 for any completed < total. Fix: `completed * 100.0 / total`.
+- Integer ÷ 0 → `ArithmeticException` (run time). Double ÷ 0 → `Infinity` (no error!).
+
+## Casting
+- **Widening** (int → long → double) is automatic and safe.
+- **Narrowing** needs an explicit cast and can lose data: `(int) 3.99` = 3 (truncates, doesn't round), `(int) 3_000_000_000L` = garbage (wraps), `(byte) 200` = −56.
+- javac error "possible lossy conversion from X to Y" = you're narrowing without a cast. Don't add a cast just to silence it — first ask if the value can actually fit.
+
+## Overflow — silent!
+- `Integer.MAX_VALUE + 1` = −2147483648. No error, no warning.
+- Classic bug: `long ms = 1000 * 60 * 60 * 24 * 30;` → −1702967296. The multiplication runs in `int` **before** assignment to `long`. Fix: `1000L * 60 * ...` (make the first operand long).
+- When overflow must never happen: `Math.addExact`, `Math.multiplyExact` → throw `ArithmeticException` instead of wrapping.
+
+## Floating point & money
+- `0.1 + 0.2` = 0.30000000000000004 (binary floating point can't represent 0.1 exactly).
+- Money: **never `double`**. Use `long` in minor units (paise/cents) or `BigDecimal` (covered later).
+
+## Error categories (so far)
+1. **Compile time** — javac rejects it (types, syntax, lossy conversion, uninitialized local).
+2. **Launch time** — JVM can't find the class or a valid `main`.
+3. **Run time** — exception while executing (`ArithmeticException`, `ArrayIndexOutOfBoundsException`).
+4. **Silently wrong** — runs fine, wrong answer (overflow, integer division, float rounding). The most dangerous kind.

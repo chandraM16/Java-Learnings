@@ -80,5 +80,7 @@ Difficulty levels: 1 Beginner, 2 Practice, 3 Applied, 4 Advanced, 5 Production, 
 - Strengths: follows hands-on steps accurately; honest about gaps ("idk") instead of guessing — good, keep encouraging it.
 - Struggles (2026-09-17, Lesson 1): observes *what* happens but often can't yet explain *why*; answered "idk" on open-ended reasoning questions. → When a question is open-ended, give a hint/scaffold ("think about X") and ask smaller stepping-stone questions before the big one.
 - Reads error messages loosely (Ex 3a ran the wrong command and didn't notice the error didn't match the change). → Keep making them paste and interpret exact error text.
-- Workspace note: exercises live in `exeercies/` (typo in folder name, created by learner). Offered rename to `exercises/`.
+- Workspace note: exercises live in `exercies/` (learner's folder; name kept as-is). Workspace became a git repo on 2026-09-18.
+- Pattern (2026-09-18): tends to submit the hands-on parts and skip the reasoning/debug/quiz parts. → Explicitly ask for the skipped parts; keep them short.
+- Improvement (2026-09-18, Lesson 2): explanations of *why* got clearly better (classpath/FQN reasoning).
 - Likely JS→Java friction points to watch for: static typing strictness, `==` vs `.equals()`, primitives vs references, checked exceptions, no top-level functions (everything in classes), thread-based concurrency vs event loop.
