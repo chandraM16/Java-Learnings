@@ -174,10 +174,33 @@ public class App {                   // 3. type declaration; public class name =
 - `Integer.MAX_VALUE + 1` = −2147483648. No error, no warning.
 - Classic bug: `long ms = 1000 * 60 * 60 * 24 * 30;` → −1702967296. The multiplication runs in `int` **before** assignment to `long`. Fix: `1000L * 60 * ...` (make the first operand long).
 - When overflow must never happen: `Math.addExact`, `Math.multiplyExact` → throw `ArithmeticException` instead of wrapping.
+- Overflow **never** throws on its own — it's always "silently wrong", not "run time". And the wrapped value isn't always negative: `1000 * 60 * 60 * 24 * 60` → 889,032,704 (plausible-looking, wrong).
+- Declaring the result `long` is not enough: `long m = requestsPerDay * 30;` still overflows. Make an operand long: `requestsPerDay * 30L`.
+
+## Division by zero — don't "fix" it by switching to double
+- `x / (double) 0` → `Infinity`: you've turned a loud crash into a silent wrong value.
+- Real fix: handle the zero case explicitly (`if (pendingJobs == 0) ...`) and decide what the business wants (0? "N/A"? skip?).
 
 ## Floating point & money
 - `0.1 + 0.2` = 0.30000000000000004 (binary floating point can't represent 0.1 exactly).
-- Money: **never `double`**. Use `long` in minor units (paise/cents) or `BigDecimal` (covered later).
+- Money: **never `double`**. Two valid approaches:
+  - **`long` minor units** (paise/cents): simple, fast, exact for +, −, × by whole numbers. Many payment APIs (e.g. Stripe) use this. Division needs an explicit rounding decision.
+  - **`BigDecimal`**: exact decimals + explicit `RoundingMode`; use when dividing, applying rates/tax/discount %, or converting currencies.
+  - Common combo: store/transport as `long` paise → convert with `BigDecimal.valueOf(paise, 2)` (= rupees, exact) when you need division or display.
+  - Create BigDecimal from **String** or `valueOf`, never `new BigDecimal(0.1)` (captures the double's binary error: 0.1000000000000000055…).
+- Counts (subscribers, items) are **`int`/`long`**, not BigDecimal or double.
+- **Source of truth = smallest unit.** Compute in paise, derive rupees for display. Never go rupees → `longValue()` → paise (truncates fractions silently).
+- `(double) a / b` casts `a` **before** dividing → double division ✅. `(double) (a / b)` casts **after** int division → fraction already lost ❌.
+
+## Avoiding unit bugs
+- Replace magic numbers with named constants: `static final int PAISE_PER_RUPEE = 100;` → one definition to review, and the name says the intent.
+- Tests: an **example test** with a hand-computed expected value (2.5M × ₹999 = 249,750,000,000 paise) catches wrong factors. An **invariant test** (paise / rupees == 100) checks consistency but passes if both are wrong the same way. Use both. (JUnit: Phase 10.)
+- In review: estimate the order of magnitude and compare with the output.
+
+## Formatting numbers for output
+- `double` prints large values in scientific notation: `83250000.0` → `8.325E7`.
+- `String.format("%.2f", x)` or `"%.2f".formatted(x)` → `83250000.00`. `%,.2f` adds grouping → `83,250,000.00`.
+- Exact money display from paise: `BigDecimal.valueOf(paise, 2)` → `2497500000.00`.
 
 ## Error categories (so far)
 1. **Compile time** — javac rejects it (types, syntax, lossy conversion, uninitialized local).
