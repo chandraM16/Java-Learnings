@@ -8,7 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 5 — Operators & control flow (delivered 2026-09-20, awaiting exercises).
+Lesson 5 — Operators & control flow. Ex1 5/6, Ex2 ✅, Ex3 ✅ (2026-09-21) — **first exercise with the int-division cast applied unprompted.** Awaiting L5 quiz → then Lesson 6.
 Lesson 4 closed by learner request; EmailMasker v2 + L4 quiz not submitted. Open L4 items (substring off-by-one, String vs StringBuilder, `==` vs equals wording) folded into L5 Ex2/Ex3.
 
 Phase 1 remaining after L5: L6 Methods, L7 Arrays, Checkpoint 1.
@@ -37,7 +37,8 @@ Phase 1 remaining after L5: L6 Methods, L7 Arrays, Checkpoint 1.
 Not Started (see `roadmap.md`).
 
 ## Needs Review
-- **Int division in ratios — 3rd miss (L3 #6, L4 #5)** — recognises the rule when asked directly, never spots it in code. → Make it a standing review question on every future exercise that computes a rate/percentage/average; retest at Checkpoint 1.
+- **Naming the error category (5th miss)** — fixes bugs correctly but calls silent wrong-output bugs "run time". Anchor: *did anything throw / stop the program?* No → silently wrong. Test again at Checkpoint 1.
+- **Int division in ratios** — 3 misses (L3 ×2, L4), then applied correctly unprompted in L5 Ex3 (2026-09-21). Keep spot-checking; retest at Checkpoint 1.
 - **No truthiness in Java (L3 recap)** — wrote `args[0] ? args[0] : "username"`. Conditions must be boolean expressions.
 - **String concatenation rule (L4)** — expected `boolean + String` to be an error. Rule: if either operand of `+` is a String, the other is converted to text (works for every type, incl. null). Otherwise `+` is arithmetic — which is why `char + char` = int.
 - **Applying integer-division rule in own code (L3)** — knows the rule in isolation (Ex1 ✅) but wrote `a.intValue() * 100 / b.intValue()` in Ex2. Knowledge → application gap.
@@ -81,7 +82,10 @@ Not Started (see `roadmap.md`).
 | 2026-09-20 | L4 Ex3 EmailMasker | ⚠️ works, design issues | ✅ strip/toLowerCase, indexOf guard, `repeat()`, handled no-`@` case. ❌ `substring(idx)` includes the `@` (off-by-one). ❌ used StringBuilder for read-only text + mutating `replace(...)`. ❌ blank input not handled (prints empty Normalized). ❌ leftover debug print, missing "Masked" label. |
 | 2026-09-20 | Self-study `StringLearning.java` | 👍 | Learner experimented with lesson features unprompted (StringBuilder aliasing, split, text block, parseInt). Note: wrapped everything in `try/catch(Exception)`; comments for parseInt/valueOf are swapped. |
 | 2026-09-20 | L4 Ex3 v2 + L4 Quiz | Skipped | Learner moved to Lesson 5 |
-| — | L5 Ex1 predictions, Ex2 Broken (REQUIRED), Ex3 OrderStatusReport, Quiz | Pending | |
+| 2026-09-20 | L5 Ex1 Predictions | 5/6 | ✅ switch expression, multi-label, `if (flag = true)` → A/true, `continue` → 12, short-circuit null guard. ❌ `byte b += 300` → said 310 (actual 54: += casts, value wraps to 8 bits). |
+| 2026-09-20 | L5 Ex2 DiscountEngine | ✅ code / ❌ categories | Found & fixed all 3 bugs correctly; converted to arrow switch; kept `%.2f` formatting from L3. ❌ Called fall-through and `if (flag = true)` "run time" — all 3 are silently wrong (asked explicitly, 5th category miss). Didn't answer Q3 (why gold gets less). Used arrow switch as statements, not as an expression. `isPremium == true` instead of `isPremium`. |
+| 2026-09-21 | L5 Ex3 OrderStatusReport | ✅ | Output matches spec exactly. Guard clause + `return`, enhanced for, arrow switch, `toLowerCase()` normalisation, **`(double)` cast applied without being prompted** (first time), `%.2f`. Gaps: per-status counts computed but never printed (spec item); no `strip()` so `" paid "` counts as unknown; 5 parallel counters (→ Map/enum later); long `+` chain instead of `formatted`. |
+| — | L5 Quiz | Pending | |
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
 
 ## Assessments
@@ -91,6 +95,7 @@ Not Started (see `roadmap.md`).
 - None yet.
 
 ## Strengths (evidence)
+- Code quality improving fast: L5 Ex3 was correct on the first attempt, including the rule he had missed 3 times before.
 - Writes working code quickly; applies fixes correctly once a bug is explained (AccessCheck 5/5).
 - Started self-directed practice (`StringLearning.java`) without being asked — 2026-09-20.
 
