@@ -207,3 +207,87 @@ public class App {                   // 3. type declaration; public class name =
 2. **Launch time** — JVM can't find the class or a valid `main`.
 3. **Run time** — exception while executing (`ArithmeticException`, `ArrayIndexOutOfBoundsException`).
 4. **Silently wrong** — runs fine, wrong answer (overflow, integer division, float rounding). The most dangerous kind.
+
+## Primitives vs references (memory model)
+- Primitive variable **holds the value**. Reference variable **holds an address** of an object on the **heap**.
+- Assignment copies what the variable holds: for primitives the value, for references the **address** (two variables → same object).
+- References can be `null` (points to nothing). Calling a method on `null` → `NullPointerException` (run time). Primitives can never be null.
+
+## Strings
+- `String` is a **class** (reference type), not a primitive. `"text"` = String, `'t'` = char.
+- **Immutable**: every "modifying" method returns a **new** String. `s.toUpperCase();` alone does nothing — must assign: `s = s.toUpperCase();`.
+- Why immutable: safe to share between threads, safe as map keys, can be cached/pooled, can't be changed after a security check.
+- Common methods: `length()`, `charAt(i)`, `substring(start, end)` (end exclusive), `indexOf`, `contains`, `startsWith`/`endsWith`, `toLowerCase`/`toUpperCase`, `strip()` (Unicode-aware trim), `isEmpty()`, `isBlank()`, `split(regex)`, `replace`, `repeat(n)`, `String.join`, `formatted`.
+- `substring(i)` starts **at** index i — to skip a delimiter found by `indexOf`, use `substring(i + 1)`.
+- `split` drops trailing empty strings: `"a,b,,c,,".split(",").length` = 4.
+- Parsing: `Integer.parseInt("42")` → 42; bad input → `NumberFormatException` (run time). Other way: `String.valueOf(42)`.
+
+## `==` vs `.equals()`  ⚠️ #1 JS→Java trap
+- `==` on references: **same object?** (address comparison). `.equals()`: **same content?**
+- String literals are pooled, so `"hello" == "hello"` is `true` — **by accident**. Strings built at run time (input, concatenation with variables, substring, JSON, DB) are new objects → `==` is `false` even with identical text.
+- Rule: **always compare strings (and any objects) with `.equals()`**. `==` only for primitives (and `null` checks / enums later).
+- Null-safe: `"ADMIN".equals(role)` (constant first) or `Objects.equals(a, b)`. `role.equals("ADMIN")` throws NPE if role is null.
+- Case-insensitive: `equalsIgnoreCase`. Ordering: `compareTo` (negative/0/positive).
+
+## String vs StringBuilder — pick by intent
+- `String` = immutable value → safe to pass around, read-only work (parsing, slicing, comparing).
+- `StringBuilder` = mutable buffer → only when **building** text piece by piece (loops, big reports).
+- Mutating a builder in the middle of reading from it makes later reads depend on call order — a common source of bugs.
+
+## String building
+- `+` is fine for a few pieces (compiler optimizes it). In **loops**, each `+=` creates a new String → use `StringBuilder` (`append`, then `toString()`).
+- **The `+` rule:** if **either operand is a String**, `+` concatenates and converts the other operand to text — any type: `true + "!" + 5 + 'c' + 1.5 + null` → `"true!5c1.5null"`. If **neither** is a String, `+` is arithmetic — which is why `char + char` is int: `'J' + 'a'` = 171. Force concatenation by starting with `""`: `"" + 'J' + 'a'` = "Ja".
+- `"1" + 2 + 3` = "123" but `1 + 2 + "3"` = "33" (left to right).
+- Text blocks (`"""` … `"""`) for multi-line SQL/JSON; indentation is stripped based on the closing delimiter.
+
+# Operators & control flow (Java vs JS differences)
+
+## Operators
+- **No `===`.** `==` compares primitives by value, objects by reference → `.equals()` for objects.
+- **No truthiness:** `if`, `while`, `&&`, `||`, `?:` need a real `boolean`. `if (list)` / `if (str)` don't compile.
+- **No `||` default idiom and no `??`:** use `x != null ? x : fallback` or `Objects.requireNonNullElse(x, fallback)`.
+- `&&` / `||` short-circuit (same as JS) — the standard null guard: `if (s != null && !s.isBlank())`.
+- `&` / `|` on booleans = non-short-circuiting (both sides evaluated); on ints = bitwise. `^` xor, `<<`, `>>`, `>>>` (unsigned right shift; JS `>>>` coerces to 32-bit, Java's works on int/long).
+- Compound assignment has a **hidden cast**: `byte b = 10; b += 5;` compiles, `b = b + 5;` doesn't.
+- `instanceof` with **pattern variable**: `if (o instanceof String s && s.length() > 2)` — no cast needed.
+- `=` in a condition compiles when the variable is boolean: `if (isPremium = true)` **assigns** and is always true. A classic silent bug.
+
+## if / else
+- Condition must be boolean. Otherwise identical to JS.
+- Prefer **guard clauses** (validate + `return` early) over deep nesting.
+
+## switch — much stronger than JS
+```java
+// classic (fall-through, needs break) — legacy style, avoid in new code
+switch (tier) { case "gold": x = 20; break; default: x = 0; }
+
+// arrow switch (Java 14+): no fall-through, can be an EXPRESSION
+int discount = switch (tier) {
+    case "gold", "platinum" -> 20;       // multiple labels
+    case "silver" -> 10;
+    case null -> 0;                       // switch can handle null (Java 21+)
+    default -> { int base = tier.length(); yield Math.min(base, 5); }   // block → yield
+};
+```
+- Works on `int`, `String`, `enum`, and (Java 21+) any type via **pattern matching**:
+```java
+String describe(Object value) {
+    return switch (value) {
+        case Integer i when i > 100 -> "big int " + i;   // guard with `when`
+        case Integer i -> "int " + i;
+        case String s -> "string of length " + s.length();
+        case null -> "nothing";
+        default -> "something else";
+    };
+}
+```
+- A switch **expression** must be exhaustive (hence `default`, unless all enum/sealed cases are covered).
+- `switch` on String compares with `.equals()` internally — safe, unlike `==`.
+- Classic `switch` without `break` **falls through** to the next case — a common silent bug.
+
+## Loops
+- `for (int i = 0; i < n; i++)` — same as JS.
+- **Enhanced for** (= JS `for...of`): `for (String arg : args) { ... }`. No index available; use a classic for when you need one.
+- `while`, `do { } while (cond);` (runs at least once — JS has this too but it's rarely used).
+- `break` / `continue`, plus **labels** for nested loops: `outer: for (...) { for (...) { break outer; } }`.
+- There is no `for...in`; iterating a Map's keys comes later (Phase 3).

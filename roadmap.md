@@ -14,11 +14,11 @@ Each phase ends with a checkpoint assessment. Projects are placed where their pr
 0.4 Maven in 20 minutes (just enough to run a project) *(deep dive in Phase 9)*
 
 ### Phase 1 — Fundamentals
+Lesson mapping: L2 = 1.1, L3 = 1.2, L4 = 1.3, L5 = 1.4+1.5, L6 = 1.6, L7 = 1.7, then Checkpoint 1.
 1.1 Anatomy of a program: classes, `main`, statements, comments, naming conventions
 1.2 Variables, primitive types, `var`, literals, casting, overflow
 1.3 Reference types, `String`, immutability, `==` vs `equals`, `StringBuilder`
-1.4 Operators & expressions (integer division, short-circuiting, precedence traps)
-1.5 Control flow: `if`, classic & arrow `switch`, loops, `break`/`continue`, labels
+1.4 + 1.5 (merged 2026-09-19) Operators & control flow: Java-specific operator differences (no `===`, compound-assignment casts, short-circuit, ternary), `if`, classic & arrow `switch`, loops, `break`/`continue`, labels
 1.6 Methods: parameters, return, overloading, scope, pass-by-value, `static`, `final`
 1.7 Arrays: 1D/2D, `Arrays` utility, arrays vs lists preview
 **Checkpoint 1**

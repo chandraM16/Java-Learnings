@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-19 (Session 4)_
+_Last updated: 2026-09-20 (Session 5, cont.)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,9 +8,10 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 3 — Variables & primitive types. Ex1 reviewed (9/12). Ex2 v1 + v2 reviewed (2026-09-19) → reference solution shown. Predictions ✅, Challenge ✅, Quiz 2/4, Ex3 3/7 (predicted only, didn't run). **Awaiting: Ex3 actually compiled/run + fixed with output pasted; re-answer Quiz Q2 (var vs let) & Q3 (why cast only for narrowing).** Then Lesson 4. Lesson 2 closed (Challenge + Quiz Q1–3 skipped).
+Lesson 5 — Operators & control flow (delivered 2026-09-20, awaiting exercises).
+Lesson 4 closed by learner request; EmailMasker v2 + L4 quiz not submitted. Open L4 items (substring off-by-one, String vs StringBuilder, `==` vs equals wording) folded into L5 Ex2/Ex3.
 
-Note: learner chose to move on without answering the Lesson 1 re-check questions. Those ideas (compile vs launch vs run time; artifacts vs source) are folded into Lesson 2 Ex3 + Quiz as spaced revision — verify there.
+Phase 1 remaining after L5: L6 Methods, L7 Arrays, Checkpoint 1.
 
 ## Topic Status
 
@@ -28,12 +29,17 @@ Note: learner chose to move on without answering the Lesson 1 re-check questions
 |---|---|---|
 | 1.1 Anatomy: class, `main`, statements, comments, packages, imports, naming | Practiced | L2 Ex2: packaged build/run correct; explained classpath + FQN errors mostly correctly (named NoClassDefFoundError as generic mismatch) |
 | 1.2 Variables, primitives, `var`, casting, overflow | Practiced | Rules known in isolation (predictions ✅, type choices 9/9); applying them in code still inconsistent (Ex3 3/7) |
-| 1.3–1.7 | Not Started | |
+| 1.3 Strings & reference types | Practiced | L4: `==`/equals understood + applied in AccessCheck; EmailMasker worked but had off-by-one + StringBuilder misuse |
+| 1.4+1.5 Operators & control flow | Introduced | Lesson 5 delivered |
+| 1.6–1.7 | Not Started | |
 
 ### Phases 2–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
+- **Int division in ratios — 3rd miss (L3 #6, L4 #5)** — recognises the rule when asked directly, never spots it in code. → Make it a standing review question on every future exercise that computes a rate/percentage/average; retest at Checkpoint 1.
+- **No truthiness in Java (L3 recap)** — wrote `args[0] ? args[0] : "username"`. Conditions must be boolean expressions.
+- **String concatenation rule (L4)** — expected `boolean + String` to be an error. Rule: if either operand of `+` is a String, the other is converted to text (works for every type, incl. null). Otherwise `+` is arithmetic — which is why `char + char` = int.
 - **Applying integer-division rule in own code (L3)** — knows the rule in isolation (Ex1 ✅) but wrote `a.intValue() * 100 / b.intValue()` in Ex2. Knowledge → application gap.
 - **Choosing types by meaning** — v1 used BigDecimal for counts (fixed in v2 ✅). 'Smallest unit = source of truth' now explained correctly in own words (2026-09-19) → verify in future code.
 - **Following explicit instructions** — skipped requested comments/questions in consecutive submissions.
@@ -68,6 +74,14 @@ Not Started (see `roadmap.md`).
 | 2026-09-19 | L3 follow-up predictions | ✅ 3/3 | Truncation vs overflow now correct; char→int correct. Gap closed. |
 | 2026-09-19 | L3 Ex3 MetricsReport (prediction only) | 3/7 | ✅ float, boolean compile errors; ✅ requestsPerMonth silently wrong (but fix incomplete: changing var to long alone still overflows). ❌ "no package" ≠ launch error. ❌ cacheTtlMs called run time (overflow is silent). ❌ missed successRate = 0.0. ❌ / by zero called silently-wrong; proposed double fix → turns crash into silent Infinity. Didn't run the program. |
 | 2026-09-19 | L3 Challenge (type choices) | ✅ 9/9 | No reasons given. |
+| 2026-09-19 | L3 MetricsReport run + Q#5 re-explain | Skipped | Learner moved to Lesson 4 |
+| 2026-09-20 | L4 Ex1 Predictions | 6/8 | ✅ ==/equals with correct reasons, substring, indexOf, parseInt, `1+2+"3"+4+5`. ❌ merged the two charAt lines → missed 171 and "Ja". ❌ thought `boolean + String` is an error (it's "true false"). |
+| 2026-09-20 | L4 Ex2 AccessCheck — ran 4 ways + bug table | 3.5/5 | ✅ Ran all 4 (first time following the run-it instruction). ✅ `==` bug + fix `"admin".equals(role)`. ✅ overflow + `1000L` fix. ✅ args[0] run time. ⚠️ #1: caught the NPE but missed that `role.toLowerCase();` discards its result (immutability). ❌ #5 int division (`2/7*100` → 0.0) missed even after a hint — 3rd exposure. ⚠️ Proposed JS-style ternary `args[0] ? ... : ...` (no truthiness in Java). |
+| 2026-09-20 | L4 Ex2 AccessCheck — fixed | ✅ 5/5 | `equalsIgnoreCase`, `(double)` cast, `1000L`, null/length guards. Deviation: silently defaults username to "guest" instead of printing the required message. |
+| 2026-09-20 | L4 Ex3 EmailMasker | ⚠️ works, design issues | ✅ strip/toLowerCase, indexOf guard, `repeat()`, handled no-`@` case. ❌ `substring(idx)` includes the `@` (off-by-one). ❌ used StringBuilder for read-only text + mutating `replace(...)`. ❌ blank input not handled (prints empty Normalized). ❌ leftover debug print, missing "Masked" label. |
+| 2026-09-20 | Self-study `StringLearning.java` | 👍 | Learner experimented with lesson features unprompted (StringBuilder aliasing, split, text block, parseInt). Note: wrapped everything in `try/catch(Exception)`; comments for parseInt/valueOf are swapped. |
+| 2026-09-20 | L4 Ex3 v2 + L4 Quiz | Skipped | Learner moved to Lesson 5 |
+| — | L5 Ex1 predictions, Ex2 Broken (REQUIRED), Ex3 OrderStatusReport, Quiz | Pending | |
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
 
 ## Assessments
@@ -76,12 +90,16 @@ Not Started (see `roadmap.md`).
 ## Projects
 - None yet.
 
+## Strengths (evidence)
+- Writes working code quickly; applies fixes correctly once a bug is explained (AccessCheck 5/5).
+- Started self-directed practice (`StringLearning.java`) without being asked — 2026-09-20.
+
 ## Confidence (mentor estimate)
 - Java overall: 0.5/5
 - Phase 0 concepts: 2/5
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Review Lesson 3 submissions (key signals: do they spot overflow in SubscriptionBilling unprompted? do they classify the "silently wrong" bugs?).
-2. Lesson 4: Strings & reference types (`==` vs `equals`, immutability, `StringBuilder`, primitives vs references in memory).
-3. Lesson 5: Operators & expressions (short-circuit, precedence, `++`, compound assignment).
+1. Review Lesson 4 (key signals: did they RUN AccessCheck? do they catch `==` on strings, ignored `toUpperCase()` result, NPE, plus the L3 int-division/overflow bugs?).
+2. Lesson 5: Operators (Java-specific only) + control flow (`if`, arrow `switch`, loops).
+3. Lesson 6: Methods. Lesson 7: Arrays. Then Checkpoint 1.
