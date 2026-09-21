@@ -35,6 +35,8 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **JVM (Java Virtual Machine)** — The runtime that loads, verifies, and executes bytecode, and manages memory.
 - **Literal** — A value written directly in code: `42`, `42L`, `3.14`, `'A'`, `true`, `"text"`.
 - **LTS (Long-Term Support)** — A Java release supported for years by vendors. Current: 25 (previous: 21, 17, 11, 8).
+- **Method overloading** — Several methods with the same name but different parameter lists; chosen at compile time.
+- **Method signature** — Method name + parameter types (not the return type). Must be unique within a class.
 - **Narrowing conversion** — Converting to a smaller/less precise type (double → int, long → int). Requires an explicit cast.
 - **`NoClassDefFoundError`** — JVM error when a class definition can't be loaded, e.g. a `.class` file found but its internal name doesn't match (`wrong name`), or a class present at compile time is missing at run time.
 - **`null`** — A reference that points to no object. Only reference types can be null.
@@ -44,12 +46,17 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
 - **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
 - **Package-private** — The default visibility when no modifier is written: accessible only within the same package.
+- **Pass-by-value** — Arguments are copied into parameters. For references, the copied value is the address, so the object is shared but reassignment is local.
 - **Pattern matching** — Testing a value's type and binding it to a variable in one step (`o instanceof String s`, `case Integer i ->`).
 - **Primitive type** — One of Java's 8 built-in value types (`byte short int long float double char boolean`). Holds the value directly, not a reference to an object.
 - **Reference** — The value held by a reference-type variable: the address of an object on the heap.
 - **Reference type** — Any non-primitive type (classes, interfaces, arrays, `String`). A variable of this type holds a reference to an object.
 - **Short-circuit evaluation** — `&&`/`||` skip the right operand when the result is already known.
 - **Source-file mode** — `java File.java`: compiles in memory and runs without writing `.class` files.
+- **Stack (call stack)** — Per-thread memory holding one frame per active method call (parameters, locals, return address).
+- **Stack frame** — The block of stack memory for one method call; created on call, discarded on return.
+- **`StackOverflowError`** — Thrown when the call stack runs out of space, typically from infinite recursion.
+- **Stack trace** — List of active frames printed with an exception; top = where it happened, below = the callers.
 - **Standard library (JDK class library)** — Built-in packages like `java.lang`, `java.util`, `java.time`, `java.net.http`.
 - **`static`** — Belongs to the class itself rather than to an instance; usable without creating an object. (Deep dive: Phase 2.)
 - **`StringBuilder`** — Mutable, growable string buffer for efficient building in loops.
@@ -57,4 +64,5 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
 - **Type inference (`var`)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
+- **Varargs** — `Type... name` parameter accepting zero or more arguments, received as an array.
 - **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.

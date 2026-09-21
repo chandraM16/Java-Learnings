@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-20 (Session 5, cont.)_
+_Last updated: 2026-09-21 (Session 6)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,10 +8,10 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 5 — Operators & control flow. Ex1 5/6, Ex2 ✅, Ex3 ✅ (2026-09-21) — **first exercise with the int-division cast applied unprompted.** Awaiting L5 quiz → then Lesson 6.
-Lesson 4 closed by learner request; EmailMasker v2 + L4 quiz not submitted. Open L4 items (substring off-by-one, String vs StringBuilder, `==` vs equals wording) folded into L5 Ex2/Ex3.
+Lesson 6 — Methods (delivered 2026-09-21, awaiting exercises).
+Lesson 5 closed by learner request; L5 quiz not submitted (4th lesson in a row with quiz skipped).
 
-Phase 1 remaining after L5: L6 Methods, L7 Arrays, Checkpoint 1.
+Phase 1 remaining after L6: L7 Arrays, Checkpoint 1.
 
 ## Topic Status
 
@@ -30,8 +30,9 @@ Phase 1 remaining after L5: L6 Methods, L7 Arrays, Checkpoint 1.
 | 1.1 Anatomy: class, `main`, statements, comments, packages, imports, naming | Practiced | L2 Ex2: packaged build/run correct; explained classpath + FQN errors mostly correctly (named NoClassDefFoundError as generic mismatch) |
 | 1.2 Variables, primitives, `var`, casting, overflow | Practiced | Rules known in isolation (predictions ✅, type choices 9/9); applying them in code still inconsistent (Ex3 3/7) |
 | 1.3 Strings & reference types | Practiced | L4: `==`/equals understood + applied in AccessCheck; EmailMasker worked but had off-by-one + StringBuilder misuse |
-| 1.4+1.5 Operators & control flow | Introduced | Lesson 5 delivered |
-| 1.6–1.7 | Not Started | |
+| 1.4+1.5 Operators & control flow | Practiced | L5: Ex1 5/6, DiscountEngine 3/3 fixed, OrderStatusReport correct first try |
+| 1.6 Methods | Introduced | Lesson 6 delivered |
+| 1.7 Arrays | Not Started | |
 
 ### Phases 2–19
 Not Started (see `roadmap.md`).
@@ -85,7 +86,8 @@ Not Started (see `roadmap.md`).
 | 2026-09-20 | L5 Ex1 Predictions | 5/6 | ✅ switch expression, multi-label, `if (flag = true)` → A/true, `continue` → 12, short-circuit null guard. ❌ `byte b += 300` → said 310 (actual 54: += casts, value wraps to 8 bits). |
 | 2026-09-20 | L5 Ex2 DiscountEngine | ✅ code / ❌ categories | Found & fixed all 3 bugs correctly; converted to arrow switch; kept `%.2f` formatting from L3. ❌ Called fall-through and `if (flag = true)` "run time" — all 3 are silently wrong (asked explicitly, 5th category miss). Didn't answer Q3 (why gold gets less). Used arrow switch as statements, not as an expression. `isPremium == true` instead of `isPremium`. |
 | 2026-09-21 | L5 Ex3 OrderStatusReport | ✅ | Output matches spec exactly. Guard clause + `return`, enhanced for, arrow switch, `toLowerCase()` normalisation, **`(double)` cast applied without being prompted** (first time), `%.2f`. Gaps: per-status counts computed but never printed (spec item); no `strip()` so `" paid "` counts as unknown; 5 parallel counters (→ Map/enum later); long `+` chain instead of `formatted`. |
-| — | L5 Quiz | Pending | |
+| 2026-09-21 | L5 Quiz | Skipped | Learner moved to Lesson 6 |
+| — | L6 Ex1 predictions, Ex2 StatusTools (REQUIRED), Ex3 OrderStatusReport refactor, Quiz | Pending | |
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
 
 ## Assessments
@@ -95,7 +97,7 @@ Not Started (see `roadmap.md`).
 - None yet.
 
 ## Strengths (evidence)
-- Code quality improving fast: L5 Ex3 was correct on the first attempt, including the rule he had missed 3 times before.
+- Code quality improving fast: L5 Ex3 was correct on the first attempt, including the rule missed 3 times before.
 - Writes working code quickly; applies fixes correctly once a bug is explained (AccessCheck 5/5).
 - Started self-directed practice (`StringLearning.java`) without being asked — 2026-09-20.
 

@@ -291,3 +291,45 @@ String describe(Object value) {
 - `while`, `do { } while (cond);` (runs at least once — JS has this too but it's rarely used).
 - `break` / `continue`, plus **labels** for nested loops: `outer: for (...) { for (...) { break outer; } }`.
 - There is no `for...in`; iterating a Map's keys comes later (Phase 3).
+
+# Methods
+
+## Anatomy
+```java
+private static double percentage(int part, int total) { ... }
+// modifiers  return-type  name   parameters (typed)     body
+```
+- Every method lives in a class. `static` = call without an object (`ClassName.method()` or just `method()` inside the class). Instance methods come in Phase 2.
+- `void` = returns nothing. Non-void methods must `return` on **every** path → otherwise compile error "missing return statement".
+- Access: `private` for helpers used only inside the class, `public` for things other classes call.
+- Names: camelCase verbs (`calculateTotal`, `isValid`, `formatRupees`). Small, one job each.
+
+## No default/optional parameters → overloading
+- Same name, **different parameter lists** (count or types). Return type alone doesn't count.
+- The compiler picks the overload at **compile time** by the argument types: `describe(5)` → int, `describe(5L)` → long, `describe('A')` → int (char widens to int).
+- **Varargs**: `static int sum(int... nums)` — `sum()`, `sum(1, 2, 3)`; inside, `nums` is an array. Must be the last parameter.
+
+## Java is ALWAYS pass-by-value
+- The method receives a **copy of the variable's value**.
+  - Primitive → a copy of the number. Changing it inside doesn't affect the caller.
+  - Reference → a copy of the **address**. Both point to the same object:
+    - **Mutating the object** (`sb.append("!")`) → caller sees it.
+    - **Reassigning the parameter** (`sb = new StringBuilder()`, `status = status.strip()`) → only the local copy changes; caller unaffected.
+- Consequence: a method can't "change" a caller's String (immutable + reassignment is local) → **return the new value** instead.
+- Same model as JS (objects are shared by reference-copy, rebinding a param is local). Java is *not* pass-by-reference.
+
+## Scope
+- Locals are block-scoped (like `let`). Parameters are locals.
+- Java forbids redeclaring a local in a nested block: `int x = 1; { int x = 2; }` → compile error (JS allows this shadowing).
+
+## Call stack & stack traces
+- Each call pushes a **frame** (params + locals) onto the thread's stack; `return` pops it.
+- Stack trace = frames from innermost (top, where it failed) to outermost (bottom, who started it):
+```
+NullPointerException: Cannot invoke "String.strip()" because "status" is null
+    at StatusTools.normalize(StatusTools.java:3)   ← failed here
+    at StatusTools.main(StatusTools.java:21)       ← called from here
+```
+- Read top line for *what/where*, then walk down for *who passed the bad value*.
+- Compile with `javac -g` to get variable names in NPE messages instead of `<parameter1>`/`<local2>`.
+- Infinite recursion → `StackOverflowError`.
