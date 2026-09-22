@@ -35,6 +35,7 @@ Understanding over memorization: why, how internally, when to use, when not to, 
 | `notes.md` | Concise long-term revision notes, organized by topic. Not lesson dumps. |
 | `roadmap.md` | Full curriculum (phases → lessons) + the 5 projects. |
 | `glossary.md` | Java/Spring terminology, defined in one or two lines each. |
+| `assessments/` | Checkpoint papers (one file per checkpoint). Answer keys are NOT stored in the repo — recompute when grading. |
 
 Create additional files (e.g. `mistakes.md`, `flashcards.md`, `interview.md`) only when they earn their place, and list them here.
 

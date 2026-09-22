@@ -8,9 +8,8 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 7 — Arrays. Ex1 8/9, Ex2 ✅ 5/5, Ex3 5/8 checklist (2026-09-22). **Awaiting: Ex3 package + per-status counts + index-risk sentence** → then Checkpoint 1. Last Phase 1 lesson.
-
-Phase 1 remaining after L7: Checkpoint 1 (gate for Phase 2).
+**Checkpoint 1** issued 2026-09-22 (`assessments/checkpoint-1.md`) — awaiting submission. Pass = ≥32/42 AND Part D ≥6/10 AND all Part C checklist items.
+L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) — same skills are tested in Checkpoint Part C.
 
 ## Topic Status
 
@@ -99,7 +98,9 @@ Not Started (see `roadmap.md`).
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
 
 ## Assessments
-- None yet.
+| Date | Assessment | Result | Notes |
+|---|---|---|---|
+| 2026-09-22 | Checkpoint 1 (L1–L7) | Part A received (provisional 7.5/8 — #2 overflow ✅ but labelled "client error", expected "silently wrong"); Part B received (provisional 13.5/14 — all 7 bugs, all categories correct, output matches exactly; E6 'why' missing; rounds question unanswered); Part C v1 received (provisional 6.5/10 — output matches for all 4 commands, but checklist items 2 (int[] of valid minutes), 3 (arrow switch), 10 (paste outputs) missed; 'no valid' printed on one line; main 17 lines; constants not private/final; args re-parsed in 4 methods); C fixes + D pending | Parts: A predict 8, B debug 14 (7 bugs: 1 compile/1 launch/1 run/4 silent), C build DeliveryStats 10, D explain 10 |
 
 ## Projects
 - None yet.
