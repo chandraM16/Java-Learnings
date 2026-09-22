@@ -3,7 +3,9 @@
 Alphabetical. One or two lines each. Added as terms are introduced.
 
 - **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
+- **Array** — Fixed-size, indexed container of one element type. An object (reference type).
 - **`ArrayIndexOutOfBoundsException`** — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
+- **`Arrays`** — `java.util` utility class of static helpers for arrays (`toString`, `sort`, `equals`, `copyOf`…).
 - **Arrow switch** — `case X -> ...` form (Java 14+): no fall-through, usable as an expression.
 - **`BigDecimal`** — Standard-library class for exact decimal arithmetic; used for money. (Covered later.)
 - **Bytecode** — The instruction set of the JVM, stored in `.class` files. Produced by `javac`, platform-independent.
@@ -13,6 +15,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Class file (`.class`)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
 - **`ClassNotFoundException`** — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
 - **Classpath (`-cp`)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Entry point** — The method the launcher calls first: `main`.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
@@ -24,6 +27,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Identifier** — A name you give to a package, class, method, or variable.
 - **Immutable** — An object whose state can't change after creation (e.g. `String`). "Changes" produce new objects.
 - **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
+- **Jagged array** — A 2D array whose rows have different lengths.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
 - **Javadoc** — `/** ... */` doc comments on classes/methods; rendered by IDEs and the `javadoc` tool.
 - **`JAVA_HOME`** — Environment variable pointing to the JDK install directory; used by Maven, Gradle, IDEs.
@@ -35,6 +39,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **JVM (Java Virtual Machine)** — The runtime that loads, verifies, and executes bytecode, and manages memory.
 - **Literal** — A value written directly in code: `42`, `42L`, `3.14`, `'A'`, `true`, `"text"`.
 - **LTS (Long-Term Support)** — A Java release supported for years by vendors. Current: 25 (previous: 21, 17, 11, 8).
+- **Magic number / magic index** — An unexplained literal whose meaning is implicit (`counts[2]`). Replace with a named constant.
 - **Method overloading** — Several methods with the same name but different parameter lists; chosen at compile time.
 - **Method signature** — Method name + parameter types (not the return type). Must be unique within a class.
 - **Narrowing conversion** — Converting to a smaller/less precise type (double → int, long → int). Requires an explicit cast.

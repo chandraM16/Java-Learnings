@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-21 (Session 6)_
+_Last updated: 2026-09-22 (Session 7)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,10 +8,9 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
 
 ## Current Topic
-Lesson 6 — Methods (delivered 2026-09-21, awaiting exercises).
-Lesson 5 closed by learner request; L5 quiz not submitted (4th lesson in a row with quiz skipped).
+Lesson 7 — Arrays. Ex1 8/9, Ex2 ✅ 5/5, Ex3 5/8 checklist (2026-09-22). **Awaiting: Ex3 package + per-status counts + index-risk sentence** → then Checkpoint 1. Last Phase 1 lesson.
 
-Phase 1 remaining after L6: L7 Arrays, Checkpoint 1.
+Phase 1 remaining after L7: Checkpoint 1 (gate for Phase 2).
 
 ## Topic Status
 
@@ -31,20 +30,21 @@ Phase 1 remaining after L6: L7 Arrays, Checkpoint 1.
 | 1.2 Variables, primitives, `var`, casting, overflow | Practiced | Rules known in isolation (predictions ✅, type choices 9/9); applying them in code still inconsistent (Ex3 3/7) |
 | 1.3 Strings & reference types | Practiced | L4: `==`/equals understood + applied in AccessCheck; EmailMasker worked but had off-by-one + StringBuilder misuse |
 | 1.4+1.5 Operators & control flow | Practiced | L5: Ex1 5/6, DiscountEngine 3/3 fixed, OrderStatusReport correct first try |
-| 1.6 Methods | Introduced | Lesson 6 delivered |
-| 1.7 Arrays | Not Started | |
+| 1.6 Methods | Practiced | L6: pass-by-value predictions 6/7, StatusTools 4/4 with correct categories, refactor into pure methods |
+| 1.7 Arrays | Practiced | L7: predictions 8/9, BalanceStats 5/5 (incl. unprompted int-division fix) |
 
 ### Phases 2–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
-- **Naming the error category (5th miss)** — fixes bugs correctly but calls silent wrong-output bugs "run time". Anchor: *did anything throw / stop the program?* No → silently wrong. Test again at Checkpoint 1.
+- **Precise wording: reference copy vs object copy (L6)** — says "copied object". Java copies the reference (address); objects are never copied on a call. Recheck at Checkpoint 1.
+- **Naming the error category** — 5 misses, then 4/4 correct in L6 Ex2 (2026-09-21) after the "did it throw?" test was given. Improving; confirm at Checkpoint 1.
 - **Int division in ratios** — 3 misses (L3 ×2, L4), then applied correctly unprompted in L5 Ex3 (2026-09-21). Keep spot-checking; retest at Checkpoint 1.
 - **No truthiness in Java (L3 recap)** — wrote `args[0] ? args[0] : "username"`. Conditions must be boolean expressions.
 - **String concatenation rule (L4)** — expected `boolean + String` to be an error. Rule: if either operand of `+` is a String, the other is converted to text (works for every type, incl. null). Otherwise `+` is arithmetic — which is why `char + char` = int.
 - **Applying integer-division rule in own code (L3)** — knows the rule in isolation (Ex1 ✅) but wrote `a.intValue() * 100 / b.intValue()` in Ex2. Knowledge → application gap.
 - **Choosing types by meaning** — v1 used BigDecimal for counts (fixed in v2 ✅). 'Smallest unit = source of truth' now explained correctly in own words (2026-09-19) → verify in future code.
-- **Following explicit instructions** — skipped requested comments/questions in consecutive submissions.
+- **Following explicit instructions** — skipped requested comments/questions in consecutive submissions. Still happening (L6 Ex3: per-status counts missing twice, package, testability sentence). → Checkpoint 1 tasks will use an explicit requirements checklist to tick off.
 - ~~Casting vs overflow~~ / ~~char is a number~~ — resolved 2026-09-19 (follow-up predictions 3/3).
 - **Overflow is silent, never an exception (L3)** — labelled cacheTtlMs overflow as run time. Also: declaring the target `long` doesn't help; an operand must be long.
 - **Converting a crash into a silent bug (L3)** — proposed making `/ by zero` a double division (→ Infinity). Teach: guard the zero case; a crash is better than a wrong number.
@@ -87,7 +87,15 @@ Not Started (see `roadmap.md`).
 | 2026-09-20 | L5 Ex2 DiscountEngine | ✅ code / ❌ categories | Found & fixed all 3 bugs correctly; converted to arrow switch; kept `%.2f` formatting from L3. ❌ Called fall-through and `if (flag = true)` "run time" — all 3 are silently wrong (asked explicitly, 5th category miss). Didn't answer Q3 (why gold gets less). Used arrow switch as statements, not as an expression. `isPremium == true` instead of `isPremium`. |
 | 2026-09-21 | L5 Ex3 OrderStatusReport | ✅ | Output matches spec exactly. Guard clause + `return`, enhanced for, arrow switch, `toLowerCase()` normalisation, **`(double)` cast applied without being prompted** (first time), `%.2f`. Gaps: per-status counts computed but never printed (spec item); no `strip()` so `" paid "` counts as unknown; 5 parallel counters (→ Map/enum later); long `+` chain instead of `formatted`. |
 | 2026-09-21 | L5 Quiz | Skipped | Learner moved to Lesson 6 |
-| — | L6 Ex1 predictions, Ex2 StatusTools (REQUIRED), Ex3 OrderStatusReport refactor, Quiz | Pending | |
+| 2026-09-21 | L6 Ex1 Predictions | 6/7 | ✅ primitive copy (with reason), mutation via shared reference, String reassignment local, return-the-value, overload resolution incl. float→double & char→int. ❌ after `reset(label)` predicted "GOLD" — reset has no effect, so still "GOLD-VIP" (lost track that `tag` already mutated the shared object). Nit: wrote 10_000 (prints 10000). |
+| 2026-09-21 | L6 Ex2 StatusTools | ✅ 4/4 | **All 4 categories correct — first time** (compile, run, 2× silently wrong). All fixes correct: return-the-value normalize, `(double)` cast + `double` return type propagated to `riskLevel`, final `return "LOW"`, guard clause. Minor: redundant ternary after guard; blank input → `Status: []`; unformatted 42.857142857142854%. Questions A + B (stack trace reading, why reassignment is local) not answered. |
+| 2026-09-21 | L6 Ex2 Q A (stack trace) | ✅ | Crash = normalize line 3; bad value passed from main. (Extra nuance taught: null originated at the ternary, one step before the call.) |
+| 2026-09-21 | L6 Ex2 Q B (why reassignment is local) | ⚠️ | Right conclusion (return + reassign). Imprecise: said "copied String object" — the *reference* is copied, never the object; and credited immutability for locality (reassignment is local for every type — cf. `reset(StringBuilder)`). |
+| 2026-09-22 | L7 Ex3 countStatuses | 5/8 checklist | ✅ `private static int[] countStatuses`, named index constants, loop out of main, all helpers private, `formatSummary` now takes inputs only + uses `formatted` (applied L6 review), main ≤10 lines. ❌ per-status counts still not printed (3rd time); ❌ saved file has no `package` line and isn't under `com/chandan/orders/` (learner believed it was — possibly unsaved/misplaced); ❌ index-risk sentence missing. |
+| 2026-09-22 | L7 Ex2 BalanceStats — `best` fix + Q B | ✅ | `Integer.MIN_VALUE` start; explained "finding a max needs the smallest possible start since values can be negative". Taught: MIN_VALUE vs `arr[0]` on empty arrays (silent vs loud). |
+| 2026-09-22 | L7 Ex2 BalanceStats | 4/5 | ✅ `<` loop (run time), Arrays.toString (silent), copy-before-sort with correct "sharing the same reference" explanation (Q A ✅), **average `(double)` cast fixed unprompted** (but not listed in table). ❌ `best = 0` missed — asked "what is Best?" (domain meaning unclear, not a Java gap). Redundant alias `sortedArr = copyForSorting`. |
+| 2026-09-22 | L7 Ex1 Predictions | 8/9 | ✅ identity vs Arrays.equals, aliasing via `c = a` (typo 90 for 99), doubleAll mutation, **`replace` has no effect → [6,2,4]** (fixes the L6 `reset` miss), null defaults, copyOf padding, uppercase-first sort. ❌ `grid[1].length` → said 3 (row 1 is `{4}` → 1). |
+| 2026-09-21 | L6 Ex3 OrderStatusReport refactor | ✅ works / ⚠️ | Pure methods returning values ✅, `strip()` added (fixes " paid ") ✅, `total == 0` guard ✅. Missed again: per-status counts not printed (2nd time), no package, testability sentence. Design: `get` prefix on a calculation, `public` instead of `private`, `formatSummary` takes both `paid/total` and derived `paidPercentage` (can be inconsistent), counting loop still in main (can't return 5 counts from one method → motivates arrays/objects). |
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
 
 ## Assessments
@@ -107,6 +115,6 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Review Lesson 4 (key signals: did they RUN AccessCheck? do they catch `==` on strings, ignored `toUpperCase()` result, NPE, plus the L3 int-division/overflow bugs?).
-2. Lesson 5: Operators (Java-specific only) + control flow (`if`, arrow `switch`, loops).
-3. Lesson 6: Methods. Lesson 7: Arrays. Then Checkpoint 1.
+1. Review Lesson 7 exercises (BalanceStats: 5 bugs = 1 run time + 4 silent; countStatuses returning int[]).
+2. Checkpoint 1 — mixed assessment over L1–L7. Must include: error-category naming, int division in ratios, overflow, `==` vs equals, pass-by-value wording (reference copy), requirements checklist, explain-in-own-words items.
+3. Before Phase 2 / Project 1: install IntelliJ (0.3) + Maven quick start (0.4).

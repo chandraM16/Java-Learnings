@@ -197,6 +197,21 @@ public class App {                   // 3. type declaration; public class name =
 - Tests: an **example test** with a hand-computed expected value (2.5M × ₹999 = 249,750,000,000 paise) catches wrong factors. An **invariant test** (paise / rupees == 100) checks consistency but passes if both are wrong the same way. Use both. (JUnit: Phase 10.)
 - In review: estimate the order of magnitude and compare with the output.
 
+## Format strings (`formatted` / `String.format`)
+- `"template".formatted(a, b, c)` ≡ `String.format("template", a, b, c)` (`formatted` is Java 15+).
+- Each `%…` placeholder is filled **left to right** by the arguments.
+| Spec | Meaning | Example |
+|---|---|---|
+| `%d` | integer (`int`, `long`) | `"%d".formatted(42)` → `42` |
+| `%.2f` | decimal, 2 places (rounds) | `42.857…` → `42.86` |
+| `%,d` / `%,.2f` | with grouping separators | `2,497,500,000` |
+| `%s` | anything, via its text form | `"hi"`, objects |
+| `%b` | boolean | `true` |
+| `%5d` / `%-5d` / `%05d` | width 5, right / left aligned / zero-padded | `[   42]` `[42   ]` `00042` |
+| `%%` | a literal `%` sign | |
+| `%n` | platform line break | |
+- Wrong type (`%d` with a double) → `IllegalFormatConversionException`; too few args → `MissingFormatArgumentException`. Both at **run time** — javac doesn't check format strings (IntelliJ does warn).
+
 ## Formatting numbers for output
 - `double` prints large values in scientific notation: `83250000.0` → `8.325E7`.
 - `String.format("%.2f", x)` or `"%.2f".formatted(x)` → `83250000.00`. `%,.2f` adds grouping → `83,250,000.00`.
@@ -318,6 +333,12 @@ private static double percentage(int part, int total) { ... }
 - Consequence: a method can't "change" a caller's String (immutable + reassignment is local) → **return the new value** instead.
 - Same model as JS (objects are shared by reference-copy, rebinding a param is local). Java is *not* pass-by-reference.
 
+## Method design rules of thumb
+- `get`/`set`/`is` prefixes are reserved by convention for **accessors of an object's fields** (JavaBeans). Spring/Jackson rely on this. A calculation is `percentage(...)` / `calculateTotal(...)`, not `getPercentage(...)`.
+- Don't pass a value **and** something derived from it (`paid`, `total`, `paidPercentage`) — callers can pass inconsistent combinations. Pass the inputs; derive inside.
+- Return directly: `return (double) part / total * 100;` — no single-use temp variable needed.
+- A method returns **one** value. Need several (e.g. 5 counts)? → array (L7) or an object/record (Phase 2/4).
+
 ## Scope
 - Locals are block-scoped (like `let`). Parameters are locals.
 - Java forbids redeclaring a local in a nested block: `int x = 1; { int x = 2; }` → compile error (JS allows this shadowing).
@@ -333,3 +354,45 @@ NullPointerException: Cannot invoke "String.strip()" because "status" is null
 - Read top line for *what/where*, then walk down for *who passed the bad value*.
 - Compile with `javac -g` to get variable names in NPE messages instead of `<parameter1>`/`<local2>`.
 - Infinite recursion → `StackOverflowError`.
+
+# Arrays
+
+## Basics
+- Fixed-size, typed, indexed from 0. **Size can never change** after creation (unlike JS arrays).
+```java
+int[] counts = new int[5];                    // [0, 0, 0, 0, 0] — elements get DEFAULT values
+String[] names = new String[2];               // [null, null]
+String[] statuses = {"paid", "pending"};      // literal (only in a declaration)
+int[] ids = new int[] {4, 8, 15};             // literal anywhere (e.g. as an argument)
+```
+- Defaults: numbers `0`/`0.0`, `boolean` `false`, `char` `'\u0000'`, references `null`. (Unlike locals, array elements are always initialised.)
+- `.length` is a **field**, not a method: `counts.length` (String uses `length()`).
+- Index outside `0 .. length-1` → `ArrayIndexOutOfBoundsException` (run time). Classic: `i <= arr.length`.
+
+## Arrays are objects (reference types)
+- `int[] b = a;` copies the **reference** → both names, one array. Changes via `b` are visible via `a`.
+- Passing an array to a method shares it (pass-by-value of the reference) → the method **can** change its elements.
+- Real copy: `Arrays.copyOf(a, a.length)`, `Arrays.copyOfRange(a, from, to)`, or `a.clone()`.
+- `a == b` and `a.equals(b)` both compare **identity** for arrays! Content: `Arrays.equals(a, b)` (2D: `Arrays.deepEquals`).
+- `System.out.println(arr)` prints `[I@7344699f` (type code + hash). Use `Arrays.toString(arr)` / `Arrays.deepToString(grid)`.
+
+## `java.util.Arrays` utility
+`toString`, `deepToString`, `equals`, `sort` (in place! mutates the array), `fill`, `copyOf`, `copyOfRange`, `asList` (preview).
+- `Arrays.sort` on Strings is by UTF-16 code: uppercase before lowercase (`"Paid" < "apple"`).
+
+## 2D arrays
+- An array of arrays: `int[][] grid = new int[3][4];` → `grid[row][col]`, `grid.length` rows, `grid[r].length` cols.
+- Rows can differ in length (**jagged**): `int[][] j = {{1}, {2, 3}, {}};`
+
+## Common algorithms
+- Max/min: start from the **first element** (or `Integer.MIN_VALUE`), never from `0` — all-negative data breaks it.
+  - Empty array: `MIN_VALUE` start silently returns −2,147,483,648 (silently wrong); `arr[0]` start throws (loud). Either way, guard `arr.length == 0` explicitly.
+- Average: `(double) sum / arr.length`, guard `length == 0`.
+
+## Returning several values
+- A method returns one value → an `int[]` can carry several (e.g. counts per status).
+- Downside: meaning lives in **indexes** (`counts[2]` = ?). Mitigate with named constants; real fix = enum + Map (Phase 2–3) or a record (Phase 4).
+
+## Arrays vs List (preview)
+- Arrays: fixed size, primitives allowed, fast, used by varargs/`main`/low-level APIs.
+- `List<T>` (Phase 3): grows/shrinks, rich API, objects only — what most application code uses.
