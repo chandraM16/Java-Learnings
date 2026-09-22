@@ -2,7 +2,7 @@ package com.chandan.delivery;
 
 public class DeliveryStats {
 
-    static int FAST = 0, NORMAL = 1, LATE = 2, INVALID = 3;
+    private  static int FAST = 0, NORMAL = 1, LATE = 2, INVALID = 3;
 
     private static int[] countDeliveryStatus(String[] timings) {
         int[] statusCount = new int[4];

@@ -100,7 +100,7 @@ Not Started (see `roadmap.md`).
 ## Assessments
 | Date | Assessment | Result | Notes |
 |---|---|---|---|
-| 2026-09-22 | Checkpoint 1 (L1–L7) | Part A received (provisional 7.5/8 — #2 overflow ✅ but labelled "client error", expected "silently wrong"); Part B received (provisional 13.5/14 — all 7 bugs, all categories correct, output matches exactly; E6 'why' missing; rounds question unanswered); Part C v1 received (provisional 6.5/10 — output matches for all 4 commands, but checklist items 2 (int[] of valid minutes), 3 (arrow switch), 10 (paste outputs) missed; 'no valid' printed on one line; main 17 lines; constants not private/final; args re-parsed in 4 methods); C fixes + D pending | Parts: A predict 8, B debug 14 (7 bugs: 1 compile/1 launch/1 run/4 silent), C build DeliveryStats 10, D explain 10 |
+| 2026-09-22 | Checkpoint 1 (L1–L7) | Part A received (provisional 7.5/8 — #2 overflow ✅ but labelled "client error", expected "silently wrong"); Part B received (provisional 13.5/14 — all 7 bugs, all categories correct, output matches exactly; E6 'why' missing; rounds question unanswered); Part C v1 received (provisional 6.5/10 — output matches for all 4 commands, but checklist items 2 (int[] of valid minutes), 3 (arrow switch), 10 (paste outputs) missed; 'no valid' printed on one line; main 17 lines; constants not private/final; args re-parsed in 4 methods); Part D v1 received (provisional 6/10 — Q2 reference/copy ✅ precise, Q1 mechanism ✅ but no 'why logs are clean', Q3 no recommended form, Q4 categories without examples, Q5 unanswered). Running total ~34/42; **pass blocked on Part C items 2,3,7,9**. | Parts: A predict 8, B debug 14 (7 bugs: 1 compile/1 launch/1 run/4 silent), C build DeliveryStats 10, D explain 10 |
 
 ## Projects
 - None yet.
