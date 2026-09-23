@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-22 (Session 7)_
+_Last updated: 2026-09-23 (Session 8)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,7 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.1 (Classes, objects, fields, constructors, `this`, object lifecycle) in progress.
+Lesson 2.1 (Classes, objects, fields, constructors, `this`, object lifecycle) — code exercises done, moving to 2.2 (Encapsulation, access modifiers, invariants, immutability).
 
 **⚠️ Checkpoint 1 unresolved** (`assessments/checkpoint-1.md`) — provisional ~34/42, but blocked on Part C checklist items 2/3/7/9 (int[] for valid minutes, arrow switch, args re-parsed in 4 methods, pasted outputs) and Part D was only marginally at the 6/10 floor. On 2026-09-22 the learner explicitly chose to start Phase 2 now and revisit the checkpoint later rather than close it out first — this is a deliberate deferral of the normal "checkpoint gates next phase" rule, not a pass. Circle back to close it out; don't let it get lost.
 L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) — same skills are tested in Checkpoint Part C.
@@ -34,10 +34,16 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 | 1.6 Methods | Practiced | L6: pass-by-value predictions 6/7, StatusTools 4/4 with correct categories, refactor into pure methods |
 | 1.7 Arrays | Practiced | L7: predictions 8/9, BalanceStats 5/5 (incl. unprompted int-division fix) |
 
-### Phases 2–19
+### Phase 2 — Object-Oriented Java
+| Topic | Status | Evidence |
+|---|---|---|
+| 2.1 Classes, objects, fields, constructors, `this`, object lifecycle | Practiced | L2.1: Ex1 predicted the shadowing-causes-null bug correctly (exact string spacing off); Ex2 (Account, required) all 3 bugs correctly fixed, incl. unprompted use of `this(...)` chaining to sidestep the bug rather than patch around it; Ex3 (Product) fully correct after one review round (visibility private→public, price formatting `%.2f` applied from Phase 1 memory) |
+
+### Phases 3–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
+- **When does an unqualified name resolve to a field vs. a shadowing local/parameter (L2.1, 2026-09-23)** — in `Account`'s one-arg constructor, called `balance = 0.0;` "broken" when it actually correctly set the field (no parameter named `balance` in scope there); the real bug in that constructor was `owner` never being touched at all. Got the right final fix, but the write-up shows the *shadowing-only-when-a-name-collides* rule isn't fully solid yet. Written explanation for this wasn't collected (see Claude.md §10) — watch for it recurring in 2.2 (encapsulation/getters will exercise this same rule constantly).
 - **Precise wording: reference copy vs object copy (L6)** — says "copied object". Java copies the reference (address); objects are never copied on a call. Recheck at Checkpoint 1.
 - **Naming the error category** — 5 misses, then 4/4 correct in L6 Ex2 (2026-09-21) after the "did it throw?" test was given. Improving; confirm at Checkpoint 1.
 - **Int division in ratios** — 3 misses (L3 ×2, L4), then applied correctly unprompted in L5 Ex3 (2026-09-21). Keep spot-checking; retest at Checkpoint 1.
@@ -98,6 +104,9 @@ Not Started (see `roadmap.md`).
 | 2026-09-22 | L7 Ex1 Predictions | 8/9 | ✅ identity vs Arrays.equals, aliasing via `c = a` (typo 90 for 99), doubleAll mutation, **`replace` has no effect → [6,2,4]** (fixes the L6 `reset` miss), null defaults, copyOf padding, uppercase-first sort. ❌ `grid[1].length` → said 3 (row 1 is `{4}` → 1). |
 | 2026-09-21 | L6 Ex3 OrderStatusReport refactor | ✅ works / ⚠️ | Pure methods returning values ✅, `strip()` added (fixes " paid ") ✅, `total == 0` guard ✅. Missed again: per-status counts not printed (2nd time), no package, testability sentence. Design: `get` prefix on a calculation, `public` instead of `private`, `formatSummary` takes both `paid/total` and derived `paidPercentage` (can be inconsistent), counting loop still in main (can't return 5 counts from one method → motivates arrays/objects). |
 | 2026-09-19 | L3 Quiz | 2/4 | Q1 ✅ Q4 ✅ (good business reasoning). Q2 ❌ confused with JS `var` hoisting. Q3 ⚠️ restated question, no reason. |
+| 2026-09-23 | L2.1 Ex1 Parcel predictions | ✅ reasoning / ⚠️ exact output | Correctly predicted `trackingId` stays `null` in both objects (the shadowing bug — the point of the exercise). Off on exact string spacing (`null ( 2.5 kg)` vs actual `null (2.5kg)`) — reads reasoning right, literal output loosely. |
+| 2026-09-23 | L2.1 Ex2 Account (REQUIRED) | ✅ | All 3 bugs found and fixed correctly on disk (`exercies/phase2/lesson1/src/com/chandan/bank/Account.java`), verified by compiling: `Meera: 600.0` / `Zoe: 0.0`. One-arg constructor fixed via `this(owner, 0.0)` chaining — better than a minimal per-field fix. Initial bug write-up mislabeled the one-arg constructor's `balance = 0.0;` as broken (it wasn't — no parameter shadows `balance` there, so it correctly sets the field; only `owner` was the real bug in that constructor). Category labels (compile/runtime/silent) and the two follow-up reasoning questions were not answered — learner asked to stop the per-exercise explain-in-own-words questions (see Claude.md §10, 2026-09-23 entry); agreed to gate them on novelty instead of dropping entirely. |
+| 2026-09-23 | L2.1 Ex3 Product | ✅ after 1 review round | v1: correct constructor chaining, independent objects, unprompted correct money handling (`long` paise, cast-before-divide from Phase 1). Flagged: `restock`/`describe` `private` (only worked because `main` is in the same class) and unformatted price (`Rs 2000.0`). v2 fixed both (`public`, `"%.2f".formatted(...)`) — verified by compiling: `Rs 2000.00` / `Rs 4000.00`. |
 
 ## Assessments
 | Date | Assessment | Result | Notes |
@@ -118,6 +127,6 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Review Lesson 7 exercises (BalanceStats: 5 bugs = 1 run time + 4 silent; countStatuses returning int[]).
-2. Checkpoint 1 — mixed assessment over L1–L7. Must include: error-category naming, int division in ratios, overflow, `==` vs equals, pass-by-value wording (reference copy), requirements checklist, explain-in-own-words items.
-3. Before Phase 2 / Project 1: install IntelliJ (0.3) + Maven quick start (0.4).
+1. Lesson 2.2 — Encapsulation, access modifiers, invariants, immutability (the *why* behind `private`, which 2.1 used on faith). Good spot to re-probe the field-vs-shadowing-local rule from L2.1 Needs Review, since getters/setters will hit it constantly.
+2. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.
+3. Before Phase 2 / Project 1 wraps: install IntelliJ (0.3) + Maven quick start (0.4) — still not done.

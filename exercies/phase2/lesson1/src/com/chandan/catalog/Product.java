@@ -15,13 +15,13 @@ public class Product {
         this.stock = stock;
     }
 
-    private void restock(int newStock) {
+    public void restock(int newStock) {
         this.stock = this.stock + newStock;
     }
 
-    private void describe() {
+    public void describe() {
         double priceInRupee = (double) this.priceInPaise / 100.00;
-        System.out.println(this.name + ": Rs " + priceInRupee + " (" + this.stock + " in stock)");
+        System.out.println(this.name + ": Rs " + "%.2f".formatted(priceInRupee) + " (" + this.stock + " in stock)");
     }
 
     public static void main(String[] args) {
