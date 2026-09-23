@@ -11,14 +11,19 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Bytecode** — The instruction set of the JVM, stored in `.class` files. Produced by `javac`, platform-independent.
 - **Bytecode verifier** — JVM step that checks loaded bytecode is well-formed and type-safe before executing it.
 - **Casting** — Explicitly converting a value to another type: `(int) 3.99`. Narrowing casts can lose data.
+- **Class** — A blueprint: declares what fields and methods every object of that type has. Compile-time construct, exists once.
 - **`ClassCastException`** — Runtime exception when casting an object to a type it isn't. Proof that Java checks types at runtime too.
 - **Class file (`.class`)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
 - **`ClassNotFoundException`** — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
 - **Classpath (`-cp`)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- **Constructor** — Special block that runs when `new` creates an object; initializes its fields. Same name as the class, no return type.
+- **Constructor chaining** — One constructor calling another overload on the same class via `this(...)` as its first statement, to avoid duplicating init logic.
+- **Constructor overloading** — Multiple constructors with different parameter lists; the compiler picks one by the arguments at the call site.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Entry point** — The method the launcher calls first: `main`.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
+- **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
 - **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
 - **GraalVM Native Image** — Tool that compiles Java ahead-of-time into a native executable: fast startup, low memory, reduced runtime dynamism.
@@ -27,6 +32,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Identifier** — A name you give to a package, class, method, or variable.
 - **Immutable** — An object whose state can't change after creation (e.g. `String`). "Changes" produce new objects.
 - **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
+- **Instance** — A specific object created from a class via `new`, with its own field values, living on the heap. "Object" and "instance" are used interchangeably.
 - **Jagged array** — A 2D array whose rows have different lengths.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
 - **Javadoc** — `/** ... */` doc comments on classes/methods; rendered by IDEs and the `javadoc` tool.
@@ -47,6 +53,8 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`null`** — A reference that points to no object. Only reference types can be null.
 - **`NullPointerException` (NPE)** — Run-time exception when you call a method or access a field on `null`.
 - **`NumberFormatException`** — Run-time exception when parsing text that isn't a valid number (`Integer.parseInt("42abc")`).
+- **Object** — A runtime instance of a class: allocated on the heap, holds its own field values. See also Instance.
+- **Object lifecycle** — Created by `new` (fields set to defaults, then constructor runs) → referenced while reachable → eligible for GC once no reference remains. No manual `delete`/`free`.
 - **OpenJDK** — The open-source reference implementation of Java. Most distributions (Temurin, Corretto, Zulu, Oracle) are builds of it.
 - **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
 - **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
@@ -68,6 +76,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **String pool (interning)** — JVM cache of string literals so identical literals share one object. Why `==` sometimes "works" on strings.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
+- **`this`** — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
 - **Type inference (`var`)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
 - **Varargs** — `Type... name` parameter accepting zero or more arguments, received as an array.
 - **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.

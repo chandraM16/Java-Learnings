@@ -1,6 +1,6 @@
 # Claude.md — Master Context for the Java 0→100 Mentorship
 
-Read this file first at the start of every session, then `progress.md`, then the relevant parts of `notes.md`.
+Read this file first at the start of every session, then `progress.md`, then the relevant `phaseNoteN.md` file(s) (see `notes.md` for the index).
 
 ---
 
@@ -32,7 +32,8 @@ Understanding over memorization: why, how internally, when to use, when not to, 
 |---|---|
 | `Claude.md` | This file. Background, rules, decisions, struggles. |
 | `progress.md` | Current phase/topic, status per topic, exercises, assessments, next steps. |
-| `notes.md` | Concise long-term revision notes, organized by topic. Not lesson dumps. |
+| `notes.md` | Index into the per-phase note files below. Not itself a notes dump. |
+| `phaseNoteN.md` (e.g. `phaseNote0.md`, `phaseNote1.md`, `phaseNote2.md`, …) | Concise long-term revision notes for phase N only, organized by topic. Not lesson dumps. One file per phase — start a new one (and add its row to `notes.md`) when a new phase begins. |
 | `roadmap.md` | Full curriculum (phases → lessons) + the 5 projects. |
 | `glossary.md` | Java/Spring terminology, defined in one or two lines each. |
 | `assessments/` | Checkpoint papers (one file per checkpoint). Answer keys are NOT stored in the repo — recompute when grading. |
@@ -67,8 +68,8 @@ Difficulty levels: 1 Beginner, 2 Practice, 3 Applied, 4 Advanced, 5 Production, 
 
 ## 8. Session protocol
 
-**Start:** read Claude.md → progress.md → relevant notes.md → continue from where we left off (never restart unless asked).
-**End:** update progress.md, notes.md, glossary.md; update this file if context changed; record weak areas and next step.
+**Start:** read Claude.md → progress.md → relevant `phaseNoteN.md` → continue from where we left off (never restart unless asked).
+**End:** update progress.md, the current phase's `phaseNoteN.md` (+ `notes.md` index if a new phase file was created), glossary.md; update this file if context changed; record weak areas and next step.
 
 ## 9. Important decisions
 

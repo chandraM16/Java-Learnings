@@ -5,10 +5,12 @@ _Last updated: 2026-09-22 (Session 7)_
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
 ## Current Phase
-Phase 1 — Java Fundamentals (Phase 0 items 0.3 IntelliJ / 0.4 Maven deferred until just before Project 1)
+Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-**Checkpoint 1** issued 2026-09-22 (`assessments/checkpoint-1.md`) — awaiting submission. Pass = ≥32/42 AND Part D ≥6/10 AND all Part C checklist items.
+Lesson 2.1 (Classes, objects, fields, constructors, `this`, object lifecycle) in progress.
+
+**⚠️ Checkpoint 1 unresolved** (`assessments/checkpoint-1.md`) — provisional ~34/42, but blocked on Part C checklist items 2/3/7/9 (int[] for valid minutes, arrow switch, args re-parsed in 4 methods, pasted outputs) and Part D was only marginally at the 6/10 floor. On 2026-09-22 the learner explicitly chose to start Phase 2 now and revisit the checkpoint later rather than close it out first — this is a deliberate deferral of the normal "checkpoint gates next phase" rule, not a pass. Circle back to close it out; don't let it get lost.
 L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) — same skills are tested in Checkpoint Part C.
 
 ## Topic Status
