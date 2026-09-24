@@ -42,10 +42,11 @@ public class MembershipCard {
     }
 
     public static void main(String[] args) {
+        MembershipCard mc = new MembershipCard("123", 0);
+        mc.earnPoints(100);
+        mc.redeemPoints(30);
+        System.out.println(mc.getPoints());
         try {
-            MembershipCard mc = new MembershipCard("123", 0);
-            mc.earnPoints(100);
-            mc.redeemPoints(30);
             mc.redeemPoints(90);
         } catch (Exception e) {
             System.out.println(e);

@@ -23,3 +23,21 @@ Concise revision notes for this phase only. Updated as topics are learned. See `
 | Fields | Fixed set, declared with types at compile time | Dynamic — add any property, any time |
 | Constructors | Can overload freely | Exactly one `constructor()`; simulate variants with default params/factories |
 | `this` | Always the instance the method was called on | Depends on call site — can be lost, needs binding |
+
+## Encapsulation, access modifiers, invariants, immutability
+
+- **Encapsulation** = bundle data with the operations that keep it valid, hide the data (`private` fields) so nothing outside those operations can touch it. The class is the only gatekeeper of its own state.
+- **Invariant** = a fact about an object that must always hold (`balance >= 0`, `memberId` never blank). Constructor establishes it; every mutating method must re-check before allowing the change. Private fields + validated construction + validated mutation = the invariant literally can't break from outside.
+- **Access modifiers**, most → least restrictive: `private` (class only) → *(none, package-private)* (same package) → `protected` (package + subclasses, real meaning: inheritance, 2.5) → `public` (everyone). Enforced by the **JVM at runtime** — unlike TS `private`, which is compile-time only and erasable with a cast. Matches real JS `#field` more than TS `private`.
+- **Getters/setters are not a language feature** — just regular methods. `get`/`set`/`is` naming is a convention Spring/Jackson/JavaBeans recognize by reflection, not syntax Java itself understands (no `get`/`set` keyword like JS).
+- **Throwing to reject bad input/state**: `throw new IllegalArgumentException("...")` for a bad *argument*, `throw new IllegalStateException("...")` for a call that's valid in general but not given the object's *current* state (e.g. redeeming more points than available). One-line refusal; formal `try`/`catch`/custom exceptions = Phase 5.
+- **`final` on a field** locks only the field's own reference/value, not the object it points to: `final int[] arr` can't be reassigned, but `arr[0] = 5` still works. Not the same as immutability.
+
+### The defensive-copy trap (two leaks, not one)
+A `private` field can still be corrupted from outside via a **shared array reference**, through *two separate* entry points:
+1. **Constructor leak**: `this.balances = balances;` doesn't copy — the field and the caller's variable are now the same array object.
+2. **Getter leak**: `return balances;` doesn't copy either — the caller gets a live reference to internal state, not a read-only view.
+Both are the same "assignment copies the reference, not the object" rule from Phase 1 arrays — just reached through a constructor param and a return value instead of a plain `int[] b = a;`. Real fix: `balances.clone()` (or `Arrays.copyOf`) on the way in **and** the way out.
+
+### Common mistake, recurring
+- Methods default to `private` when they actually need to be called from outside the class. Compiles fine and looks correct **only** because `main`/the caller happens to live in the same class — breaks the moment another class needs to use the object. Seen twice already (L2.1 `Product`, L2.2 `MembershipCard`) — watch for a third.

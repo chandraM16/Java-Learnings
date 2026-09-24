@@ -2,6 +2,7 @@
 
 Alphabetical. One or two lines each. Added as terms are introduced.
 
+- **Access modifier** — `private`/*(package-private)*/`protected`/`public`: controls what code can see a field, method, or class. Enforced by the JVM at runtime, unlike TS's compile-time-only `private`.
 - **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **Array** — Fixed-size, indexed container of one element type. An object (reference type).
 - **`ArrayIndexOutOfBoundsException`** — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
@@ -21,6 +22,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Constructor overloading** — Multiple constructors with different parameter lists; the compiler picks one by the arguments at the call site.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
+- **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
 - **Entry point** — The method the launcher calls first: `main`.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
@@ -30,9 +32,12 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Guard clause** — An early `return`/`throw` for invalid input, so the main logic stays unnested.
 - **Heap** — Memory area where objects live. Managed by the garbage collector.
 - **Identifier** — A name you give to a package, class, method, or variable.
+- **`IllegalArgumentException`** — Unchecked exception thrown to reject a bad argument to a method/constructor (e.g. a negative amount). You `throw` it yourself; formal exception handling is Phase 5.
+- **`IllegalStateException`** — Unchecked exception thrown when a call is valid in general but not given the object's *current state* (e.g. redeeming more points than you have).
 - **Immutable** — An object whose state can't change after creation (e.g. `String`). "Changes" produce new objects.
 - **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
 - **Instance** — A specific object created from a class via `new`, with its own field values, living on the heap. "Object" and "instance" are used interchangeably.
+- **Invariant** — A fact about an object that must always be true (`balance >= 0`, `memberId` never blank). Established by the constructor, preserved by every method that mutates state — the whole point of encapsulation.
 - **Jagged array** — A 2D array whose rows have different lengths.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
 - **Javadoc** — `/** ... */` doc comments on classes/methods; rendered by IDEs and the `javadoc` tool.
