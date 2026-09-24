@@ -8,18 +8,22 @@ public class MembershipCard {
         if (memberId == null || memberId.isBlank()) {
             throw new IllegalArgumentException("MemberId is required");
         }
+        if (points < 0) {
+            throw new IllegalArgumentException("Amount should be greater than zero");
+
+        }
         this.memberId = memberId;
         this.points = points;
     }
 
-    private void earnPoints(int amount) {
+    public void earnPoints(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount should be greater than zero");
         }
         this.points += amount;
     }
 
-    private void redeemPoints(int amount) {
+    public void redeemPoints(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount should be greater than zero");
         }
@@ -29,13 +33,24 @@ public class MembershipCard {
         this.points -= amount;
     }
 
-    public static void main(String[] args) {
-        MembershipCard mc = new MembershipCard("123", 0);
-        mc.earnPoints(100);
-        mc.redeemPoints(30);
-        mc.redeemPoints(90);
+    public String getMemberId() {
+        return this.memberId;
+    }
 
-        System.out.println(mc.points);
+    public int getPoints() {
+        return this.points;
+    }
+
+    public static void main(String[] args) {
+        try {
+            MembershipCard mc = new MembershipCard("123", 0);
+            mc.earnPoints(100);
+            mc.redeemPoints(30);
+            mc.redeemPoints(90);
+        } catch (Exception e) {
+            System.out.println(e);
+
+        }
     }
 
 }
