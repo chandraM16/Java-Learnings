@@ -2,6 +2,7 @@
 
 Alphabetical. One or two lines each. Added as terms are introduced.
 
+- **`@Override`** — Annotation on a method that tells the compiler "this must match a method on the superclass." If the signature doesn't actually match, you get a compile error instead of silently creating an unrelated method. Always use it when overriding `equals`/`hashCode`/`toString`/etc.
 - **Access modifier** — `private`/*(package-private)*/`protected`/`public`: controls what code can see a field, method, or class. Enforced by the JVM at runtime, unlike TS's compile-time-only `private`.
 - **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **Array** — Fixed-size, indexed container of one element type. An object (reference type).
@@ -24,12 +25,15 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
 - **Entry point** — The method the launcher calls first: `main`.
+- **`equals()`** — Method every object has (inherited from `Object`). Default = identity (`this == o`). Override it to compare by value instead; must be overridden together with `hashCode()`.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
 - **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
+- **`getClass()`** — Method every object has that returns its exact runtime class (e.g. `Money.class`). Used in `equals()` to make sure you're not comparing two unrelated types before casting.
 - **GraalVM Native Image** — Tool that compiles Java ahead-of-time into a native executable: fast startup, low memory, reduced runtime dynamism.
 - **Guard clause** — An early `return`/`throw` for invalid input, so the main logic stays unnested.
+- **`hashCode()`** — Method every object has that returns an `int` "bucket number," used by `HashMap`/`HashSet` (Phase 3) for fast lookup. Must return the same value for any two objects that are `.equals()` — break that and hash-based lookups silently fail to find things that are actually there.
 - **Heap** — Memory area where objects live. Managed by the garbage collector.
 - **Identifier** — A name you give to a package, class, method, or variable.
 - **`IllegalArgumentException`** — Unchecked exception thrown to reject a bad argument to a method/constructor (e.g. a negative amount). You `throw` it yourself; formal exception handling is Phase 5.
@@ -60,6 +64,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`NumberFormatException`** — Run-time exception when parsing text that isn't a valid number (`Integer.parseInt("42abc")`).
 - **Object** — A runtime instance of a class: allocated on the heap, holds its own field values. See also Instance.
 - **Object lifecycle** — Created by `new` (fields set to defaults, then constructor runs) → referenced while reachable → eligible for GC once no reference remains. No manual `delete`/`free`.
+- **`Objects`** — `java.util` utility class with null-safe helpers: `Objects.equals(a, b)` (never throws on `null`), `Objects.hash(a, b, ...)` (combines several fields into one `hashCode()`).
 - **OpenJDK** — The open-source reference implementation of Java. Most distributions (Temurin, Corretto, Zulu, Oracle) are builds of it.
 - **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
 - **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
@@ -82,6 +87,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
 - **`this`** — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
+- **`toString()`** — Method every object has, called automatically by `println`/string concatenation. Default prints `ClassName@hexHashCode` (not useful) — override it for a readable representation.
 - **Type inference (`var`)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
 - **Varargs** — `Type... name` parameter accepting zero or more arguments, received as an array.
 - **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.

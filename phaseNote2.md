@@ -41,3 +41,16 @@ Both are the same "assignment copies the reference, not the object" rule from Ph
 
 ### Common mistake, recurring
 - Methods default to `private` when they actually need to be called from outside the class. Compiles fine and looks correct **only** because `main`/the caller happens to live in the same class — breaks the moment another class needs to use the object. Seen twice already (L2.1 `Product`, L2.2 `MembershipCard`) — watch for a third.
+
+## `equals`, `hashCode`, `toString`
+
+- Every class silently extends `Object` (full inheritance mechanics: 2.5), so every object already has `equals()`, `hashCode()`, `toString()` before you write anything.
+  - Default `equals()` = identity (`this == o`). Default `hashCode()` = identity-based (different for essentially every object). Default `toString()` = `ClassName@hexHashCode` — not useful.
+- **`hashCode()` in plain terms**: an `int` "bucket/locker number" for an object, used by `HashMap`/`HashSet` (Phase 3) to jump straight to the right spot instead of checking every element. The **contract**: if `a.equals(b)` is `true`, `a.hashCode() == b.hashCode()` MUST also be true — otherwise a hash-based lookup can search the wrong bucket and fail to find an object that's actually there. Nothing crashes; the object is just unreachable from where Java looked.
+- **`@Override`** — first annotation seen. Tells the compiler "this must match a method on the superclass" — typo the signature and you get a compile error instead of a silently-created unrelated method. Always use it on `equals`/`hashCode`/`toString` overrides.
+- **`getClass()`** — returns an object's exact runtime class. Used in `equals()` as `getClass() != o.getClass()` to bail out (`return false`) before casting, so comparing against an unrelated type never throws `ClassCastException`.
+- **`Objects.equals(a, b)`** — null-safe equality check (`Objects.equals(null, "x")` → `false`, no NPE). Use instead of `field.equals(other.field)` for any field that could be `null`.
+- **`Objects.hash(a, b, ...)`** — combines several fields into one `hashCode()` value; standard way to implement it without hand-rolling.
+- **Standard `equals()` shape**: `this == o` shortcut → `o == null || getClass() != o.getClass()` → cast → compare fields (`Objects.equals(...)` for any nullable ones).
+- **Mutable fields + `hashCode()` = footgun**: if a hash-based collection computes an object's bucket from a field, then that field changes, the object becomes unreachable at its old bucket — "in the set" but `contains()` returns `false`. Reason `final` fields matter here too (ties back to 2.2 immutability).
+- Same string-concatenation rule from Phase 1 (`+` converts the other operand to text if either side is a String) is what makes `println(obj)`/`"" + obj` call `toString()` automatically — no new mechanism, same rule landing on custom objects now.

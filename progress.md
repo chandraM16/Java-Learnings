@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-24 (Session 9)_
+_Last updated: 2026-09-24 (Session 9, cont'd)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,7 +8,9 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.2 (Encapsulation, access modifiers, invariants, immutability) — done, moving to 2.3 (`equals`, `hashCode`, `toString`).
+Lesson 2.3 (`equals`, `hashCode`, `toString`) — done, first pass, no revisions needed. Moving to 2.4 (static members, `final` classes/methods, packages & imports).
+
+**Teaching-style correction (2026-09-24):** learner explicitly said lesson explanations were reading like revision of things already known, not first-time teaching — asked for plain language + code examples for every new term, not dense prose. Applied for the rest of this session (equals/hashCode/getClass/Objects.equals explanations); keep doing this by default: define term in plain words → tiny code example → then the real explanation. Don't revert to the denser Claude.md §6 format's prose style for genuinely new mechanisms.
 
 **⚠️ Checkpoint 1 unresolved** (`assessments/checkpoint-1.md`) — provisional ~34/42, but blocked on Part C checklist items 2/3/7/9 (int[] for valid minutes, arrow switch, args re-parsed in 4 methods, pasted outputs) and Part D was only marginally at the 6/10 floor. On 2026-09-22 the learner explicitly chose to start Phase 2 now and revisit the checkpoint later rather than close it out first — this is a deliberate deferral of the normal "checkpoint gates next phase" rule, not a pass. Circle back to close it out; don't let it get lost.
 L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) — same skills are tested in Checkpoint Part C.
@@ -39,6 +41,7 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 |---|---|---|
 | 2.1 Classes, objects, fields, constructors, `this`, object lifecycle | Practiced | L2.1: Ex1 predicted the shadowing-causes-null bug correctly (exact string spacing off); Ex2 (Account, required) all 3 bugs correctly fixed, incl. unprompted use of `this(...)` chaining to sidestep the bug rather than patch around it; Ex3 (Product) fully correct after one review round (visibility private→public, price formatting `%.2f` applied from Phase 1 memory) |
 | 2.2 Encapsulation, access modifiers, invariants, immutability | Practiced | L2.2: Ex1 (Wallet defensive-copy) — got the getter leak, missed the constructor leak (predicted 200, actual −50); Ex2 (MembershipCard, required) — validation logic (IllegalArgumentException vs IllegalStateException, correctly distinguished unprompted) right from v1; v1→v2 fixed private→public methods (2nd occurrence of the same visibility mistake from L2.1 Product), added missing getters, and replaced "throw as last line" with unprompted correct `try`/`catch` (Phase 5 material, used correctly incl. printing the exception). Left open by choice: constructor still accepts an unvalidated-strength starting `points` value (validates ≥0 but doesn't remove the parameter) |
+| 2.3 `equals`, `hashCode`, `toString` | Practiced | L2.3: Ex1 (Coordinate, default Object behaviour) 4/4 correct first try. Ex2 (SeatAssignment, required) — correct `equals`/`hashCode`/`toString` overrides, `getClass()` guard used correctly, `final` fields (no mutable-hashCode trap), applied the Phase 1 `char + "" + int` concat trick unprompted inside `toString()`. Conceptual follow-up (equals-without-hashCode contract break) answered correctly. First lesson this phase with zero review round needed. |
 
 ### Phases 3–19
 Not Started (see `roadmap.md`).
@@ -114,6 +117,8 @@ Not Started (see `roadmap.md`).
 | 2026-09-24 | L2.2 Ex1 Wallet predictions | 1/2 | ✅ line 1 (`999999`, getter leak). ❌ line 2 predicted `200`, actual `−50` — missed the constructor-level leak (`this.balances = balances;` never copies), only caught the getter-level one. |
 | 2026-09-24 | L2.2 Ex2 MembershipCard (REQUIRED) v1 | 2/4 review points | ✅ validation logic + correct exception type per case (IllegalArgumentException vs IllegalStateException), unprompted and consistent. ❌ `earnPoints`/`redeemPoints` `private`. ❌ no `getMemberId()`/`getPoints()`. ❌ throwing call not last in `main` — dead `println` after it. ⚠️ constructor validates `points >= 0` but still accepts a starting value (spec: don't accept one at all). |
 | 2026-09-24 | L2.2 Ex2 MembershipCard v2 | 3/4 fixed | ✅ methods → `public`. ✅ getters added. ✅ ordering fixed via unprompted correct `try`/`catch` (Phase 5 material) instead of just reordering — flagged `catch (Exception e)` as too broad for later. Verified output: `70` then the caught exception. ⚠️ constructor-accepts-starting-value point left open by choice, not fixed. |
+| 2026-09-24 | L2.3 Ex1 Coordinate predictions | 4/4 | ✅ `==` false, `.equals()` false, `toString()` shape (`Coordinate@hash`), `hashCode()` mismatch — full correct reasoning about default `Object` behaviour with no overrides. |
+| 2026-09-24 | L2.3 Ex2 SeatAssignment (REQUIRED) | ✅ first try | Verified by compiling: `false / true / A34 / 3010 / 3010`. Constructor validation, `equals`/`hashCode`/`toString` overrides, `getClass()` guard, `final` fields all correct. Conceptual question (equals-without-hashCode breaks the contract even without a crash) answered correctly, in own words, unprompted detail about *why* (wrong bucket lookup). |
 
 ## Assessments
 | Date | Assessment | Result | Notes |
@@ -134,7 +139,7 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Lesson 2.3 — `equals`, `hashCode`, `toString` (why the default versions break real apps — direct callback to `==` on objects vs Strings, Phase 1).
+1. Lesson 2.4 — Static members, `final` classes/methods, packages & imports (revisit `static` now that instance methods exist to contrast against).
 2. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
 3. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.
 4. Before Phase 2 / Project 1 wraps: install IntelliJ (0.3) + Maven quick start (0.4) — still not done.
