@@ -1,6 +1,6 @@
 # Learning Progress
 
-_Last updated: 2026-09-24 (Session 9, cont'd)_
+_Last updated: 2026-09-25 (Session 10)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
@@ -8,7 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.3 (`equals`, `hashCode`, `toString`) — done, first pass, no revisions needed. Moving to 2.4 (static members, `final` classes/methods, packages & imports).
+Lesson 2.4 (static members, `final` classes/methods, packages & imports) — done. Moving to 2.5 (Inheritance, overriding, `super`, polymorphism, dynamic dispatch).
 
 **Teaching-style correction (2026-09-24):** learner explicitly said lesson explanations were reading like revision of things already known, not first-time teaching — asked for plain language + code examples for every new term, not dense prose. Applied for the rest of this session (equals/hashCode/getClass/Objects.equals explanations); keep doing this by default: define term in plain words → tiny code example → then the real explanation. Don't revert to the denser Claude.md §6 format's prose style for genuinely new mechanisms.
 
@@ -42,6 +42,7 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 | 2.1 Classes, objects, fields, constructors, `this`, object lifecycle | Practiced | L2.1: Ex1 predicted the shadowing-causes-null bug correctly (exact string spacing off); Ex2 (Account, required) all 3 bugs correctly fixed, incl. unprompted use of `this(...)` chaining to sidestep the bug rather than patch around it; Ex3 (Product) fully correct after one review round (visibility private→public, price formatting `%.2f` applied from Phase 1 memory) |
 | 2.2 Encapsulation, access modifiers, invariants, immutability | Practiced | L2.2: Ex1 (Wallet defensive-copy) — got the getter leak, missed the constructor leak (predicted 200, actual −50); Ex2 (MembershipCard, required) — validation logic (IllegalArgumentException vs IllegalStateException, correctly distinguished unprompted) right from v1; v1→v2 fixed private→public methods (2nd occurrence of the same visibility mistake from L2.1 Product), added missing getters, and replaced "throw as last line" with unprompted correct `try`/`catch` (Phase 5 material, used correctly incl. printing the exception). Left open by choice: constructor still accepts an unvalidated-strength starting `points` value (validates ≥0 but doesn't remove the parameter) |
 | 2.3 `equals`, `hashCode`, `toString` | Practiced | L2.3: Ex1 (Coordinate, default Object behaviour) 4/4 correct first try. Ex2 (SeatAssignment, required) — correct `equals`/`hashCode`/`toString` overrides, `getClass()` guard used correctly, `final` fields (no mutable-hashCode trap), applied the Phase 1 `char + "" + int` concat trick unprompted inside `toString()`. Conceptual follow-up (equals-without-hashCode contract break) answered correctly. First lesson this phase with zero review round needed. |
+| 2.4 Static members, `final` classes/methods, packages revisited | Practiced | L2.4: Ex1 (Ticket static counter) 3/3 predictions correct. Ex2 (Invoice, required) — static counter + `static final` constant + static utility method all correctly built v1; review flagged validation boundary (`< 0` vs `<= 0`), `toString` missing a space, and `main` only printing 1 of 3 invoices (repeat of the "skips requested output" pattern). Conceptual answer on why `nextNumber` must be `static` was right in substance but called the compile error a "thrown" error — corrected (compile-time, not run-time; also missed that the constructor itself would still compile, silently producing `INV-0001` for every invoice forever). While fixing, `static` briefly disappeared from `nextNumber` (editor auto-revert) and reproduced the exact predicted compile error live — good real confirmation. Final 3 fixes applied by mentor directly (mechanical, already agreed) rather than another round-trip, per learner's momentum preference. |
 
 ### Phases 3–19
 Not Started (see `roadmap.md`).
@@ -52,13 +53,13 @@ Not Started (see `roadmap.md`).
 - **Validating a value vs. refusing to accept it at all (L2.2 Ex2, 2026-09-24)** — added `points < 0` validation to `MembershipCard`'s constructor instead of removing the `points` parameter as asked, closing the "negative" hole but not the "starting points shouldn't exist at all" invariant. Left open by learner's choice, not corrected — revisit if it recurs with a different invariant.
 - **When does an unqualified name resolve to a field vs. a shadowing local/parameter (L2.1, 2026-09-23)** — in `Account`'s one-arg constructor, called `balance = 0.0;` "broken" when it actually correctly set the field (no parameter named `balance` in scope there); the real bug in that constructor was `owner` never being touched at all. Got the right final fix, but the write-up shows the *shadowing-only-when-a-name-collides* rule isn't fully solid yet. Written explanation for this wasn't collected (see Claude.md §10) — watch for it recurring in 2.2 (encapsulation/getters will exercise this same rule constantly).
 - **Precise wording: reference copy vs object copy (L6)** — says "copied object". Java copies the reference (address); objects are never copied on a call. Recheck at Checkpoint 1.
-- **Naming the error category** — 5 misses, then 4/4 correct in L6 Ex2 (2026-09-21) after the "did it throw?" test was given. Improving; confirm at Checkpoint 1.
+- **Naming the error category** — 5 misses, then 4/4 correct in L6 Ex2 (2026-09-21) after the "did it throw?" test was given. Improving; confirm at Checkpoint 1. Resurfaced 2026-09-25 (L2.4): called a `javac` compile failure a "thrown" error — compile-time vs run-time is still not fully solid when phrasing it in prose (vs. correctly labeling categories in a structured exercise like L6 Ex2).
 - **Int division in ratios** — 3 misses (L3 ×2, L4), then applied correctly unprompted in L5 Ex3 (2026-09-21). Keep spot-checking; retest at Checkpoint 1.
 - **No truthiness in Java (L3 recap)** — wrote `args[0] ? args[0] : "username"`. Conditions must be boolean expressions.
 - **String concatenation rule (L4)** — expected `boolean + String` to be an error. Rule: if either operand of `+` is a String, the other is converted to text (works for every type, incl. null). Otherwise `+` is arithmetic — which is why `char + char` = int.
 - **Applying integer-division rule in own code (L3)** — knows the rule in isolation (Ex1 ✅) but wrote `a.intValue() * 100 / b.intValue()` in Ex2. Knowledge → application gap.
 - **Choosing types by meaning** — v1 used BigDecimal for counts (fixed in v2 ✅). 'Smallest unit = source of truth' now explained correctly in own words (2026-09-19) → verify in future code.
-- **Following explicit instructions** — skipped requested comments/questions in consecutive submissions. Still happening (L6 Ex3: per-status counts missing twice, package, testability sentence). → Checkpoint 1 tasks will use an explicit requirements checklist to tick off.
+- **Following explicit instructions** — skipped requested comments/questions in consecutive submissions. Still happening (L6 Ex3: per-status counts missing twice, package, testability sentence; L2.4 Ex2 2026-09-25: `main` only printed 1 of 3 required invoices). → Checkpoint 1 tasks will use an explicit requirements checklist to tick off.
 - ~~Casting vs overflow~~ / ~~char is a number~~ — resolved 2026-09-19 (follow-up predictions 3/3).
 - **Overflow is silent, never an exception (L3)** — labelled cacheTtlMs overflow as run time. Also: declaring the target `long` doesn't help; an operand must be long.
 - **Converting a crash into a silent bug (L3)** — proposed making `/ by zero` a double division (→ Infinity). Teach: guard the zero case; a crash is better than a wrong number.
@@ -119,6 +120,10 @@ Not Started (see `roadmap.md`).
 | 2026-09-24 | L2.2 Ex2 MembershipCard v2 | 3/4 fixed | ✅ methods → `public`. ✅ getters added. ✅ ordering fixed via unprompted correct `try`/`catch` (Phase 5 material) instead of just reordering — flagged `catch (Exception e)` as too broad for later. Verified output: `70` then the caught exception. ⚠️ constructor-accepts-starting-value point left open by choice, not fixed. |
 | 2026-09-24 | L2.3 Ex1 Coordinate predictions | 4/4 | ✅ `==` false, `.equals()` false, `toString()` shape (`Coordinate@hash`), `hashCode()` mismatch — full correct reasoning about default `Object` behaviour with no overrides. |
 | 2026-09-24 | L2.3 Ex2 SeatAssignment (REQUIRED) | ✅ first try | Verified by compiling: `false / true / A34 / 3010 / 3010`. Constructor validation, `equals`/`hashCode`/`toString` overrides, `getClass()` guard, `final` fields all correct. Conceptual question (equals-without-hashCode breaks the contract even without a crash) answered correctly, in own words, unprompted detail about *why* (wrong bucket lookup). |
+| 2026-09-25 | L2.4 Ex1 Ticket static counter predictions | 3/3 | ✅ instance `id` frozen at construction (1, then 3 for t3), ✅ shared `Ticket.nextId` correctly tracked to 4 after 3 constructions, read via class name. |
+| 2026-09-25 | L2.4 Ex2 Invoice (REQUIRED) v1 | 3/6 review points | ✅ `static` counter + `static final` constant + static utility method (`totalInvoicesCreated`) all correct, class `final`. ❌ validation `< 0` instead of `<= 0` (message claimed ">0" required). ❌ `main` printed only `i3`, not all 3. ❌ `toString` missing a space (`Rs700.00`). |
+| 2026-09-25 | L2.4 Ex2 Invoice conceptual (why `nextNumber` static) | ⚠️ right idea, imprecise | Correctly identified `totalInvoicesCreated()` would fail without a shared field. Called it "throws the error" — actually a **compile-time** error, not runtime (same compile/run-time distinction tracked since Phase 1). Missed that the constructor itself would still compile fine, silently giving every invoice `INV-0001` forever — the more important real-world consequence. Confirmed live when `static` briefly vanished from `nextNumber` mid-session and reproduced the exact predicted javac error. |
+| 2026-09-25 | L2.4 Ex2 Invoice v2 | ✅ | All 3 fixes applied (mentor-applied directly — mechanical, already agreed, learner asked to move on). Verified: `INV-0001: Rs 100.00` / `INV-0002: Rs 400.00` / `INV-0003: Rs 700.00` / `3`. |
 
 ## Assessments
 | Date | Assessment | Result | Notes |
@@ -139,7 +144,7 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Lesson 2.4 — Static members, `final` classes/methods, packages & imports (revisit `static` now that instance methods exist to contrast against).
+1. Lesson 2.5 — Inheritance, overriding, `super`, polymorphism, dynamic dispatch.
 2. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
 3. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.
 4. Before Phase 2 / Project 1 wraps: install IntelliJ (0.3) + Maven quick start (0.4) — still not done.
