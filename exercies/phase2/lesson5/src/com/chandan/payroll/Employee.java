@@ -1,3 +1,5 @@
+package com.chandan.payroll;
+
 public class Employee {
     protected final String name;
     protected final long baseSalaryInPaise;

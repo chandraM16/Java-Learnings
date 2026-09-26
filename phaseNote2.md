@@ -64,3 +64,59 @@ Both are the same "assignment copies the reference, not the object" rule from Ph
 - `final class` — blocks all subclassing (`String` itself is `final`). `final` method — blocks overriding just that one method in a subclass that's otherwise still extendable. Full override mechanics: 2.5.
 - `static final` array/collection field: `final` still only locks the reference, not the contents — `static final int[] IDS = {1,2,3};` can't be reassigned, but `IDS[0] = 99` still works (same rule as 2.1/2.2, just on a static field this time).
 - Packages/imports: no new mechanics beyond Phase 1 — the useful new context is that classes in the **same package** can see each other's package-private members without an `import`; classes in **different** packages always need one, even within the same project.
+
+## Multiple classes per file & packages (revisit, 2026-09-26)
+- A `.java` file = a **compilation unit**: `package` line (≤1) → `import` lines → one or more **top-level classes**.
+- **At most one `public` top-level class per file**, and its name must equal the file name. A second public class → `error: class Three is public, should be declared in a file named Three.java`.
+- Extra non-public classes in the same file are **package-private helpers**. Each still compiles to its **own** `.class` file (`OrderApp.class`, `OrderLabel.class`) — the JVM has no concept of "several classes in one file".
+- When to put a helper in the same file: tiny, only used by that class, not worth its own file. Otherwise one class per file (what teams expect; IDE/Git friendly).
+- **Same package → no import.** Different package → `import`, or write the FQN inline (`java.time.LocalDate today = java.time.LocalDate.now();`).
+- Package-private class used from another package → `error: TaxTable is not public in com.shop.billing; cannot be accessed from outside package`. Missing import → `error: cannot find symbol / symbol: class Invoice`.
+- **Two classes with the same simple name** (`java.util.List` vs `java.awt.List`): import one, use the FQN for the other. There's no `import X as Y` in Java.
+- **Static import** brings in a *member*, not a type: `import static java.lang.Math.max;` → `max(3, 9)`. Use sparingly (hides where the method came from); common in tests (`assertEquals`).
+- `import` never controls compilation — `javac` finds classes via the **classpath / source paths**, not via imports.
+- Compile a whole tree at once: `javac -d out $(find src -name '*.java')`. Output mirrors the package folders under `out/`.
+
+## Packages — plain-language recap (revisited 2026-09-26)
+
+**A package is a named group of classes. The name is the folder path, written with dots.**
+- Every class in the same folder gets the **same** `package` line — that line says "I belong to this group".
+- The package name becomes part of the class's real name: `com.chandan.payment.Money` (its FQN).
+- Folders must mirror the package for IDEs/Maven and for javac's `-sourcepath` lookups.
+  - Nuance: `javac -d out OneFile.java` alone tolerates a mismatch (it writes output by package), but as soon as another class has to be found by name, the mismatch fails with `cannot find symbol`. Always mirror.
+
+```
+src/com/chandan/payment/Money.java             package com.chandan.payment;
+src/com/chandan/payment/CardValidator.java     package com.chandan.payment;
+src/com/chandan/payment/PaymentProcessor.java  package com.chandan.payment;
+src/com/chandan/orders/Checkout.java           package com.chandan.orders;
+```
+
+**Using another class:**
+| Where it lives | What you need |
+|---|---|
+| Same package | Nothing. Just use the name. |
+| Different package | `import com.chandan.payment.Money;` **and** the class must be `public` |
+| `java.lang` (String, Math…) | Nothing, imported automatically |
+
+Real errors from the demo:
+- Missing import → `error: cannot find symbol  symbol: class Money  location: class Checkout`
+- Class not public, used from another package → `error: CardValidator is not public in com.chandan.payment; cannot be accessed from outside package`
+
+**Package boundary = a visibility boundary.** A class (or member) with no modifier is *package-private*: usable inside its own package, invisible outside. That's how you keep helpers (`CardValidator`) internal while exposing an API (`PaymentProcessor`, `Money`). This is the first real use of the 4th access level from 2.2.
+
+**Same simple name, different packages** is fine: `com.chandan.payment.Status` and `com.chandan.orders.Status` are different classes. Import one and use the FQN for the other.
+
+**Compile & run with packages:**
+```bash
+javac -d out $(find src -name '*.java')
+java -cp out com.chandan.orders.Checkout
+```
+
+### Nested folders = separate packages (2026-09-26)
+`com/chandan/orders/f1/Cart.java` **must** declare `package com.chandan.orders.f1;` — one folder, one package. There is no "package containing sub-packages" in Java's access rules:
+- `com.chandan.orders` and `com.chandan.orders.f1` are two **unrelated** packages that happen to share a name prefix.
+- A class in `…orders.f1` needs an `import` to use a `public` class in `…orders`, and **cannot** see its package-private members: `error: OrderHelper is not public in com.chandan.orders; cannot be accessed from outside package`.
+- Sibling packages (`…orders.f1` ↔ `…orders.f2`) likewise need imports + `public`.
+- Declaring a mismatched package (file in `f1/`, says `package com.chandan.orders;`) often still compiles when every file is passed to javac explicitly, but: IntelliJ flags it, `-sourcepath` lookups fail (`cannot find symbol`), and two same-named classes in different folders collide → `error: duplicate class: com.chandan.orders.Report`.
+- Package depth is only naming. Name sub-packages by feature/role (`orders.pricing`, `orders.shipping`), never `f1`/`f2`/`util`-dumping-grounds.
