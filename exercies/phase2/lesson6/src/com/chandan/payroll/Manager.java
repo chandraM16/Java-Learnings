@@ -23,7 +23,7 @@ public class Manager extends Employee {
     public static void main(String[] args) {
         Employee manager = new Manager("Ravi", 8_000_000L, 5);
 
-        Employee intern = new Intern("Chandan", 0);
+        Employee intern = new Intern("Chandan", 1_500_000L);
 
         System.out.println(manager.describePay());
         System.out.println(intern.describePay());

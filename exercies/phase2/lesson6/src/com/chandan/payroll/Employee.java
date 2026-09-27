@@ -4,12 +4,12 @@ public abstract class Employee implements Payable {
     protected final String name;
     protected final long baseSalaryInPaise;
 
-    public Employee(String name, long baseSalaryInPaise) {
+    protected Employee(String name, long baseSalaryInPaise) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name id Required!");
         }
-        if (baseSalaryInPaise < 0) {
-            throw new IllegalArgumentException("baseSalaryInPaise can't be negative!");
+        if (baseSalaryInPaise < Payable.minimumWage()) {
+            throw new IllegalArgumentException("baseSalaryInPaise is too low !");
 
         }
         this.name = name;
@@ -25,7 +25,7 @@ public abstract class Employee implements Payable {
 
     @Override
     public long calculatePay() {
-        return baseSalaryInPaise;
+        return baseSalaryInPaise + calculateBonus();
     }
 
 }
