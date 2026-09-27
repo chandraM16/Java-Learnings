@@ -24,10 +24,13 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
+- **Dynamic dispatch** — The JVM decides *which* overridden method body actually runs by looking at an object's real runtime class, not its declared/reference type. What you're *allowed to call* is still decided by the declared type at compile time — two separate rules.
 - **Entry point** — The method the launcher calls first: `main`.
 - **`equals()`** — Method every object has (inherited from `Object`). Default = identity (`this == o`). Override it to compare by value instead; must be overridden together with `hashCode()`.
+- **`extends`** — Declares one class (the subclass) as building on another (the superclass), inheriting its fields/methods, and able to override or add to them.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
+- **Flexible Constructor Bodies** — JDK 25 feature: statements are allowed before `super(...)`/`this(...)` in a constructor, as long as they don't touch `this`/instance state — e.g. validating constructor arguments before delegating. Relaxes the older "must be the literal first statement" rule.
 - **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
 - **`getClass()`** — Method every object has that returns its exact runtime class (e.g. `Money.class`). Used in `equals()` to make sure you're not comparing two unrelated types before casting.
@@ -71,6 +74,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Package-private** — The default visibility when no modifier is written: accessible only within the same package.
 - **Pass-by-value** — Arguments are copied into parameters. For references, the copied value is the address, so the object is shared but reassignment is local.
 - **Pattern matching** — Testing a value's type and binding it to a variable in one step (`o instanceof String s`, `case Integer i ->`).
+- **Polymorphism** — Code written against a general (superclass/interface) type that, at run time, runs whichever subclass's specific behavior the real object provides. Enabled by dynamic dispatch.
 - **Primitive type** — One of Java's 8 built-in value types (`byte short int long float double char boolean`). Holds the value directly, not a reference to an object.
 - **Reference** — The value held by a reference-type variable: the address of an object on the heap.
 - **Reference type** — Any non-primitive type (classes, interfaces, arrays, `String`). A variable of this type holds a reference to an object.
@@ -84,6 +88,8 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`static`** — Belongs to the class itself rather than to an instance; usable without creating an object. (Deep dive: Phase 2.)
 - **`StringBuilder`** — Mutable, growable string buffer for efficient building in loops.
 - **String pool (interning)** — JVM cache of string literals so identical literals share one object. Why `==` sometimes "works" on strings.
+- **Subclass / Superclass** — The subclass `extends` the superclass, inheriting (and able to override) its members. "Child"/"parent" are informal synonyms.
+- **`super`** — Refers to the superclass. `super(...)` (constructor, must lead — see Flexible Constructor Bodies exception) calls the superclass's constructor; `super.method()` calls the superclass's version of a method from inside an override.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
 - **`this`** — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.

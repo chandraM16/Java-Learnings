@@ -113,6 +113,18 @@ javac -d out $(find src -name '*.java')
 java -cp out com.chandan.orders.Checkout
 ```
 
+## Inheritance, overriding, `super`, polymorphism, dynamic dispatch
+
+- `class Manager extends Employee` — `Manager` gets every field/method `Employee` has, for free, then can add/override.
+- `protected` (2.2's least-used access level) is for exactly this: fields/methods a subclass needs, but the outside world shouldn't touch directly.
+- `super(...)` — calls the superclass constructor; same first-line rule as `this(...)` chaining from 2.1, **with one modern exception** (below). `super.method()` — calls the superclass's version of a method from inside an override, used to *extend* behavior instead of fully replacing it.
+- **Polymorphism / dynamic dispatch, the actual mechanism**: two separate questions, answered two different ways —
+  - *What can you call?* → decided by the variable's **declared type**, checked at **compile time**. `Employee e2 = new Manager(...); e2.getTeamSize();` fails to compile — `getTeamSize()` isn't on `Employee` — even though `e2` really holds a `Manager`. The error names the declared type explicitly: `location: variable e2 of type Employee`.
+  - *Which version actually runs?* → decided by the object's **real runtime type**. `e2.calculateBonus()` compiles (declared type `Employee` has it) and runs `Manager`'s override — even inside code written entirely in `Employee` itself (e.g. `Employee.toString()` calling `calculateBonus()` internally still dispatches to `Manager`'s version when the real object is a `Manager`). Overriding isn't "replace the method in this file" — it's "the JVM looks up the real object's class at the call site, every time."
+  - To call a subclass-only method through a superclass-typed variable, cast: `((Manager) e2).getTeamSize();` — same cast syntax as Phase 1's numeric casts, now on your own class hierarchy. Risks `ClassCastException` if the cast is wrong (same idea as `getClass()` checks in 2.3's `equals()`).
+- **Correction to a rule taught earlier this phase**: `super(...)`/`this(...)` no longer has to be *literally* the first statement. JDK 25 finalized **Flexible Constructor Bodies**: statements before `super(...)`/`this(...)` are legal as long as they don't touch `this`/instance state yet — pure argument validation (throwing on a bad constructor argument *before* delegating) is the sanctioned use case, and it behaves correctly (the validation runs and can throw before the superclass is ever constructed). Older Java (and most existing teaching material/StackOverflow answers) will say this is illegal — it was, before this feature finalized.
+- Multi-class compile reminder (2.1-era, resurfaced): `javac` only compiles the file(s) you give it plus anything on its sourcepath — pointing it at `Manager.java` alone when `Manager extends Employee` in a separate file fails with `cannot find symbol: class Employee`, even with both files sitting in the same folder. Compile both together: `javac -d out src/.../*.java`.
+
 ### Nested folders = separate packages (2026-09-26)
 `com/chandan/orders/f1/Cart.java` **must** declare `package com.chandan.orders.f1;` — one folder, one package. There is no "package containing sub-packages" in Java's access rules:
 - `com.chandan.orders` and `com.chandan.orders.f1` are two **unrelated** packages that happen to share a name prefix.
