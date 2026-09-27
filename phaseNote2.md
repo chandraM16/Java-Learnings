@@ -125,6 +125,17 @@ java -cp out com.chandan.orders.Checkout
 - **Correction to a rule taught earlier this phase**: `super(...)`/`this(...)` no longer has to be *literally* the first statement. JDK 25 finalized **Flexible Constructor Bodies**: statements before `super(...)`/`this(...)` are legal as long as they don't touch `this`/instance state yet — pure argument validation (throwing on a bad constructor argument *before* delegating) is the sanctioned use case, and it behaves correctly (the validation runs and can throw before the superclass is ever constructed). Older Java (and most existing teaching material/StackOverflow answers) will say this is illegal — it was, before this feature finalized.
 - Multi-class compile reminder (2.1-era, resurfaced): `javac` only compiles the file(s) you give it plus anything on its sourcepath — pointing it at `Manager.java` alone when `Manager extends Employee` in a separate file fails with `cannot find symbol: class Employee`, even with both files sitting in the same folder. Compile both together: `javac -d out src/.../*.java`.
 
+## Abstract classes vs interfaces
+
+- **Abstract class**: can't be instantiated (`new Employee(...)` → `error: Employee is abstract; cannot be instantiated`, compile time). Can hold real instance state and constructors. Constructor is usually `protected` (only subclasses can call it anyway).
+- **Abstract method**: signature only, ends in `;`, no body. A class with any abstract method must be `abstract`. Every concrete subclass must implement every inherited abstract method, or javac names exactly which one is missing.
+- **Interface**: a contract — "implementers can do these things." No constructors, no instance state.
+  - Abstract method: every implementer must define it.
+  - `default` method (Java 8+): has a body, inherited for free, can be overridden. Added so library interfaces (e.g. `List`) could gain methods without breaking every existing implementer.
+  - `static` method: belongs to the interface, called as `Payable.minimumWage()`.
+- **Deciding factor**: `extends` only one class; `implements` as many interfaces as you like. Shared real state/code across a tight family → abstract class. A capability many unrelated classes might have → interface.
+- Dispatch works through default methods too: a `default` method calling an abstract method runs the real object's implementation, same mechanism as 2.5. The *method* is shared; the *data* it reads (`this`'s fields) is per object.
+
 ### Nested folders = separate packages (2026-09-26)
 `com/chandan/orders/f1/Cart.java` **must** declare `package com.chandan.orders.f1;` — one folder, one package. There is no "package containing sub-packages" in Java's access rules:
 - `com.chandan.orders` and `com.chandan.orders.f1` are two **unrelated** packages that happen to share a name prefix.

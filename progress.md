@@ -8,7 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.5 (Inheritance, overriding, `super`, polymorphism, dynamic dispatch) — done. Moving to 2.6 (Abstract classes vs interfaces, default & static interface methods).
+Lesson 2.6 (Abstract classes vs interfaces, default & static interface methods) — done. Moving to 2.7 (Composition vs inheritance). Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
 
 Open question for learner: `phaseNote1.md`'s "Scope" and "Call stack & stack traces" sections were struck through (`~~...~~`) by the learner on 2026-09-26 — intent unclear (mark as mastered vs. delete outright). Left as-is; ask next session if not already resolved.
 
@@ -46,6 +46,8 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 | 2.3 `equals`, `hashCode`, `toString` | Practiced | L2.3: Ex1 (Coordinate, default Object behaviour) 4/4 correct first try. Ex2 (SeatAssignment, required) — correct `equals`/`hashCode`/`toString` overrides, `getClass()` guard used correctly, `final` fields (no mutable-hashCode trap), applied the Phase 1 `char + "" + int` concat trick unprompted inside `toString()`. Conceptual follow-up (equals-without-hashCode contract break) answered correctly. First lesson this phase with zero review round needed. |
 | 2.4 Static members, `final` classes/methods, packages revisited | Practiced | L2.4: Ex1 (Ticket static counter) 3/3 predictions correct. Ex2 (Invoice, required) — static counter + `static final` constant + static utility method all correctly built v1; review flagged validation boundary (`< 0` vs `<= 0`), `toString` missing a space, and `main` only printing 1 of 3 invoices (repeat of the "skips requested output" pattern). Conceptual answer on why `nextNumber` must be `static` was right in substance but called the compile error a "thrown" error — corrected (compile-time, not run-time; also missed that the constructor itself would still compile, silently producing `INV-0001` for every invoice forever). While fixing, `static` briefly disappeared from `nextNumber` (editor auto-revert) and reproduced the exact predicted compile error live — good real confirmation. Final 3 fixes applied by mentor directly (mechanical, already agreed) rather than another round-trip, per learner's momentum preference. |
 | 2.5 Inheritance, overriding, `super`, polymorphism, dynamic dispatch | Practiced | L2.5: Ex1 (Shape/Circle dynamic dispatch) — correctly predicted `describe()` (defined only in the superclass) still calls the subclass's overridden `area()`, the deepest test of the lesson. Ex2 (Employee/Manager, required) — full correct build: `protected` fields, `super(...)` constructor delegation, `@Override` + `super.calculateBonus()` extension, correct cast to call a subclass-only method. First compile attempt failed only because `javac` was pointed at one file instead of both (classpath/multi-file mechanics, not an OOP gap) — resolved. Used validation-before-`super()` in `Manager`'s constructor, which the lesson had (incorrectly) said was illegal — verified it's actually legal and correct in JDK 25 (Flexible Constructor Bodies, finalized) — mentor error corrected, learner's code was already idiomatic modern Java. Package declarations initially missing from both files (mechanical, not new material) — fixed after being flagged twice. |
+
+| 2.6 Abstract classes vs interfaces, default & static interface methods | Practiced | L2.6: Ex1 correct in substance (literal slip). Ex2 refactor correct and working first try (interface + abstract class + abstract method + 2 subclasses). Design gaps: weakened salary invariant, unused `minimumWage()`, `public` ctor on abstract class. Conceptual answer covered availability via inheritance, not per-object dispatch; mentor's question premise was flawed. |
 
 ### Phases 3–19
 Not Started (see `roadmap.md`).
@@ -153,7 +155,7 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Lesson 2.6 — Abstract classes vs interfaces, default & static interface methods.
+1. Lesson 2.7 — Composition vs inheritance. Then 2.8 Enums, then Checkpoint 2 + Project 1 kickoff.
 2. Resolve the `phaseNote1.md` strikethrough question (Current Topic, above) with the learner.
 3. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
 4. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.

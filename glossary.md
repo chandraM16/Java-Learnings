@@ -3,6 +3,8 @@
 Alphabetical. One or two lines each. Added as terms are introduced.
 
 - **`@Override`** — Annotation on a method that tells the compiler "this must match a method on the superclass." If the signature doesn't actually match, you get a compile error instead of silently creating an unrelated method. Always use it when overriding `equals`/`hashCode`/`toString`/etc.
+- **Abstract class** — A class marked `abstract`: can't be instantiated with `new`, can hold real state and constructors, may declare abstract methods for subclasses to fill in.
+- **Abstract method** — A method signature with no body (`public abstract long calculateBonus();`). Forces every concrete subclass/implementer to provide one.
 - **Access modifier** — `private`/*(package-private)*/`protected`/`public`: controls what code can see a field, method, or class. Enforced by the JVM at runtime, unlike TS's compile-time-only `private`.
 - **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **Array** — Fixed-size, indexed container of one element type. An object (reference type).
@@ -21,6 +23,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Constructor** — Special block that runs when `new` creates an object; initializes its fields. Same name as the class, no return type.
 - **Constructor chaining** — One constructor calling another overload on the same class via `this(...)` as its first statement, to avoid duplicating init logic.
 - **Constructor overloading** — Multiple constructors with different parameter lists; the compiler picks one by the arguments at the call site.
+- **Default method** — An interface method with a body (`default String describePay() { ... }`). Implementers inherit it for free and may override it. Java 8+.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
@@ -42,8 +45,10 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`IllegalArgumentException`** — Unchecked exception thrown to reject a bad argument to a method/constructor (e.g. a negative amount). You `throw` it yourself; formal exception handling is Phase 5.
 - **`IllegalStateException`** — Unchecked exception thrown when a call is valid in general but not given the object's *current state* (e.g. redeeming more points than you have).
 - **Immutable** — An object whose state can't change after creation (e.g. `String`). "Changes" produce new objects.
+- **`implements`** — Declares that a class fulfils an interface's contract. A class can implement many interfaces (`implements A, B`) but `extends` only one class.
 - **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
 - **Instance** — A specific object created from a class via `new`, with its own field values, living on the heap. "Object" and "instance" are used interchangeably.
+- **Interface** — A contract: method signatures implementers must provide, plus optional `default` and `static` methods. No constructors, no instance state.
 - **Invariant** — A fact about an object that must always be true (`balance >= 0`, `memberId` never blank). Established by the constructor, preserved by every method that mutates state — the whole point of encapsulation.
 - **Jagged array** — A 2D array whose rows have different lengths.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
