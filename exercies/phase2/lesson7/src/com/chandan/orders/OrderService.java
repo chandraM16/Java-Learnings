@@ -32,6 +32,6 @@ public class OrderService {
         os2.placeOrder("Samsung", 9000000);
         os3.placeOrder("Google", 7000000);
 
-        System.out.println("Recorded: " + fakeNotifier.getLastMessage() + " / " + fakeNotifier.getMessageString());
+        System.out.println("Recorded: " + fakeNotifier.getLastTo() + " / " + fakeNotifier.getLastMessage());
     }
 }

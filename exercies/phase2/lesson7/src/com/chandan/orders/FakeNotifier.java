@@ -4,11 +4,11 @@ public class FakeNotifier implements Notifier {
     private String lastTo;
     private String lastMessage;
 
-    public String getLastMessage() {
+    public String getLastTo() {
         return this.lastTo;
     }
 
-    public String getMessageString() {
+    public String getLastMessage() {
         return this.lastMessage;
     }
 

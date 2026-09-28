@@ -16,19 +16,19 @@ class Counter {
 
 class LoggingCounter extends Counter {
     private int addCalls = 0;
+    private final Counter counter = new Counter();
 
     @Override
     public void add(int n) {
-        System.out.println("n ->" + n);
         addCalls++;
-        super.add(n);
+        counter.add(n);
     }
 
     @Override
     public void addAll(int[] numbers) {
         System.out.println("n ->" + numbers.length);
         addCalls += numbers.length;
-        super.addAll(numbers);
+        counter.addAll(numbers);
     }
 
     public int getAddCalls() {
