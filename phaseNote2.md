@@ -136,6 +136,24 @@ java -cp out com.chandan.orders.Checkout
 - **Deciding factor**: `extends` only one class; `implements` as many interfaces as you like. Shared real state/code across a tight family → abstract class. A capability many unrelated classes might have → interface.
 - Dispatch works through default methods too: a `default` method calling an abstract method runs the real object's implementation, same mechanism as 2.5. The *method* is shared; the *data* it reads (`this`'s fields) is per object.
 
+## Composition vs inheritance
+
+- **Inheritance = is-a** (`Manager` is an `Employee`). **Composition = has-a**: keep another object in a field and forward calls to it (**delegation**).
+- Default to composition. Inherit only for a true is-a where you control both classes (or the parent is designed for extension).
+- Standard shape — **constructor injection** (what Spring automates in Phase 11):
+```java
+public class OrderService {
+    private final Notifier notifier;                 // interface type, private final
+    public OrderService(Notifier notifier) { this.notifier = notifier; }
+    public void placeOrder(...) { notifier.send(...); }
+}
+new OrderService(new EmailNotifier());   // swap implementations without touching OrderService
+```
+- Don't `new` the dependency inside the class (`= new EmailNotifier()`) — hard-wired, can't swap, can't test.
+- **Fragile base class**: inside a parent, `add(n)` is really `this.add(n)`, and `this` is the real object — so the parent's own code can call your override. `LoggingCounter extends Counter` overriding both `add` and `addAll` double-counts (7 instead of 4). `super.add(n)` is the one call that skips dispatch.
+  - Composition fix: `LoggingCounter` holds `private final Counter counter` and calls `counter.addAll(...)`. Inside, `this` is the `Counter`, so nothing dispatches back → 4.
+- **Test double (fake)**: an implementation of the interface that only *records* what it received — no printing, no validation. Declare it as its own type in the test (`FakeNotifier fake = new FakeNotifier();`) so you can read its getters afterwards, while `OrderService` still only sees `Notifier`. Same idea as a Jest `jest.fn()` mock checked with `toHaveBeenCalledWith`.
+
 ### Nested folders = separate packages (2026-09-26)
 `com/chandan/orders/f1/Cart.java` **must** declare `package com.chandan.orders.f1;` — one folder, one package. There is no "package containing sub-packages" in Java's access rules:
 - `com.chandan.orders` and `com.chandan.orders.f1` are two **unrelated** packages that happen to share a name prefix.

@@ -8,7 +8,9 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.6 (Abstract classes vs interfaces, default & static interface methods) — done. Moving to 2.7 (Composition vs inheritance). Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
+Lesson 2.7 (Composition vs inheritance) — done. Moving to 2.8 (Enums), the last lesson before Checkpoint 2 + Project 1.
+
+Prior: Lesson 2.6 done. Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
 
 Open question for learner: `phaseNote1.md`'s "Scope" and "Call stack & stack traces" sections were struck through (`~~...~~`) by the learner on 2026-09-26 — intent unclear (mark as mastered vs. delete outright). Left as-is; ask next session if not already resolved.
 
@@ -49,10 +51,13 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 
 | 2.6 Abstract classes vs interfaces, default & static interface methods | Practiced | L2.6: Ex1 correct in substance (literal slip). Ex2 refactor correct and working first try (interface + abstract class + abstract method + 2 subclasses). Design gaps: weakened salary invariant, unused `minimumWage()`, `public` ctor on abstract class. Conceptual answer covered availability via inheritance, not per-object dispatch; mentor's question premise was flawed. |
 
+| 2.7 Composition vs inheritance | Practiced | L2.7: fragile-base-class predict 2/2; asked a sharp follow-up ("why does the child's add get called?") — good sign. OrderService/Notifier composition core correct first try; took 4 rounds to get the FakeNotifier test-double right (declared type, recording-only, getter naming). Did not answer the composition-rewrite question. |
+
 ### Phases 3–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
+- **Boundary checks: `<` vs `<=` (3 in a row, 2026-09-28)**: `Invoice` (2.4) `< 0` for "must be > 0", `Employee` (2.6) loosened to `< 0`, `OrderService` (2.7) `< 0`. Always ask: is the edge value (0) itself allowed?
 - **Exact-literal precision in predictions (3 occurrences, 2026-09-27)**: reasoning correct, characters wrong. L2.1 Ex1 (added spaces), L2.5 Ex1 (added a space after `area=`), L2.6 Ex1 (dropped the comma in `"Hello, "`). Suggested fix: copy each string literal character by character first, then substitute values. If it recurs, have the learner write the literals out before predicting.
 - **Methods defaulting to `private` when they need to be callable from outside (2nd occurrence, 2026-09-24)** — `Product.restock`/`describe` (L2.1) then `MembershipCard.earnPoints`/`redeemPoints` (L2.2 v1). Both only compiled because `main` was in the same class. Fixed both times once flagged, but it's recurring — watch for a 3rd occurrence before assuming it's resolved.
 - **Defensive copies — caught the getter leak, missed the constructor leak (L2.2 Ex1, 2026-09-24)** — predicted `Wallet` line 2 as `200`, actual `−50`: didn't extend "getter returns the live array" reasoning to "constructor never copied its parameter either," even though both are the same rule (`int[] b = a` shares the reference) applied at two different entry points to the object.
@@ -132,6 +137,7 @@ Not Started (see `roadmap.md`).
 | 2026-09-25 | L2.4 Ex2 Invoice v2 | ✅ | All 3 fixes applied (mentor-applied directly — mechanical, already agreed, learner asked to move on). Verified: `INV-0001: Rs 100.00` / `INV-0002: Rs 400.00` / `INV-0003: Rs 700.00` / `3`. |
 | 2026-09-26 | L2.5 Ex1 Shape/Circle predictions | ✅ substance | Both lines correct, including the deep test (`describe()`, defined only in `Shape`, still calls `Circle`'s overridden `area()`). Same minor precision slip as L2.1 Ex1 — predicted a space (`area= 12.56...`) that isn't in the literal (`area=12.56...`). |
 | 2026-09-26 | L2.5 Ex2 Employee/Manager (REQUIRED) | ✅ after tooling + 1 content fix | `protected` fields, `super(...)` delegation, `@Override` + `super.calculateBonus()` extension, cast to call subclass-only method — all correct. v1 compile failed from invoking `javac` on `Manager.java` alone (multi-file/classpath mechanics, not OOP) — resolved. Package declarations missing from both files initially — fixed after 2nd flag. Verified final: `500000 / 1000000 / 4`, classes correctly nested at `out/com/chandan/payroll/`. |
+| 2026-09-28 | L2.7 Ex2 v3→v4 | ✅ | v3: `FakeNotifier` declared as its own type, simplified to plain recording, main reads getters — but getter names swapped (`getLastMessage()` returned `lastTo`), output correct only by coincidence. v4 fixed. Verified: `Recorded: Google / Order placed: Rs 70000.00`. Composition fix for LoggingCounter: mentor gave the answer (asked 3×, unanswered). |
 | 2026-09-28 | L2.7 Ex2 OrderService/Notifier (REQUIRED) v1→v2 | ⚠️ partial | ✅ composition core right first try (private final interface field, constructor injection, delegation, 3 swappable notifiers), unprompted customer validation. v1: FakeNotifier recording never printed, `< 0` boundary slip (3rd in a row), FakeNotifier had public validating setters + `toString` field name. v2 ("fixed all"): `<= 0` ✅, fields renamed ✅, setters private ✅ — but still declared `Notifier fakeNotifier` and printed *inside* `send()` instead of reading the getters from `main` (sidestepped the declared-type point); validation now silently skips recording (worse than throwing); param names/typo remain. Conceptual (composition fix for LoggingCounter) unanswered twice. |
 | 2026-09-27 | L2.7 Ex1 LoggingCounter (fragile base class) | ✅ 2/2 | `total: 11`, `addCalls: 7`. Correctly traced the double count through dynamic dispatch from the parent's own `addAll`. |
 | 2026-09-27 | L2.6 Ex1 Greeter predictions | ✅ substance | Correct name resolution through default method → abstract class's `name()`. Dropped the comma in `"Hello, "` (3rd exact-literal slip, see Needs Review). |
@@ -157,7 +163,7 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Lesson 2.7 — Composition vs inheritance. Then 2.8 Enums, then Checkpoint 2 + Project 1 kickoff.
+1. Lesson 2.8 — Enums (fields + behavior). Then Checkpoint 2 + Project 1 kickoff (Ledger CLI). Checkpoint 2 should include: boundary checks (`<` vs `<=`, 3 slips in Phase 2), exact-literal output prediction, declared vs runtime type, a test-double exercise.
 2. Resolve the `phaseNote1.md` strikethrough question (Current Topic, above) with the learner.
 3. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
 4. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.

@@ -20,12 +20,15 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Class file (`.class`)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
 - **`ClassNotFoundException`** — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
 - **Classpath (`-cp`)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- **Composition** — "Has-a": a class holds another object in a field and forwards work to it, instead of inheriting from it. Preferred over inheritance by default.
 - **Constructor** — Special block that runs when `new` creates an object; initializes its fields. Same name as the class, no return type.
 - **Constructor chaining** — One constructor calling another overload on the same class via `this(...)` as its first statement, to avoid duplicating init logic.
+- **Constructor injection** — Passing a class's dependencies in through its constructor (`new OrderService(new EmailNotifier())`) instead of creating them inside. What Spring automates.
 - **Constructor overloading** — Multiple constructors with different parameter lists; the compiler picks one by the arguments at the call site.
 - **Default method** — An interface method with a body (`default String describePay() { ... }`). Implementers inherit it for free and may override it. Java 8+.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
+- **Delegation** — A method that does its job by calling the same kind of method on an object it holds (`notifier.send(...)`). The mechanism of composition.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
 - **Dynamic dispatch** — The JVM decides *which* overridden method body actually runs by looking at an object's real runtime class, not its declared/reference type. What you're *allowed to call* is still decided by the declared type at compile time — two separate rules.
 - **Entry point** — The method the launcher calls first: `main`.
@@ -34,6 +37,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
 - **Flexible Constructor Bodies** — JDK 25 feature: statements are allowed before `super(...)`/`this(...)` in a constructor, as long as they don't touch `this`/instance state — e.g. validating constructor arguments before delegating. Relaxes the older "must be the literal first statement" rule.
+- **Fragile base class** — A subclass breaking because of how its parent calls its own methods internally: the parent's `add(n)` is `this.add(n)`, so it can run the subclass's override unexpectedly.
 - **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
 - **`getClass()`** — Method every object has that returns its exact runtime class (e.g. `Money.class`). Used in `equals()` to make sure you're not comparing two unrelated types before casting.
@@ -96,6 +100,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Subclass / Superclass** — The subclass `extends` the superclass, inheriting (and able to override) its members. "Child"/"parent" are informal synonyms.
 - **`super`** — Refers to the superclass. `super(...)` (constructor, must lead — see Flexible Constructor Bodies exception) calls the superclass's constructor; `super.method()` calls the superclass's version of a method from inside an override.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
+- **Test double (fake)** — A stand-in implementation of an interface used in tests, e.g. `FakeNotifier` that records what it was sent instead of sending it. Like a Jest mock.
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
 - **`this`** — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
 - **`toString()`** — Method every object has, called automatically by `println`/string concatenation. Default prints `ClassName@hexHashCode` (not useful) — override it for a readable representation.
