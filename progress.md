@@ -8,9 +8,7 @@ Status scale: Not Started → Introduced → Practiced → Comfortable → Maste
 Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
 
 ## Current Topic
-Lesson 2.7 (Composition vs inheritance) — done. Moving to 2.8 (Enums), the last lesson before Checkpoint 2 + Project 1.
-
-Prior: Lesson 2.6 done. Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
+**All Phase 2 lessons (2.1–2.8) done as of 2026-09-28.** Next: Checkpoint 2 (Phase 2 gate), then Project 1 (Ledger CLI). Checkpoint 1 is still unresolved (deferred 2026-09-22, see below) — decide with the learner whether to close it alongside Checkpoint 2. Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
 
 Open question for learner: `phaseNote1.md`'s "Scope" and "Call stack & stack traces" sections were struck through (`~~...~~`) by the learner on 2026-09-26 — intent unclear (mark as mastered vs. delete outright). Left as-is; ask next session if not already resolved.
 
@@ -52,6 +50,8 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 | 2.6 Abstract classes vs interfaces, default & static interface methods | Practiced | L2.6: Ex1 correct in substance (literal slip). Ex2 refactor correct and working first try (interface + abstract class + abstract method + 2 subclasses). Design gaps: weakened salary invariant, unused `minimumWage()`, `public` ctor on abstract class. Conceptual answer covered availability via inheritance, not per-object dispatch; mentor's question premise was flawed. |
 
 | 2.7 Composition vs inheritance | Practiced | L2.7: fragile-base-class predict 2/2; asked a sharp follow-up ("why does the child's add get called?") — good sign. OrderService/Notifier composition core correct first try; took 4 rounds to get the FakeNotifier test-double right (declared type, recording-only, getter naming). Did not answer the composition-rewrite question. |
+
+| 2.8 Enums (fields & behavior) | Practiced | L2.8: first-time topic — asked for a from-zero explanation, then Ex1 6/6 and Ex2 correct first try apart from style/catch-scope fixes. Reproduced the exhaustive-switch compile error correctly. |
 
 ### Phases 3–19
 Not Started (see `roadmap.md`).
@@ -137,6 +137,8 @@ Not Started (see `roadmap.md`).
 | 2026-09-25 | L2.4 Ex2 Invoice v2 | ✅ | All 3 fixes applied (mentor-applied directly — mechanical, already agreed, learner asked to move on). Verified: `INV-0001: Rs 100.00` / `INV-0002: Rs 400.00` / `INV-0003: Rs 700.00` / `3`. |
 | 2026-09-26 | L2.5 Ex1 Shape/Circle predictions | ✅ substance | Both lines correct, including the deep test (`describe()`, defined only in `Shape`, still calls `Circle`'s overridden `area()`). Same minor precision slip as L2.1 Ex1 — predicted a space (`area= 12.56...`) that isn't in the literal (`area=12.56...`). |
 | 2026-09-26 | L2.5 Ex2 Employee/Manager (REQUIRED) | ✅ after tooling + 1 content fix | `protected` fields, `super(...)` delegation, `@Override` + `super.calculateBonus()` extension, cast to call subclass-only method — all correct. v1 compile failed from invoking `javac` on `Manager.java` alone (multi-file/classpath mechanics, not OOP) — resolved. Package declarations missing from both files initially — fixed after 2nd flag. Verified final: `500000 / 1000000 / 4`, classes correctly nested at `out/com/chandan/payroll/`. |
+| 2026-09-28 | L2.8 Ex2 OrderStatus + Order (REQUIRED) v1→v2 | ✅ | v1: enum with label + `canMoveTo` (no default) + `parse` (strip/upper/valueOf, blank guard) + `Order` state machine all correct; `RETURNED` exhaustiveness error pasted correctly. Fixes: handle `RETURNED` (DELIVERED → RETURNED), one value per line, `catch (Exception)` → `catch (IllegalStateException)` + `getMessage()`, add `getId()`. v2 verified; only a leftover IDE `// TODO` comment remains. |
+| 2026-09-28 | L2.8 Ex1 Size enum predictions | ✅ 6/6 | toString = name, ordinal, `==` on enums, `*` before `+` precedence, `values().length`, case-sensitive `valueOf` throws. Asked for a from-zero enum explanation first (first-time topic) — step-by-step version with `javap` output landed. |
 | 2026-09-28 | L2.7 Ex2 v3→v4 | ✅ | v3: `FakeNotifier` declared as its own type, simplified to plain recording, main reads getters — but getter names swapped (`getLastMessage()` returned `lastTo`), output correct only by coincidence. v4 fixed. Verified: `Recorded: Google / Order placed: Rs 70000.00`. Composition fix for LoggingCounter: mentor gave the answer (asked 3×, unanswered). |
 | 2026-09-28 | L2.7 Ex2 OrderService/Notifier (REQUIRED) v1→v2 | ⚠️ partial | ✅ composition core right first try (private final interface field, constructor injection, delegation, 3 swappable notifiers), unprompted customer validation. v1: FakeNotifier recording never printed, `< 0` boundary slip (3rd in a row), FakeNotifier had public validating setters + `toString` field name. v2 ("fixed all"): `<= 0` ✅, fields renamed ✅, setters private ✅ — but still declared `Notifier fakeNotifier` and printed *inside* `send()` instead of reading the getters from `main` (sidestepped the declared-type point); validation now silently skips recording (worse than throwing); param names/typo remain. Conceptual (composition fix for LoggingCounter) unanswered twice. |
 | 2026-09-27 | L2.7 Ex1 LoggingCounter (fragile base class) | ✅ 2/2 | `total: 11`, `addCalls: 7`. Correctly traced the double count through dynamic dispatch from the parent's own `addAll`. |
@@ -163,7 +165,7 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Lesson 2.8 — Enums (fields + behavior). Then Checkpoint 2 + Project 1 kickoff (Ledger CLI). Checkpoint 2 should include: boundary checks (`<` vs `<=`, 3 slips in Phase 2), exact-literal output prediction, declared vs runtime type, a test-double exercise.
+1. Checkpoint 2, then Project 1 kickoff (Ledger CLI). Also the `catch (Exception)` habit (2.2, 2.8) — include a narrow-catch item. Checkpoint 2 should include: boundary checks (`<` vs `<=`, 3 slips in Phase 2), exact-literal output prediction, declared vs runtime type, a test-double exercise.
 2. Resolve the `phaseNote1.md` strikethrough question (Current Topic, above) with the learner.
 3. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
 4. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.

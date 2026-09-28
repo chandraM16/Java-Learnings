@@ -32,7 +32,9 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
 - **Dynamic dispatch** — The JVM decides *which* overridden method body actually runs by looking at an object's real runtime class, not its declared/reference type. What you're *allowed to call* is still decided by the declared type at compile time — two separate rules.
 - **Entry point** — The method the launcher calls first: `main`.
+- **Enum** — A type with a fixed set of values; each value is a single `public static final` object of that type, created once. Can have fields, a (private) constructor and methods. Compare with `==`.
 - **`equals()`** — Method every object has (inherited from `Object`). Default = identity (`this == o`). Override it to compare by value instead; must be overridden together with `hashCode()`.
+- **Exhaustive switch** — A switch expression that covers every possible value (e.g. all enum constants) without `default`. Adding a new value makes it a compile error: "the switch expression does not cover all possible input values".
 - **`extends`** — Declares one class (the subclass) as building on another (the superclass), inheriting its fields/methods, and able to override or add to them.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
@@ -78,6 +80,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Object lifecycle** — Created by `new` (fields set to defaults, then constructor runs) → referenced while reachable → eligible for GC once no reference remains. No manual `delete`/`free`.
 - **`Objects`** — `java.util` utility class with null-safe helpers: `Objects.equals(a, b)` (never throws on `null`), `Objects.hash(a, b, ...)` (combines several fields into one `hashCode()`).
 - **OpenJDK** — The open-source reference implementation of Java. Most distributions (Temurin, Corretto, Zulu, Oracle) are builds of it.
+- **`ordinal()`** — An enum value's position in its declaration (from 0). Changes if values are reordered/inserted — never persist it; store `name()` instead.
 - **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
 - **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
 - **Package-private** — The default visibility when no modifier is written: accessible only within the same package.

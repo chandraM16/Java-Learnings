@@ -154,6 +154,18 @@ new OrderService(new EmailNotifier());   // swap implementations without touchin
   - Composition fix: `LoggingCounter` holds `private final Counter counter` and calls `counter.addAll(...)`. Inside, `this` is the `Counter`, so nothing dispatches back → 4.
 - **Test double (fake)**: an implementation of the interface that only *records* what it received — no printing, no validation. Declare it as its own type in the test (`FakeNotifier fake = new FakeNotifier();`) so you can read its getters afterwards, while `OrderService` still only sees `Notifier`. Same idea as a Jest `jest.fn()` mock checked with `toHaveBeenCalledWith`.
 
+## Enums
+
+- An enum is a fixed set of values; each value is a **single object**, created once. What javac generates (`javap -p`): `public final class OrderStatus extends java.lang.Enum<OrderStatus>`, one `public static final OrderStatus PAID;` per value, a **private** constructor, plus `values()`/`valueOf(String)`.
+- Because there's exactly one `PAID` object, **`==` is correct** for enums (the exception to Phase 1's "use `.equals()` for objects").
+- Fields/constructor/methods: `PAID("Paid")` *is* a constructor call. Values come first, then `;`, then fields and methods.
+- Behavior in the enum: `canMoveTo(next)` with `switch (this)` — `this` is the value the method was called on. Inside the enum write `case PAID`, not `case OrderStatus.PAID`.
+- **Exhaustive switch, no `default`**: add a value and every switch expression over the enum fails to compile — `error: the switch expression does not cover all possible input values`. A `default` would hide this.
+- Built-ins: `values()` (array, declared order), `valueOf("PAID")` (exact, case-sensitive — `IllegalArgumentException: No enum constant OrderStatus.paid`), `name()`, `toString()` (= name unless overridden), `ordinal()` (position from 0).
+- Normalize input before `valueOf`: `valueOf(raw.strip().toUpperCase())`.
+- **Never persist `ordinal()`** — inserting/reordering values silently changes the meaning of stored numbers. Persist `name()`.
+- vs TS: a TS union/enum is erased at compile time; a Java enum is a real class, checked at compile time *and* runtime.
+
 ### Nested folders = separate packages (2026-09-26)
 `com/chandan/orders/f1/Cart.java` **must** declare `package com.chandan.orders.f1;` — one folder, one package. There is no "package containing sub-packages" in Java's access rules:
 - `com.chandan.orders` and `com.chandan.orders.f1` are two **unrelated** packages that happen to share a name prefix.
