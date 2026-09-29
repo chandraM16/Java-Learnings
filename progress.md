@@ -1,21 +1,24 @@
 # Learning Progress
 
-_Last updated: 2026-09-26 (Session 11)_
+_Last updated: 2026-09-29 (Session 12)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
 ## Current Phase
-Phase 2 — Object-Oriented Java (Phase 0 items 0.3 IntelliJ / 0.4 Maven still deferred until just before Project 1)
+**Phase 2 — Object-Oriented Java: COMPLETE (2026-09-29, by learner's decision).** Next: Project 1 kickoff (Ledger CLI) alongside Phase 3 (Collections & Generics). Phase 0 items 0.3 IntelliJ / 0.4 Maven were deferred "until just before Project 1" — that point is now.
 
 ## Current Topic
-**Checkpoint 2 issued 2026-09-28** (`assessments/checkpoint-2.md`) — awaiting submission. Pass = ≥32/40 AND Part D ≥5/8 AND all Part C checklist items AND Part E done. Part E folds in the 4 open Checkpoint 1 Part C items (2, 3, 7, 9) + `private static final` constants + exact usage line — completing Part E closes Checkpoint 1. Mentor verified Part A and Part B outputs by compiling (keys not stored). Part B note: `"S" + 1` is a compile-time constant (interned, `==` true) — paper uses `int number = 1; "S" + number` so the `==` bug is visible. Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
+**Checkpoint 2: scored 32/40** (A 7, B 7, C 10, D 8) — meets the score, Part D and Part C gates. **Part E skipped by learner's choice** ("skip Part E and mark Phase 2 complete"), so this is recorded as *Phase 2 complete by decision*, not a full pass. Weak spots from CP2: reference casts (A8), error-category naming (declined in B), switch statement vs expression (C, fix not applied).
+
+**Checkpoint 1: formally still open.** Its 4 unfinished `DeliveryStats` items are **folded into Project 1's requirements** instead of blocking: (1) parse input once into a typed structure, never re-parse the same input in several methods; (2) arrow switch *expressions* for categorisation; (3) `main` short (≤15 lines), logic in small private methods; (4) exact output matching incl. usage line. Check these in Project 1 reviews.
+
+Optional 2.6 follow-ups left open by learner's choice: `calculatePay()` including `calculateBonus()` (dispatch chain demo), enforcing `Payable.minimumWage()`, `protected` constructor on abstract class.
 
 Open question for learner: `phaseNote1.md`'s "Scope" and "Call stack & stack traces" sections were struck through (`~~...~~`) by the learner on 2026-09-26 — intent unclear (mark as mastered vs. delete outright). Left as-is; ask next session if not already resolved.
 
 **Teaching-style correction (2026-09-24):** learner explicitly said lesson explanations were reading like revision of things already known, not first-time teaching — asked for plain language + code examples for every new term, not dense prose. Applied for the rest of this session (equals/hashCode/getClass/Objects.equals explanations); keep doing this by default: define term in plain words → tiny code example → then the real explanation. Don't revert to the denser Claude.md §6 format's prose style for genuinely new mechanisms.
 
-**⚠️ Checkpoint 1 unresolved** (`assessments/checkpoint-1.md`) — provisional ~34/42, but blocked on Part C checklist items 2/3/7/9 (int[] for valid minutes, arrow switch, args re-parsed in 4 methods, pasted outputs) and Part D was only marginally at the 6/10 floor. On 2026-09-22 the learner explicitly chose to start Phase 2 now and revisit the checkpoint later rather than close it out first — this is a deliberate deferral of the normal "checkpoint gates next phase" rule, not a pass. Circle back to close it out; don't let it get lost.
-L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) — same skills are tested in Checkpoint Part C.
+History: Checkpoint 1 was deferred 2026-09-22 (provisional ~34/42, blocked on Part C items 2/3/7/9); offered again as CP2 Part E, skipped 2026-09-29; items now tracked via Project 1 (above).
 
 ## Topic Status
 
@@ -52,6 +55,8 @@ L7 Ex3 closed unfinished (package + per-status counts + index-risk sentence) —
 | 2.7 Composition vs inheritance | Practiced | L2.7: fragile-base-class predict 2/2; asked a sharp follow-up ("why does the child's add get called?") — good sign. OrderService/Notifier composition core correct first try; took 4 rounds to get the FakeNotifier test-double right (declared type, recording-only, getter naming). Did not answer the composition-rewrite question. |
 
 | 2.8 Enums (fields & behavior) | Practiced | L2.8: first-time topic — asked for a from-zero explanation, then Ex1 6/6 and Ex2 correct first try apart from style/catch-scope fixes. Reproduced the exhaustive-switch compile error correctly. |
+
+**Phase 2 closed 2026-09-29** — all 8 topics Practiced; Checkpoint 2 32/40 (Part E skipped by choice).
 
 ### Phases 3–19
 Not Started (see `roadmap.md`).
@@ -150,6 +155,12 @@ Not Started (see `roadmap.md`).
 ## Assessments
 | Date | Assessment | Result | Notes |
 |---|---|---|---|
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | **Closed: 32/40, Part E skipped** → Phase 2 complete by learner's decision | Checkpoint 1 items folded into Project 1 requirements. |
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | **Score 32/40** (A 7, B 7, C 10, D 8) — pass threshold met; **Part E pending** | Q2 revised: equal objects → different hash codes → different buckets (2/2). Official pass awaits Part E (DeliveryStats refactor), which also closes Checkpoint 1. |
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | Part D: Q4 2/2 → **D 7.5/8, total 31.5/40** (pass = 32) | Q4: compile-time typo catch + `valueOf` throws on bad input. Half point short — Q2 one-clause revision (equal objects → different hash codes → different buckets) would reach 32. Part E still pending. |
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | Part D (partial): Q3 2/2 → D 5.5/6, Q4 pending | Q3: parent's `addAll` → `add` runs child's override again; fix = hold `LibraryCounter` as a field. Terse but complete. |
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | Part D (partial): Q1 2/2, Q2 1.5/2, Q3–Q4 pending | Q1: runtime object picks the override, declared type decides what compiles — correct. Q2: named HashSet/HashMap + failed lookup, but not *why* (equal objects → different identity-based hash codes → wrong bucket); offered a one-clause revision for full marks. |
+| 2026-09-29 | Checkpoint 2 (L2.1–L2.8) | Part C: **10/10** (running total 24/40) | v1 (partial, guided): double fee, switch statement, hard-coded 0 fee in toString, PREFIX, live-list `history()`, no `issue()` call, duplicate validation. v2: all fixed except the fee switch stays a *statement* — mentor showed a 4th enum value compiles and silently returns fee 0; checklist item 2's wording ("switch (this), no default") is met, so scored ✅ but fix requested. Used `List`/`ArrayList` (Phase 3) internally, returned `toArray` copy. Pass now needs D 8/8 + Part E. |
 | 2026-09-28 | Checkpoint 2 (L2.1–L2.8) | Part B final: **7/14** (fixes 7/7, categories 0/7 — declined) | Learner declined to label categories ("time taking, want to move fast"). Accepted, not pushed further. Running total 14/40; pass now requires C 10/10 and D 8/8. Error-category naming stays unverified for Phase 2. |
 | 2026-09-28 | Checkpoint 2 (L2.1–L2.8) | Part B v2: fixes **7/7**, categories still pending | `toSting` → `@Override toString()` fixed properly; main still calls `.toString()` explicitly (redundant, noted). Running total 14/40 (A7 + B-fixes 7); max reachable without categories = 32. |
 | 2026-09-28 | Checkpoint 2 (L2.1–L2.8) | Part B: fixes **6/7**, categories pending (0/7 so far) | All 7 bugs found; output matches. `toSting` not fixed — worked around by calling `.toSting()` in main (bug remains: `println(obj)` still prints `ClassName@hash`). `Objects.equals` used for id (good). Learner declined per-bug written explanations as "too time consuming"; told plainly that without categories max total is 31 < 32, offered a 7-word category reply instead. |
@@ -171,8 +182,8 @@ Not Started (see `roadmap.md`).
 - Lesson 2 (packages/classpath): 3/5 — reasoning noticeably better than Lesson 1
 
 ## Next
-1. Checkpoint 2, then Project 1 kickoff (Ledger CLI). Also the `catch (Exception)` habit (2.2, 2.8) — include a narrow-catch item. Checkpoint 2 should include: boundary checks (`<` vs `<=`, 3 slips in Phase 2), exact-literal output prediction, declared vs runtime type, a test-double exercise.
-2. Resolve the `phaseNote1.md` strikethrough question (Current Topic, above) with the learner.
-3. Watch for a 3rd "method defaults to private" occurrence (see Needs Review) — if it recurs, it's a pattern worth naming explicitly rather than fixing silently each time.
-4. Checkpoint 1 still unresolved (see Current Topic ⚠️) — blocked on Part C items 2,3,7,9 + Part D borderline. Deliberately deferred 2026-09-22; circle back before Checkpoint 2 at the latest.
-5. Before Phase 2 / Project 1 wraps: install IntelliJ (0.3) + Maven quick start (0.4) — still not done.
+1. **Phase 0 leftovers, now due:** install IntelliJ (0.3) + Maven quick start (0.4) — Project 1 should be a Maven project.
+2. **Project 1 kickoff: Ledger CLI** (roadmap: Phases 2–5). Requirements must include the folded-in Checkpoint 1 items (see Current Topic) + narrow `catch`, enum switch *expressions*, boundary checks.
+3. **Phase 3 — Collections & Generics** (3.1 onward), in parallel with Project 1. Create `phaseNote3.md` + add it to `notes.md` when 3.1 starts.
+4. Resolve the `phaseNote1.md` strikethrough question with the learner.
+5. Watch for a 3rd "method defaults to private" occurrence (see Needs Review).

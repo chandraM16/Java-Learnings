@@ -76,6 +76,7 @@ Difficulty levels: 1 Beginner, 2 Practice, 3 Applied, 4 Advanced, 5 Production, 
 - 2026-09-16: JDK 25 LTS as the course baseline. Maven first, Gradle as reading knowledge later (Phase 9).
 - 2026-09-16: Early lessons use plain `javac`/`java` in the terminal before IntelliJ/Maven, so the compile → bytecode → JVM pipeline is understood rather than hidden by the IDE.
 - 2026-09-16: PostgreSQL for all database work. Flyway for migrations (Liquibase mentioned for comparison).
+- 2026-09-29: Phase 2 marked complete by the learner's decision after Checkpoint 2 scored 32/40 with the required Part E skipped. Checkpoint 1's open items are folded into Project 1's requirements instead of a separate paper. Pattern (CP1 deferral 2026-09-22, CP2 Part E skip): the learner prefers applying skills in the next real work over closing out old papers — plan follow-ups as requirements in upcoming work, not as standalone make-up tasks.
 
 ## 10. Observed strengths / struggles
 

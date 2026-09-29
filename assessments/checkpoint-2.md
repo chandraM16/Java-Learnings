@@ -325,7 +325,7 @@ Package `com.chandan.payments`, folder `exercies/phase2/checkpoint2/src/com/chan
   PAY-1: Rs 500.00 via CARD (fee Rs 10.00)
   ```
 - `ReceiptSender`: interface with `void issue(Payment payment);`
-- `ConsoleReceiptSender`: prints `Receipt:`  followed by the payment.
+- `ConsoleReceiptSender`: prints `Receipt:` followed by the payment.
 - `FakeReceiptSender`: a test double. It records the last payment it received and how many it has received.
 - `PaymentService`: `Payment pay(String id, long amountPaise, PaymentMethod method)` creates the payment, calls the sender, and remembers it. `Payment[] history()` returns the payments made so far.
 
@@ -334,19 +334,19 @@ Package `com.chandan.payments`, folder `exercies/phase2/checkpoint2/src/com/chan
 ### Requirements checklist: tick every item before submitting
 
 - [ ] 1. Package `com.chandan.payments`, one public type per file, compiled with `javac -d out src/com/chandan/payments/*.java` and run by its fully qualified name
-- [ ] 2. `PaymentMethod` computes the fee in a method that uses `switch (this)` with **no** `default`, and has `static PaymentMethod parse(String raw)` that cleans the input first
-- [ ] 3. `Payment` is a `final` class; all its fields are `private final`; the constructor rejects a blank id and an amount below 100 paise (**100 itself is accepted**)
-- [ ] 4. `Payment` overrides `equals`, `hashCode` and `toString`, all with `@Override`; two payments are equal when their **ids** are equal
-- [ ] 5. `FakeReceiptSender` only records (no printing, no validation) and exposes what it recorded through getters
-- [ ] 6. `PaymentService` receives its `ReceiptSender` through the constructor and keeps it in a `private final` field typed as the **interface**
-- [ ] 7. `history()` returns a **copy** holding only the payments made so far; `main` proves that changing the returned array doesn't change the service
-- [ ] 8. Invalid input is caught with the **narrowest** exception type, and only `getMessage()` is printed
-- [ ] 9. `main`, using `FakeReceiptSender`, shows all of these:
+- [x] 2. `PaymentMethod` computes the fee in a method that uses `switch (this)` with **no** `default`, and has `static PaymentMethod parse(String raw)` that cleans the input first
+- [x] 3. `Payment` is a `final` class; all its fields are `private final`; the constructor rejects a blank id and an amount below 100 paise (**100 itself is accepted**)
+- [x] 4. `Payment` overrides `equals`, `hashCode` and `toString`, all with `@Override`; two payments are equal when their **ids** are equal
+- [x] 5. `FakeReceiptSender` only records (no printing, no validation) and exposes what it recorded through getters
+- [x] 6. `PaymentService` receives its `ReceiptSender` through the constructor and keeps it in a `private final` field typed as the **interface**
+- [x] 7. `history()` returns a **copy** holding only the payments made so far; `main` proves that changing the returned array doesn't change the service
+- [x] 8. Invalid input is caught with the **narrowest** exception type, and only `getMessage()` is printed
+- [x] 9. `main`, using `FakeReceiptSender`, shows all of these:
   - 3 payments, one per method, each printed
   - the fake's count and last payment id, read through its getters
   - `PaymentMethod.parse(" card ")`
   - a 99-paise payment rejected, and a 100-paise payment accepted
-- [ ] 10. The full output is pasted
+- [x] 10. The full output is pasted
 
 ---
 
