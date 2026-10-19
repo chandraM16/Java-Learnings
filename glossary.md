@@ -159,3 +159,27 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`computeIfAbsent(k, fn)`** — key na ho to `fn` se value bana ke daalo, phir value return karo. Grouping ka one-liner: `computeIfAbsent(k, x -> new ArrayList<>()).add(item)`.
 - **`entrySet()`** — map ke key-value jodon ka `Set<Map.Entry<K,V>>`. Iterate karne ka sahi tarika — `keySet()` + `get()` do lookups hai, ye ek.
 - **`LinkedHashMap` / `LinkedHashSet`** — hash-based, par entries ke beech ek extra doubly-linked list rakhti hain, to iteration **insertion order** mein hoti hai. Lookup abhi bhi O(1). **Sorted nahi** — randomness hatana sorting nahi hai.
+
+## Phase 3.4–3.7 — Sorting, generics, wildcards
+
+- **`Comparable<T>`** — class ka apna "natural order", ek method `int compareTo(T other)`. Ek class = ek order. Return ka sirf **sign** matter karta hai (negative → `this` pehle, 0 → barabar, positive → baad mein).
+- **`Comparator<T>`** — order ek **alag object** ke roop mein, class ke bahar. Ek hi class ke kai comparators ho sakte hain; library ki class ke liye bhi likh sakte ho.
+- **Natural ordering** — jo `compareTo` kehta hai. `String` alphabetical, numbers numeric, `enum` declaration order.
+- **Tie-breaker** — `thenComparing(...)` — primary order barabar ho to aage kis field se decide karein. `TreeSet`/`TreeMap` mein zaroori (warna element girta hai) aur jab input order random ho (jaise `HashMap.entrySet()`).
+- **Red-black tree** — self-balancing binary search tree; `TreeMap`/`TreeSet` ka internal structure. Isi se O(log n) aur sorted order aata hai.
+- **Binary heap** — `PriorityQueue` ka internal structure: array mein store kiya tree jiska **ek hi** rule hai — parent apne children se chhota. Poora array sorted **nahi** hota, isliye iteration sorted nahi hoti.
+- **Range query** — "is value se chhoti sabse badi key" type sawaal (`floorKey`, `ceilingKey`, `subMap`, `headSet`). `TreeMap` ki asli wajah; `HashMap` ye de hi nahi sakta.
+- **Fail-fast iterator** — iterator jo collection badalne pe turant `ConcurrentModificationException` phenk de, galat chalne ke bajaye. `modCount` vs `expectedModCount` ke comparison se.
+- **`modCount`** — collection ka counter jo har **structural** change (add/remove) pe badhta hai. `set(i, x)` structural nahi hai.
+- **Structural modification** — size badalne wala change (add/remove). Element replace karna structural nahi.
+- **View vs copy** — `Collections.unmodifiableList(x)` ek **view** hai (original badla to dikhega); `List.copyOf(x)` ek **copy** hai (nahi dikhega). Getters ke liye copy default.
+- **Type parameter** — `<T>` jaisa placeholder jo type rakhta hai, value nahi. Conventions: `T` Type, `E` Element, `K`/`V` Key/Value, `R` Return.
+- **Bounded type parameter** — `<T extends Comparable<T>>` — `T` pe shart. Bound hi wo cheez hai jo `T` pe methods kholti hai; bina bound `T` javac ke liye `Object` hai. Multiple bounds `&` se (`<T extends Number & Comparable<T>>`), class pehle.
+- **Type erasure** — generics **sirf compile time** pe hote hain. javac check karta hai, casts daalta hai, aur type mita deta hai; runtime pe `ArrayList<String>` aur `ArrayList<Integer>` dono `ArrayList` hain. Wajah: 2004 ki backward compatibility.
+- **Raw type** — `List` bina `<>` ke. Legal (purana code) par saari type safety chali jaati hai; javac `unchecked` warning deta hai.
+- **Unchecked warning** — javac ka *"main is call ki type-safety check nahi kar paaya, tum apne risk pe ho."*
+- **Heap pollution** — typed collection mein galat type ka object ghus jaana. Crash injection site pe nahi, us jagah hota hai jahan javac ne apna chhipa cast daala tha — isliye debug karna mushkil.
+- **Invariance** — `String` `Object` ka subtype hai, par `List<String>` `List<Object>` ka subtype **nahi**. Isse hi wildcards ki zaroorat paida hoti hai.
+- **Wildcard** — `?` — "koi type, pata nahi kaunsa". `? extends T` (upper bound), `? super T` (lower bound), ya akela `?`.
+- **Capture (`CAP#1`)** — javac ka invent kiya hua type variable jab wo `?` dekhta hai: bound pata hai, identity nahi. Isliye `? extends` wali list mein write reject hota hai (`null` ke alawa).
+- **PECS** — **P**roducer **E**xtends, **C**onsumer **S**uper. Parameter se padhna hai → `? extends T`; usme daalna hai → `? super T`; dono → plain `List<T>`.

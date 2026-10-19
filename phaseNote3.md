@@ -425,3 +425,85 @@ Java pehle step pe rok deta hai taaki teesra kabhi na aaye. Safe hal: `? extends
 
 ### TS comparison
 TS generics bhi **erased** hain (`Array<string>`/`Array<number>` runtime pe dono `Array`), to basic model wahi hai. Farak: TS structural + optional, `any` se kahin bhi nikal sakte ho; Java nominal + mandatory, aur raw type (`any` ka kareeb) pe javac **warning** deta hai — chup-chaap jaane nahi deta.
+
+## Wildcards, `? extends`/`? super`, PECS (3.7)
+
+### Problem — invariance
+`List<Integer>` `List<Number>` ka subtype **nahi** hai, to `sum(List<Number>)` `List<Integer>` accept nahi karega. Teen copies likhne ki jagah wildcard lagao.
+
+### `? extends T` — PRODUCER (nal 🚰)
+```java
+List<? extends Number> prod = ints;
+Number n = prod.get(0);    // ✅ jo bhi ho, Number to hai
+prod.add(7);               // ❌ error: int cannot be converted to CAP#1
+prod.add((Integer) 7);     // ❌ wahi error — cast se bhi nahi
+prod.add(null);            // ✅ sirf null
+```
+- Padho: *"kisi **ek** aise type ki list jo `Number` ya uska subclass hai — par pata nahi kaunsa."*
+- **`CAP#1` kya hai:** javac `? extends Number` dekh ke ek **capture** type variable banata hai jiske baare mein use sirf itna pata hai "ye `Number` extend karta hai"; **identity pata nahi**. To `add(7)` pe sochta hai *"CAP#1 `Integer` ho sakta hai, `Double`, ya `BigDecimal` — nahi pata, to reject."* `null` chalta hai kyunki wo har reference type mein fit hota hai.
+
+### `? super T` — CONSUMER (dustbin 🗑️)
+```java
+List<? super Integer> cons = new ArrayList<Number>();
+cons.add(7);               // ✅ Integer, Number/Object dono mein fit hota hai
+Object o = cons.get(0);    // ✅ sirf Object
+Integer i = cons.get(0);   // ❌ error: CAP#1 cannot be converted to Integer
+```
+- Padho: *"`Integer` ya uska superclass — `Integer`, `Number`, ya `Object`."*
+- Likhna safe hai kyunki `Integer` teeno mein fit hota hai. Padhna restricted hai kyunki guaranteed common type sirf `Object` hai.
+
+### PECS
+> **P**roducer → **E**xtends, **C**onsumer → **S**uper
+
+Sawaal: *"ye parameter mujhe data **de** raha hai ya **le** raha hai?"*
+
+| Parameter ka kaam | Likho |
+|---|---|
+| isse **padhunga** (produce karta hai) | `? extends T` |
+| isme **daalunga** (consume karta hai) | `? super T` |
+| **dono** | koi wildcard nahi — plain `List<T>` |
+
+```java
+public static <T> void copyAll(List<? super T> dest, List<? extends T> src) {
+    for (T item : src) dest.add(item);     // src produce, dest consume
+}
+```
+Dono ulte likh do to **kuch bhi** compile nahi hoga.
+
+**JDK signatures — ab padhi ja sakti hain:**
+```java
+boolean addAll(Collection<? extends E> c)     // c se elements NIKALTE hain → producer → extends
+void sort(Comparator<? super E> c)            // c ko elements JAATE hain   → consumer → super
+static <T> void copy(List<? super T> dest, List<? extends T> src)
+static <T> T max(Collection<? extends T> coll, Comparator<? super T> comp)
+```
+`sort(Comparator<? super E>)` ka concrete faayda: `List<Integer>` ko `Comparator<Number>` se sort kar sakte ho. `Comparator<E>` hota to sirf `Comparator<Integer>` chalta.
+
+### `?` akela (unbounded)
+```java
+List<?> any = someList;    // "kisi bhi cheez ki list"
+any.size();                // ✅ element type ki parwah nahi
+any.add("x");              // ❌ CAP#1
+any.add(null);             // ✅
+```
+- Kab: jab element ka type **chahiye hi nahi** — `size()`, `isEmpty()`, `clear()`, printing.
+- **`List<?>` ≠ `List<Object>`**: `List<?> a = new ArrayList<String>();` ✅ par `List<Object> b = new ArrayList<String>();` ❌ (invariance). `List<?>` "koi bhi list", `List<Object>` "specifically Objects ki list".
+
+### Wildcard vs type parameter
+```java
+public static double sum(List<? extends Number> nums)              // wildcard — type ka naam nahi chahiye
+public static <T extends Number> T first(List<T> nums)             // <T> — naam chahiye (return mein use hua)
+```
+- **Rule:** type ko **ek se zyada jagah** reference karna hai (parameter + return, ya do parameters ko tie karna) → type parameter `<T>`. Sirf ek parameter mein ek baar → wildcard `?`.
+- **Return type mein wildcard mat likho** — `public List<? extends Number> getAll()` caller ko dard deta hai (wo usme kuch daal nahi sakta, aur wildcard uske code mein phailta jaata hai). `List<Number>` likho.
+- Wildcards **public API** par matter karte hain; private helper mein `List<Integer>` theek hai.
+
+### Correction (2026-10-19)
+`HashMap` ke "order nahi hota" ka example chunte waqt dhyaan rakho: chhote key-sets pe wo **sanyog se** insertion order jaisa dikh sakta hai. Verified:
+```
+insertion [banana, apple, cherry]      -> HashMap [banana, apple, cherry]    <- same, sanyog
+insertion [zebra, apple, mango]        -> HashMap [zebra, apple, mango]      <- same, sanyog
+insertion [PAID, SHIPPED, CANCELLED]   -> HashMap [CANCELLED, PAID, SHIPPED] <- farak dikhta hai
+insertion [alpha, beta, gamma, delta]  -> HashMap [alpha, delta, beta, gamma]
+```
+Sabak dono taraf ka hai: order ki **koi guarantee nahi** — na insertion, aur na "definitely different". Isliye us order pe depend karna bug hai, aur usse *test* karna bhi bharosemand nahi.

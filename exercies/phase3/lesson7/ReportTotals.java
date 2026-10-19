@@ -14,7 +14,7 @@ import java.util.List;
 public class ReportTotals {
 
     /** Kisi bhi number list ka total. */
-    public static double sum(List<Number> numbers) {
+    public static double sum(List<? extends Number> numbers) {
         double total = 0;
         for (Number n : numbers) {
             total += n.doubleValue();
@@ -23,14 +23,14 @@ public class ReportTotals {
     }
 
     /** src ke saare items dest mein daal do. */
-    public static <T> void copyAll(List<? extends T> dest, List<? extends T> src) {
+    public static <T> void copyAll(List<? super T> dest, List<? extends T> src) {
         for (T item : src) {
             dest.add(item);
         }
     }
 
     /** Agar list khaali ho to ek 0 daal do. */
-    public static void addZeroIfEmpty(List<? extends Number> target) {
+    public static void addZeroIfEmpty(List<? super Integer> target) {
         if (target.isEmpty()) {
             target.add(0);
         }
