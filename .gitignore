@@ -2,5 +2,12 @@
 out/
 *.class
 
+# Maven build output
+target/
+
+# IntelliJ project files (machine-specific)
+.idea/
+*.iml
+
 # macOS
 .DS_Store

@@ -82,3 +82,44 @@ public class Hello {
 - Homebrew: `brew install openjdk@25` (or a distribution such as Temurin via `brew install --cask temurin@25`).
 - Verify: `java -version`, `javac -version`.
 - `JAVA_HOME` points tools (Maven, IDEs) at a specific JDK. On macOS: `/usr/libexec/java_home -v 25`.
+
+## Installing Maven & IntelliJ (2026-10-10)
+- `brew install maven` → verify with `mvn -v`; check its `Java version:` line says 25 (Maven uses `JAVA_HOME`, the terminal's `java` uses `PATH` — they can differ).
+- `brew install --cask intellij-idea` — the old `intellij-idea-ce` cask is discontinued (one unified IntelliJ app now; choose the free tier, no subscription needed for plain Java/Maven).
+
+## IntelliJ basics
+- Open a Maven project: **Open** → the folder containing `pom.xml` → Trust Project. IntelliJ reads the pom itself.
+- **"Project JDK is not defined"**: IntelliJ keeps its *own* JDK list (not `PATH`, not `JAVA_HOME`). Fix: Setup SDK link, or File → Project Structure (`⌘ ;`) → Project → SDK → Add SDK → JDK → `/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home`.
+- Three tools, three JDK settings: terminal `java` = `PATH`, Maven = `JAVA_HOME`, IntelliJ = Project SDK. When something works in one place but not another, check all three.
+- After editing `pom.xml`: Maven panel → 🔄 Reload All Maven Projects.
+- Run: green ▶ next to `main`. Don't commit `.idea/`, `*.iml`, `target/` (machine-specific / generated).
+
+## Maven quick start
+| Node / npm | Java / Maven |
+|---|---|
+| `package.json` | `pom.xml` |
+| npm registry | Maven Central |
+| `node_modules/` per project | `~/.m2/repository/` — one shared local cache |
+| `npm run build` | `mvn package` (compile + test + jar) |
+| `npm test` | `mvn test` |
+| `dist/` | `target/` |
+
+Minimal `pom.xml`:
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" ...>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.chandan</groupId>           <!-- who: reversed domain -->
+    <artifactId>hello-maven</artifactId>     <!-- what: project name -->
+    <version>1.0-SNAPSHOT</version>           <!-- SNAPSHOT = in development, not a release -->
+    <properties>
+        <maven.compiler.release>25</maven.compiler.release>   <!-- = javac --release 25 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+</project>
+```
+- `groupId:artifactId:version` = **coordinates**, the unique address of a project/library.
+- **Fixed layout** (convention over configuration): code in `src/main/java/<package path>/`, tests in `src/test/java/`. Maven looks *only* there.
+- Output: `target/classes/` (the old `out/`) + `target/<artifactId>-<version>.jar`. Run: `java -cp target/hello-maven-1.0-SNAPSHOT.jar com.chandan.hello.App`.
+- `mvn clean package` — `clean` deletes `target/` first so stale output can't survive.
+- First build downloads plugins ("Downloading from central…") into `~/.m2`; later builds reuse the cache.
+- **Trap seen 2026-10-10**: file at `src/main/com/...` (missing `java/`) → Maven prints `No sources to compile` + `[WARNING] JAR will be empty`, yet still `BUILD SUCCESS` → empty jar → `ClassNotFoundException` at run time. Always read the WARNING lines; `BUILD SUCCESS` only means nothing failed.

@@ -2,111 +2,160 @@
 
 Alphabetical. One or two lines each. Added as terms are introduced.
 
-- **`@Override`** — Annotation on a method that tells the compiler "this must match a method on the superclass." If the signature doesn't actually match, you get a compile error instead of silently creating an unrelated method. Always use it when overriding `equals`/`hashCode`/`toString`/etc.
+- `@Override` — Annotation on a method that tells the compiler **"this must match a method on the superclass."** If the signature doesn't actually match, you get a compile error instead of silently creating an unrelated method. Always use it when overriding `equals`/`hashCode`/`toString`/etc.
 - **Abstract class** — A class marked `abstract`: can't be instantiated with `new`, can hold real state and constructors, may declare abstract methods for subclasses to fill in.
 - **Abstract method** — A method signature with no body (`public abstract long calculateBonus();`). Forces every concrete subclass/implementer to provide one.
 - **Access modifier** — `private`/*(package-private)*/`protected`/`public`: controls what code can see a field, method, or class. Enforced by the JVM at runtime, unlike TS's compile-time-only `private`.
-- **`ArithmeticException`** — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
+- `ArithmeticException` — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **Array** — Fixed-size, indexed container of one element type. An object (reference type).
-- **`ArrayIndexOutOfBoundsException`** — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
-- **`Arrays`** — `java.util` utility class of static helpers for arrays (`toString`, `sort`, `equals`, `copyOf`…).
+- `ArrayIndexOutOfBoundsException` — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
+- **`ArrayList`** — The standard growable `List` implementation, backed by an array that is replaced with a bigger one when full. Declare as `List<T> x = new ArrayList<>();`.
+- `Arrays` — `java.util` utility class of static helpers for arrays (`toString`, `sort`, `equals`, `copyOf`…).
 - **Arrow switch** — `case X -> ...` form (Java 14+): no fall-through, usable as an expression.
-- **`BigDecimal`** — Standard-library class for exact decimal arithmetic; used for money. (Covered later.)
+- **Autoboxing / unboxing** — Automatic conversion between a primitive and its wrapper (`int` ↔ `Integer`), e.g. `list.add(5)` boxes, `int x = list.get(0)` unboxes. Unboxing `null` throws NPE.
+- `BigDecimal` — Standard-library class for exact decimal arithmetic; used for money. (Covered later.)
 - **Bytecode** — The instruction set of the JVM, stored in `.class` files. Produced by `javac`, platform-independent.
 - **Bytecode verifier** — JVM step that checks loaded bytecode is well-formed and type-safe before executing it.
 - **Casting** — Explicitly converting a value to another type: `(int) 3.99`. Narrowing casts can lose data.
 - **Class** — A blueprint: declares what fields and methods every object of that type has. Compile-time construct, exists once.
-- **`ClassCastException`** — Runtime exception when casting an object to a type it isn't. Proof that Java checks types at runtime too.
-- **Class file (`.class`)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
-- **`ClassNotFoundException`** — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
-- **Classpath (`-cp`)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- `ClassCastException` — Runtime exception when casting an object to a type it isn't. Proof that Java checks types at runtime too.
+- **Class file (**`.class`**)** — Compiled output of one class: bytecode + metadata (fields, methods, constant pool).
+- `ClassNotFoundException` — Thrown when the JVM can't find a class by its name on the classpath (e.g. wrong FQN or wrong `-cp`).
+- **Classpath (**`-cp`**)** — List of directories/JARs where the JVM (and javac) look for classes. Like Node's module resolution paths, but explicit.
+- **Collections framework** — `java.util`'s family of container interfaces (`Collection` → `List`/`Set`/`Queue`, plus `Map`) and their implementations (`ArrayList`, `HashMap`, …).
 - **Composition** — "Has-a": a class holds another object in a field and forwards work to it, instead of inheriting from it. Preferred over inheritance by default.
 - **Constructor** — Special block that runs when `new` creates an object; initializes its fields. Same name as the class, no return type.
 - **Constructor chaining** — One constructor calling another overload on the same class via `this(...)` as its first statement, to avoid duplicating init logic.
 - **Constructor injection** — Passing a class's dependencies in through its constructor (`new OrderService(new EmailNotifier())`) instead of creating them inside. What Spring automates.
 - **Constructor overloading** — Multiple constructors with different parameter lists; the compiler picks one by the arguments at the call site.
+- **Convention over configuration** — A tool assumes standard defaults (e.g. Maven's `src/main/java` layout) so you only configure what differs. Every Maven project looks the same.
+- **Coordinates (Maven)** — `groupId:artifactId:version`, the unique address of a project or library (e.g. `com.chandan:hello-maven:1.0-SNAPSHOT`).
 - **Default method** — An interface method with a body (`default String describePay() { ... }`). Implementers inherit it for free and may override it. Java 8+.
 - **Default value** — Value given to array elements and fields when not set explicitly: `0`, `false`, `null`.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Delegation** — A method that does its job by calling the same kind of method on an object it holds (`notifier.send(...)`). The mechanism of composition.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
+- **Diamond (`<>`)** — In `new ArrayList<>()`, lets the compiler infer the generic type from the left side instead of repeating it.
 - **Dynamic dispatch** — The JVM decides *which* overridden method body actually runs by looking at an object's real runtime class, not its declared/reference type. What you're *allowed to call* is still decided by the declared type at compile time — two separate rules.
 - **Entry point** — The method the launcher calls first: `main`.
 - **Enum** — A type with a fixed set of values; each value is a single `public static final` object of that type, created once. Can have fields, a (private) constructor and methods. Compare with `==`.
-- **`equals()`** — Method every object has (inherited from `Object`). Default = identity (`this == o`). Override it to compare by value instead; must be overridden together with `hashCode()`.
+- `equals()` — Method every object has (inherited from `Object`). Default = identity (`this == o`). Override it to compare by value instead; must be overridden together with `hashCode()`.
 - **Exhaustive switch** — A switch expression that covers every possible value (e.g. all enum constants) without `default`. Adding a new value makes it a compile error: "the switch expression does not cover all possible input values".
-- **`extends`** — Declares one class (the subclass) as building on another (the superclass), inheriting its fields/methods, and able to override or add to them.
+- `extends` — Declares one class (the subclass) as building on another (the superclass), inheriting its fields/methods, and able to override or add to them.
 - **Fall-through** — In a classic `switch`, execution continuing into the next `case` when `break` is missing.
 - **Field** — A variable declared in a class, holding part of an object's state. Each object gets its own copy of instance fields.
 - **Flexible Constructor Bodies** — JDK 25 feature: statements are allowed before `super(...)`/`this(...)` in a constructor, as long as they don't touch `this`/instance state — e.g. validating constructor arguments before delegating. Relaxes the older "must be the literal first statement" rule.
 - **Fragile base class** — A subclass breaking because of how its parent calls its own methods internally: the parent's `add(n)` is `this.add(n)`, so it can run the subclass's override unexpectedly.
 - **Fully qualified name (FQN)** — Package + class name, e.g. `java.time.LocalDate`. The class's real identity.
 - **GC (Garbage Collector)** — The JVM component that automatically reclaims memory from unreachable objects.
-- **`getClass()`** — Method every object has that returns its exact runtime class (e.g. `Money.class`). Used in `equals()` to make sure you're not comparing two unrelated types before casting.
+- **Generics** — Type parameters on classes/methods (`List<String>`) so a container is type-checked at compile time. Like TS `Array<string>`. Only object types allowed (`List<Integer>`, not `List<int>`). Deep dive 3.6.
+- `getClass()` — Method every object has that returns its exact runtime class (e.g. `Money.class`). Used in `equals()` to make sure you're not comparing two unrelated types before casting.
 - **GraalVM Native Image** — Tool that compiles Java ahead-of-time into a native executable: fast startup, low memory, reduced runtime dynamism.
 - **Guard clause** — An early `return`/`throw` for invalid input, so the main logic stays unnested.
-- **`hashCode()`** — Method every object has that returns an `int` "bucket number," used by `HashMap`/`HashSet` (Phase 3) for fast lookup. Must return the same value for any two objects that are `.equals()` — break that and hash-based lookups silently fail to find things that are actually there.
+- `hashCode()` — Method every object has that returns an `int` "bucket number," used by `HashMap`/`HashSet` (Phase 3) for fast lookup. Must return the same value for any two objects that are `.equals()` — break that and hash-based lookups silently fail to find things that are actually there.
 - **Heap** — Memory area where objects live. Managed by the garbage collector.
 - **Identifier** — A name you give to a package, class, method, or variable.
-- **`IllegalArgumentException`** — Unchecked exception thrown to reject a bad argument to a method/constructor (e.g. a negative amount). You `throw` it yourself; formal exception handling is Phase 5.
-- **`IllegalStateException`** — Unchecked exception thrown when a call is valid in general but not given the object's *current state* (e.g. redeeming more points than you have).
+- `IllegalArgumentException` — Unchecked exception thrown to reject a bad argument to a method/constructor (e.g. a negative amount). You `throw` it yourself; formal exception handling is Phase 5.
+- `IllegalStateException` — Unchecked exception thrown when a call is valid in general but not given the object's *current state* (e.g. redeeming more points than you have).
 - **Immutable** — An object whose state can't change after creation (e.g. `String`). "Changes" produce new objects.
-- **`implements`** — Declares that a class fulfils an interface's contract. A class can implement many interfaces (`implements A, B`) but `extends` only one class.
+- `implements` — Declares that a class fulfils an interface's contract. A class can implement many interfaces (`implements A, B`) but `extends` only one class.
 - **Import** — Compile-time naming shortcut so you can write `LocalDate` instead of `java.time.LocalDate`. Loads/executes nothing.
 - **Instance** — A specific object created from a class via `new`, with its own field values, living on the heap. "Object" and "instance" are used interchangeably.
+- **Integer cache** — Java reuses `Integer` objects for −128..127, so `==` on boxed values "works" only in that range (`127 == 127` true, `128 == 128` false). Always compare wrappers with `.equals()`.
 - **Interface** — A contract: method signatures implementers must provide, plus optional `default` and `static` methods. No constructors, no instance state.
 - **Invariant** — A fact about an object that must always be true (`balance >= 0`, `memberId` never blank). Established by the constructor, preserved by every method that mutates state — the whole point of encapsulation.
 - **Jagged array** — A 2D array whose rows have different lengths.
 - **JAR (Java ARchive)** — A zip file of `.class` files + resources + manifest. The unit of distribution (like a published npm package, but compiled).
 - **Javadoc** — `/** ... */` doc comments on classes/methods; rendered by IDEs and the `javadoc` tool.
-- **`JAVA_HOME`** — Environment variable pointing to the JDK install directory; used by Maven, Gradle, IDEs.
+- `JAVA_HOME` — Environment variable pointing to the JDK install directory; used by Maven, Gradle, IDEs.
 - **JDK (Java Development Kit)** — Everything needed to develop Java: JVM + standard library + tools (`javac`, `jshell`, `jar`, `javap`…).
 - **JIT (Just-In-Time) compiler** — Part of the JVM that compiles frequently executed ("hot") bytecode into native machine code at runtime.
-- **`jlink`** — JDK tool that builds a minimal custom Java runtime containing only the modules your app needs.
+- `jlink` — JDK tool that builds a minimal custom Java runtime containing only the modules your app needs.
 - **JRE (Java Runtime Environment)** — JVM + standard library, enough to run programs. Oracle no longer ships one separately, but vendors (e.g. Temurin) still publish JRE builds.
 - **JShell** — Java's REPL (since Java 9). Like typing `node` with no arguments.
 - **JVM (Java Virtual Machine)** — The runtime that loads, verifies, and executes bytecode, and manages memory.
+- **`List`** — Ordered collection interface allowing duplicates and index access (`get`, `set`, `add(i, x)`). Main implementations: `ArrayList`, `LinkedList`. `List.of(...)` creates an unmodifiable one.
 - **Literal** — A value written directly in code: `42`, `42L`, `3.14`, `'A'`, `true`, `"text"`.
+- **Local repository (`~/.m2/repository`)** — Maven's shared cache of downloaded libraries and plugins, used by every project on the machine. Like a global `node_modules`.
 - **LTS (Long-Term Support)** — A Java release supported for years by vendors. Current: 25 (previous: 21, 17, 11, 8).
 - **Magic number / magic index** — An unexplained literal whose meaning is implicit (`counts[2]`). Replace with a named constant.
+- **Maven** — Java build tool: downloads dependencies, compiles, tests and packages a project, driven by `pom.xml`. `mvn package`, `mvn test`, `mvn clean`.
+- **Maven Central** — The default public repository Maven downloads libraries from. Java's npm registry.
 - **Method overloading** — Several methods with the same name but different parameter lists; chosen at compile time.
 - **Method signature** — Method name + parameter types (not the return type). Must be unique within a class.
 - **Narrowing conversion** — Converting to a smaller/less precise type (double → int, long → int). Requires an explicit cast.
-- **`NoClassDefFoundError`** — JVM error when a class definition can't be loaded, e.g. a `.class` file found but its internal name doesn't match (`wrong name`), or a class present at compile time is missing at run time.
-- **`null`** — A reference that points to no object. Only reference types can be null.
-- **`NullPointerException` (NPE)** — Run-time exception when you call a method or access a field on `null`.
-- **`NumberFormatException`** — Run-time exception when parsing text that isn't a valid number (`Integer.parseInt("42abc")`).
+- `NoClassDefFoundError` — JVM error when a class definition can't be loaded, e.g. a `.class` file found but its internal name doesn't match (`wrong name`), or a class present at compile time is missing at run time.
+- `null` — A reference that points to no object. Only reference types can be null.
+- `NullPointerException` **(NPE)** — Run-time exception when you call a method or access a field on `null`.
+- `NumberFormatException` — Run-time exception when parsing text that isn't a valid number (`Integer.parseInt("42abc")`).
 - **Object** — A runtime instance of a class: allocated on the heap, holds its own field values. See also Instance.
 - **Object lifecycle** — Created by `new` (fields set to defaults, then constructor runs) → referenced while reachable → eligible for GC once no reference remains. No manual `delete`/`free`.
-- **`Objects`** — `java.util` utility class with null-safe helpers: `Objects.equals(a, b)` (never throws on `null`), `Objects.hash(a, b, ...)` (combines several fields into one `hashCode()`).
+- `Objects` — `java.util` utility class with null-safe helpers: `Objects.equals(a, b)` (never throws on `null`), `Objects.hash(a, b, ...)` (combines several fields into one `hashCode()`).
 - **OpenJDK** — The open-source reference implementation of Java. Most distributions (Temurin, Corretto, Zulu, Oracle) are builds of it.
-- **`ordinal()`** — An enum value's position in its declaration (from 0). Changes if values are reordered/inserted — never persist it; store `name()` instead.
+- `ordinal()` — An enum value's position in its declaration (from 0). Changes if values are reordered/inserted — never persist it; store `name()` instead.
 - **Overflow** — When a result exceeds a type's range and wraps around silently (`Integer.MAX_VALUE + 1` → negative).
 - **Package** — Namespace grouping related classes; mirrors the directory structure (`com/acme/orders`).
 - **Package-private** — The default visibility when no modifier is written: accessible only within the same package.
 - **Pass-by-value** — Arguments are copied into parameters. For references, the copied value is the address, so the object is shared but reassignment is local.
 - **Pattern matching** — Testing a value's type and binding it to a variable in one step (`o instanceof String s`, `case Integer i ->`).
 - **Polymorphism** — Code written against a general (superclass/interface) type that, at run time, runs whichever subclass's specific behavior the real object provides. Enabled by dynamic dispatch.
+- **`pom.xml`** — A Maven project's configuration file: coordinates, Java version, dependencies, plugins. Java's `package.json`.
 - **Primitive type** — One of Java's 8 built-in value types (`byte short int long float double char boolean`). Holds the value directly, not a reference to an object.
 - **Reference** — The value held by a reference-type variable: the address of an object on the heap.
 - **Reference type** — Any non-primitive type (classes, interfaces, arrays, `String`). A variable of this type holds a reference to an object.
 - **Short-circuit evaluation** — `&&`/`||` skip the right operand when the result is already known.
+- **SNAPSHOT** — Maven version suffix (`1.0-SNAPSHOT`) meaning "in development, not a fixed release".
 - **Source-file mode** — `java File.java`: compiles in memory and runs without writing `.class` files.
 - **Stack (call stack)** — Per-thread memory holding one frame per active method call (parameters, locals, return address).
 - **Stack frame** — The block of stack memory for one method call; created on call, discarded on return.
-- **`StackOverflowError`** — Thrown when the call stack runs out of space, typically from infinite recursion.
+- `StackOverflowError` — Thrown when the call stack runs out of space, typically from infinite recursion.
 - **Stack trace** — List of active frames printed with an exception; top = where it happened, below = the callers.
+- **Standard directory layout** — Maven's fixed folders: `src/main/java` (code), `src/main/resources`, `src/test/java` (tests), output in `target/`.
 - **Standard library (JDK class library)** — Built-in packages like `java.lang`, `java.util`, `java.time`, `java.net.http`.
-- **`static`** — Belongs to the class itself rather than to an instance; usable without creating an object. (Deep dive: Phase 2.)
-- **`StringBuilder`** — Mutable, growable string buffer for efficient building in loops.
+- `static` — Belongs to the class itself rather than to an instance; usable without creating an object. (Deep dive: Phase 2.)
+- `StringBuilder` — Mutable, growable string buffer for efficient building in loops.
 - **String pool (interning)** — JVM cache of string literals so identical literals share one object. Why `==` sometimes "works" on strings.
 - **Subclass / Superclass** — The subclass `extends` the superclass, inheriting (and able to override) its members. "Child"/"parent" are informal synonyms.
-- **`super`** — Refers to the superclass. `super(...)` (constructor, must lead — see Flexible Constructor Bodies exception) calls the superclass's constructor; `super.method()` calls the superclass's version of a method from inside an override.
+- `super` — Refers to the superclass. `super(...)` (constructor, must lead — see Flexible Constructor Bodies exception) calls the superclass's constructor; `super.method()` calls the superclass's version of a method from inside an override.
 - **Switch expression** — A `switch` that produces a value (must be exhaustive; blocks return a value with `yield`).
 - **Test double (fake)** — A stand-in implementation of an interface used in tests, e.g. `FakeNotifier` that records what it was sent instead of sending it. Like a Jest mock.
 - **Text block** — Multi-line string literal delimited by `"""` (Java 15+).
-- **`this`** — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
-- **`toString()`** — Method every object has, called automatically by `println`/string concatenation. Default prints `ClassName@hexHashCode` (not useful) — override it for a readable representation.
-- **Type inference (`var`)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
+- `this` — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
+- `toString()` — Method every object has, called automatically by `println`/string concatenation. Default prints `ClassName@hexHashCode` (not useful) — override it for a readable representation.
+- **Type inference (**`var`**)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
+- **`UnsupportedOperationException`** — Run-time exception thrown when modifying an unmodifiable collection (`List.of(...).add(x)`). Compiles fine; message is `null`.
 - **Varargs** — `Type... name` parameter accepting zero or more arguments, received as an array.
 - **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.
+- **Wrapper class** — Object version of a primitive: `Integer`, `Long`, `Double`, `Boolean`, `Character`, … Needed wherever only objects are allowed (generics, `null`).
+
+## Phase 3.2 — ArrayList vs LinkedList
+
+- **Capacity** — kitni jagah `ArrayList` ke andar wale array mein hai. `size()` se alag: size = kitne elements actually hain. Capacity dikhti nahi hai.
+- **Backing array** — `ArrayList` ke andar chhipa `Object[] elementData`. List "grow" nahi hoti; naya bada array ban ke purana copy hota hai.
+- **Amortized O(1)** — har individual call constant nahi, par n calls ka *total* kaam O(n) hai, to average per call constant. `ArrayList.add` isi liye amortized O(1) hai (beech wali resizes O(n) hain).
+- **Doubly-linked list** — nodes ki chain jahan har node agle *aur* pichle node ka reference rakhta hai. `LinkedList` ki internal structure.
+- **Node** — `LinkedList` ka ek element-wrapper object: value + `prev` + `next`. Isi overhead ki wajah se `LinkedList` ~40 bytes/element leti hai.
+- **Cache locality** — CPU memory se ek byte nahi, pura ~64-byte cache line uthata hai. Contiguous data (array) ke liye ek fetch mein agle kai elements free aa jate hain; bikhre hue nodes (linked list) pe har hop ek naya cache miss (~100 cycles) ho sakta hai. Yahi wajah hai ki Big-O table hardware pe ulta pad sakta hai.
+- **Pointer chasing** — linked structure mein `node.next` follow karte jaana. Theory mein O(1) per hop, practice mein cache-miss-heavy.
+- **`System.arraycopy`** — native method jo memory block ek saath move karta hai (SIMD). Isi liye `ArrayList` ka "O(n) shift" absolute terms mein bahut sasta hai (~14 billion element-moves/sec measured).
+- **Dead-code elimination** — JIT optimization: jis loop ka result kahin use nahi hota, use hata diya jata hai. Benchmarks ko jhoota 0 ms dikhata hai; result ko ek field mein jama kar ke roka jata hai.
+- **JIT warm-up** — JVM pehle bytecode interpret karta hai, kuch hazaar calls ke baad method ko machine code mein compile karta hai. Isliye benchmark mein pehla test bina warm-up round ke apne aap slow dikhta hai.
+- **JMH (Java Microbenchmark Harness)** — official benchmarking library jo warm-up, dead-code elimination aur statistics handle karti hai. Chhote (10%-type) differences naapne ke liye hand-rolled timing ki jagah yahi use hoti hai.
+
+## Phase 3.3 — HashMap / HashSet
+
+- **Hashing** — object ko ek `int` mein badalna taaki usse array index ki tarah use kiya ja sake. Isi se lookup O(n) se O(1) ban jaata hai.
+- **Bucket** — `HashMap` ke internal `table` array ka ek slot. Index `hash & (table.length - 1)` se nikalta hai. Analogy: library ki shelf.
+- **Collision** — do different keys ka same bucket mein aana. Buckets limited hain, keys unlimited — to ye inevitable hai.
+- **Chaining** — collision handle karne ka tarika: ek bucket mein nodes ki linked list. Java 8+ mein 8 se zyada nodes (table ≥64) pe wo chain red-black tree ban jaati hai → O(log n).
+- **Treeification** — chain ka tree mein badal jaana. Khatam hone wala worst case O(n) ko O(log n) bana deta hai; kharab `hashCode` ke against safety net hai, excuse nahi.
+- **Load factor** — kitna bharne pe grow karna hai, default `0.75`. `threshold = capacity × loadFactor`.
+- **Rehash** — resize ke waqt saari entries ka bucket index dobara calculate karna (capacity badal gayi, to `& (n-1)` ka answer badal gaya). O(n), amortized.
+- **equals/hashCode contract** — `equals` se equal objects ka `hashCode` **bhi** equal hona chahiye. Tootne pe object hash-based collection mein daal diya jaata hai par milta nahi — bina kisi error ke.
+- **Mutable key trap** — key daalne ke baad uska hash-wala field badal dena. Entry purane bucket mein rehti hai, lookup naye bucket mein jaata hai → entry pahunch se bahar. Isliye map keys immutable rakhte hain.
+- **Identity hash code** — `Object` ka default `hashCode()`, jo object ki identity (address jaisa) pe based hai. `hashCode()` override na karne pe yahi milta hai, isliye do equal objects ke hash alag aate hain.
+- **`getOrDefault(k, d)`** — key na hone pe `null` ki jagah `d` deta hai. Counting mein unboxing NPE se bachata hai.
+- **`merge(k, v, fn)`** — key nahi hai to `v` daalo, hai to purani value aur `v` pe `fn` lagao. Counting ka one-liner: `merge(k, 1, Integer::sum)`.
+- **`computeIfAbsent(k, fn)`** — key na ho to `fn` se value bana ke daalo, phir value return karo. Grouping ka one-liner: `computeIfAbsent(k, x -> new ArrayList<>()).add(item)`.
+- **`entrySet()`** — map ke key-value jodon ka `Set<Map.Entry<K,V>>`. Iterate karne ka sahi tarika — `keySet()` + `get()` do lookups hai, ye ek.
+- **`LinkedHashMap` / `LinkedHashSet`** — hash-based, par entries ke beech ek extra doubly-linked list rakhti hain, to iteration **insertion order** mein hoti hai. Lookup abhi bhi O(1). **Sorted nahi** — randomness hatana sorting nahi hai.
