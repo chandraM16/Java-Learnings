@@ -1,10 +1,12 @@
 # Learning Progress
 
-_Last updated: 2026-10-19 (Session 18)_
+_Last updated: 2026-11-01 (Session 19)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
 ## Current Phase
+**Phase 4 — Modern Java** started 2026-10-31 (Session 19), **Checkpoint 3 still open — learner will do it in parallel with Phase 4** (their decision; consistent with the §9 pattern). **4.1 done (Practiced, 2026-11-01). Next: 4.2 Method references.** Notes in `phaseNote4.md`.
+
 **Phase 3 — Collections & Generics** (started 2026-10-10). **All 7 lessons of Phase 3 are complete (3.1–3.7).** **Checkpoint 3 issued 2026-10-19** (`assessments/checkpoint-3.md`, 40 points: A predict 10, B javac-reject 6, C debug 12, D collection choice 6, E explain 6). Deliberately has **no build part** — per the 2026-10-15 format decision, build work lives in Project 1, which carries 8 folded requirements. Pass bar: 32/40, ≥8/12 on Part C, Part E done. Answer keys for A and B were computed and verified by running them; not stored in the repo per Claude.md §4.
 After CP3: **Project 1 (Ledger CLI)**.
 **Format change (2026-10-15, learner's request):** 3.5–3.7 are predict + debug only; the per-lesson build exercise is dropped and folded into Project 1 (see Claude.md §9).
@@ -75,7 +77,12 @@ History: Checkpoint 1 was deferred 2026-09-22 (provisional ~34/42, blocked on Pa
 | 3.6 Generics: classes, methods, bounded types, type erasure | Practiced | L3.6: Ex1 — Part A got B but **missed F** (invariance); Part B got G and H (compile errors) but gave one answer for all three, missing I (it runs, prints `java.util.ArrayList`); Part C1 ✅ (named the missing `Comparable` bound), C2 "nahi pta". **Pattern: the compile-time-check half of generics is solid, the erasure half is not** — C2 and B-I are the same fact and both were missed. Ex2 `TypedCache`: predicted 5/6 (idk on the silent raw-`List` pollution, which is the subtle one), then generified all three correctly in one pass — `TypedCache<K,V>`, `<W extends Comparable<W>>` with the bound, `List<K>` — taking warnings from 4 to **zero**. |
 | 3.7 Wildcards, `? extends`/`? super`, PECS | Practiced | L3.7: Ex1 Part A **3/3** (C, F, I — no false positives) on the hardest read/write asymmetry in the phase; B1 ✅, B3 ✅. B2 (`Comparator<? super E>`) skipped then answered correctly in 3 stepping-stone steps — derived "sort gives the comparator elements → consumer → super" themselves. Ex2 `ReportTotals` (a file that did not compile, 4 errors, `main` off-limits): all three signatures right — `sum(List<? extends Number>)`, `copyAll(List<? super T>, List<? extends T>)` with **both** wildcards correct, `addZeroIfEmpty(List<? super Integer>)`. Clean compile, exact target output. |
 
-### Phases 4–19
+### Phase 4 — Modern Java
+| Topic | Status | Evidence |
+|---|---|---|
+| 4.1 Lambdas & functional interfaces | Practiced | 2026-10-31: Ex1 8/8 (all four method names, wrong-arity lambda, effectively-final rule named exactly); didn't answer *which line* javac flags — it's the lambda's use of `base`, not `base = 20`. Ex2 `OrderRules` exact output 2026-11-01 (loop + effectively-final copy). |
+
+### Phases 5–19
 Not Started (see `roadmap.md`).
 
 ## Needs Review
@@ -122,6 +129,8 @@ Not Started (see `roadmap.md`).
 ## Exercises
 | Date | Exercise | Result | Notes |
 |---|---|---|---|
+| 2026-10-31 | L4.1 Ex1 lambda predictions | ✅ 8/8 | Values exact incl. `OK` uppercase; (5) `test` vs `apply` → cannot find symbol ✅; (6) arity mismatch → compile error with correct reason (actual text: `incompatible parameter types in lambda expression`); (7) exact error message. Sub-question (which line gets flagged) skipped — answer: the lambda line, caret under `base`. |
+| 2026-11-01 | L4.1 Ex2 OrderRules (REQUIRED) | ✅ exact output | `apply`→`test` ✅, `Supplier` param removed ✅. Capture error solved by replacing `forEach` lambda with an enhanced `for` (mutation outside any lambda) + copying into `final long total1` for the footer lambda — valid; `final` keyword itself redundant (effectively final suffices). Pasted round-1 errors (one was a self-inflicted `reached end of file while parsing` from a mid-edit brace). Q1 ✅ in substance ("total har iteration pe badal raha hai"). Q2 (JS comparison) not answered — code demonstrates the fix, not chased per §10. Left the unused `paidCount` local. |
 | 2026-10-19 | L3.7 Ex1 wildcard predictions | ✅ 6/6 (after scaffold) | Part A 3/3 exact — identified C (`add` on `? extends`), F (`get` into `Integer` from `? super`), I (`add` on `List<?>`) and no others; `p.add(null)` and `Object o = s.get(0)` both correctly left as legal. B1 ✅, B3 ✅ ("`List<?>` kuch bhi, `List<Object>` Object ki list"). B2 skipped first, then correct in 3 steps once broken into stepping stones — confirms the Claude.md §10 scaffold approach works for open-ended reasoning items. |
 | 2026-10-19 | L3.7 Ex2 ReportTotals (REQUIRED) | ✅ 3/3 first pass | A non-compiling file (4 errors) with `main` declared off-limits, so the only lever was the signatures. All three correct on the first attempt, including `copyAll` where **both** wildcards were inverted and had to be fixed in opposite directions. Q1's answer was supplied by the code itself (`? super Integer`, consumer), so no written answer was collected per Claude.md §10. |
 | 2026-10-19 | L3.6 Ex1 generics/erasure predictions | ⚠️ ~3.5/6 | Part A: B ✅, F ❌ (did not see that `List<String>` is not a `List<Object>`). Part B: answered "compile error" once for all three — right for G (`new T[10]`) and H (same-erasure overload), wrong for I (legal code; prints `java.util.ArrayList`). Part C1 ✅ "T ne Comparable to extend nahi kiya". C2 honest "nahi pta". Both misses are the *same* erasure fact — the "generics are checked at compile time" half is understood, the "and then erased" half is not yet. |

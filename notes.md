@@ -8,5 +8,6 @@ Concise revision notes, split **one file per phase** so each stays focused and s
 | `phaseNote1.md` | Phase 1 — Fundamentals (anatomy, variables, arithmetic, casting, strings, operators, control flow, methods, arrays) |
 | `phaseNote2.md` | Phase 2 — Object-Oriented Java (classes, encapsulation, equals/hashCode, static, inheritance, interfaces, composition, enums) |
 | `phaseNote3.md` | Phase 3 — Collections & Generics (framework map, `List`/`ArrayList` vs `LinkedList` + Big-O, `HashMap`/`HashSet` internals, `TreeMap`/`Comparable`/`Comparator`, `ArrayDeque`/`PriorityQueue`/CME/immutable collections, generics & type erasure, wildcards & PECS) |
+| `phaseNote4.md` | Phase 4 — Modern Java (lambdas & functional interfaces, …; grows lesson by lesson) |
 
 Add a new `phaseNoteN.md` when a new phase starts (see `roadmap.md` for phase numbers), and add its row here.

@@ -9,7 +9,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - `ArithmeticException` — Runtime exception for illegal arithmetic, e.g. integer division by zero or `Math.addExact` overflow.
 - **Array** — Fixed-size, indexed container of one element type. An object (reference type).
 - `ArrayIndexOutOfBoundsException` — Runtime exception thrown when accessing an array index that doesn't exist. (JS would return `undefined`.)
-- **`ArrayList`** — The standard growable `List` implementation, backed by an array that is replaced with a bigger one when full. Declare as `List<T> x = new ArrayList<>();`.
+- `ArrayList` — The standard growable `List` implementation, backed by an array that is replaced with a bigger one when full. Declare as `List<T> x = new ArrayList<>();`.
 - `Arrays` — `java.util` utility class of static helpers for arrays (`toString`, `sort`, `equals`, `copyOf`…).
 - **Arrow switch** — `case X -> ...` form (Java 14+): no fall-through, usable as an expression.
 - **Autoboxing / unboxing** — Automatic conversion between a primitive and its wrapper (`int` ↔ `Integer`), e.g. `list.add(5)` boxes, `int x = list.get(0)` unboxes. Unboxing `null` throws NPE.
@@ -35,7 +35,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Definite assignment** — Compiler rule: a local variable must certainly be assigned before it's read.
 - **Delegation** — A method that does its job by calling the same kind of method on an object it holds (`notifier.send(...)`). The mechanism of composition.
 - **Encapsulation** — Bundling data with the operations that keep it valid, and hiding the data (`private` fields) so nothing outside those operations can touch it directly.
-- **Diamond (`<>`)** — In `new ArrayList<>()`, lets the compiler infer the generic type from the left side instead of repeating it.
+- **Diamond (**`<>`**)** — In `new ArrayList<>()`, lets the compiler infer the generic type from the left side instead of repeating it.
 - **Dynamic dispatch** — The JVM decides *which* overridden method body actually runs by looking at an object's real runtime class, not its declared/reference type. What you're *allowed to call* is still decided by the declared type at compile time — two separate rules.
 - **Entry point** — The method the launcher calls first: `main`.
 - **Enum** — A type with a fixed set of values; each value is a single `public static final` object of that type, created once. Can have fields, a (private) constructor and methods. Compare with `==`.
@@ -74,9 +74,9 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **JRE (Java Runtime Environment)** — JVM + standard library, enough to run programs. Oracle no longer ships one separately, but vendors (e.g. Temurin) still publish JRE builds.
 - **JShell** — Java's REPL (since Java 9). Like typing `node` with no arguments.
 - **JVM (Java Virtual Machine)** — The runtime that loads, verifies, and executes bytecode, and manages memory.
-- **`List`** — Ordered collection interface allowing duplicates and index access (`get`, `set`, `add(i, x)`). Main implementations: `ArrayList`, `LinkedList`. `List.of(...)` creates an unmodifiable one.
+- `List` — Ordered collection interface allowing duplicates and index access (`get`, `set`, `add(i, x)`). Main implementations: `ArrayList`, `LinkedList`. `List.of(...)` creates an unmodifiable one.
 - **Literal** — A value written directly in code: `42`, `42L`, `3.14`, `'A'`, `true`, `"text"`.
-- **Local repository (`~/.m2/repository`)** — Maven's shared cache of downloaded libraries and plugins, used by every project on the machine. Like a global `node_modules`.
+- **Local repository (**`~/.m2/repository`**)** — Maven's shared cache of downloaded libraries and plugins, used by every project on the machine. Like a global `node_modules`.
 - **LTS (Long-Term Support)** — A Java release supported for years by vendors. Current: 25 (previous: 21, 17, 11, 8).
 - **Magic number / magic index** — An unexplained literal whose meaning is implicit (`counts[2]`). Replace with a named constant.
 - **Maven** — Java build tool: downloads dependencies, compiles, tests and packages a project, driven by `pom.xml`. `mvn package`, `mvn test`, `mvn clean`.
@@ -99,7 +99,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Pass-by-value** — Arguments are copied into parameters. For references, the copied value is the address, so the object is shared but reassignment is local.
 - **Pattern matching** — Testing a value's type and binding it to a variable in one step (`o instanceof String s`, `case Integer i ->`).
 - **Polymorphism** — Code written against a general (superclass/interface) type that, at run time, runs whichever subclass's specific behavior the real object provides. Enabled by dynamic dispatch.
-- **`pom.xml`** — A Maven project's configuration file: coordinates, Java version, dependencies, plugins. Java's `package.json`.
+- `pom.xml` — A Maven project's configuration file: coordinates, Java version, dependencies, plugins. Java's `package.json`.
 - **Primitive type** — One of Java's 8 built-in value types (`byte short int long float double char boolean`). Holds the value directly, not a reference to an object.
 - **Reference** — The value held by a reference-type variable: the address of an object on the heap.
 - **Reference type** — Any non-primitive type (classes, interfaces, arrays, `String`). A variable of this type holds a reference to an object.
@@ -123,10 +123,12 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - `this` — Reference to the current object inside an instance method or constructor. Always bound to the instance a method was called on — no rebinding issues like JS `this`.
 - `toString()` — Method every object has, called automatically by `println`/string concatenation. Default prints `ClassName@hexHashCode` (not useful) — override it for a readable representation.
 - **Type inference (**`var`**)** — Compiler deduces a local variable's static type from its initializer. Still statically typed.
-- **`UnsupportedOperationException`** — Run-time exception thrown when modifying an unmodifiable collection (`List.of(...).add(x)`). Compiles fine; message is `null`.
+- `UnsupportedOperationException` — Run-time exception thrown when modifying an unmodifiable collection (`List.of(...).add(x)`). Compiles fine; message is `null`.
 - **Varargs** — `Type... name` parameter accepting zero or more arguments, received as an array.
 - **Widening conversion** — Converting to a larger type (int → long → double). Automatic and safe.
 - **Wrapper class** — Object version of a primitive: `Integer`, `Long`, `Double`, `Boolean`, `Character`, … Needed wherever only objects are allowed (generics, `null`).
+
+
 
 ## Phase 3.2 — ArrayList vs LinkedList
 
@@ -137,10 +139,12 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Node** — `LinkedList` ka ek element-wrapper object: value + `prev` + `next`. Isi overhead ki wajah se `LinkedList` ~40 bytes/element leti hai.
 - **Cache locality** — CPU memory se ek byte nahi, pura ~64-byte cache line uthata hai. Contiguous data (array) ke liye ek fetch mein agle kai elements free aa jate hain; bikhre hue nodes (linked list) pe har hop ek naya cache miss (~100 cycles) ho sakta hai. Yahi wajah hai ki Big-O table hardware pe ulta pad sakta hai.
 - **Pointer chasing** — linked structure mein `node.next` follow karte jaana. Theory mein O(1) per hop, practice mein cache-miss-heavy.
-- **`System.arraycopy`** — native method jo memory block ek saath move karta hai (SIMD). Isi liye `ArrayList` ka "O(n) shift" absolute terms mein bahut sasta hai (~14 billion element-moves/sec measured).
+- `System.arraycopy` — native method jo memory block ek saath move karta hai (SIMD). Isi liye `ArrayList` ka "O(n) shift" absolute terms mein bahut sasta hai (~14 billion element-moves/sec measured).
 - **Dead-code elimination** — JIT optimization: jis loop ka result kahin use nahi hota, use hata diya jata hai. Benchmarks ko jhoota 0 ms dikhata hai; result ko ek field mein jama kar ke roka jata hai.
 - **JIT warm-up** — JVM pehle bytecode interpret karta hai, kuch hazaar calls ke baad method ko machine code mein compile karta hai. Isliye benchmark mein pehla test bina warm-up round ke apne aap slow dikhta hai.
 - **JMH (Java Microbenchmark Harness)** — official benchmarking library jo warm-up, dead-code elimination aur statistics handle karti hai. Chhote (10%-type) differences naapne ke liye hand-rolled timing ki jagah yahi use hoti hai.
+
+
 
 ## Phase 3.3 — HashMap / HashSet
 
@@ -154,23 +158,25 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **equals/hashCode contract** — `equals` se equal objects ka `hashCode` **bhi** equal hona chahiye. Tootne pe object hash-based collection mein daal diya jaata hai par milta nahi — bina kisi error ke.
 - **Mutable key trap** — key daalne ke baad uska hash-wala field badal dena. Entry purane bucket mein rehti hai, lookup naye bucket mein jaata hai → entry pahunch se bahar. Isliye map keys immutable rakhte hain.
 - **Identity hash code** — `Object` ka default `hashCode()`, jo object ki identity (address jaisa) pe based hai. `hashCode()` override na karne pe yahi milta hai, isliye do equal objects ke hash alag aate hain.
-- **`getOrDefault(k, d)`** — key na hone pe `null` ki jagah `d` deta hai. Counting mein unboxing NPE se bachata hai.
-- **`merge(k, v, fn)`** — key nahi hai to `v` daalo, hai to purani value aur `v` pe `fn` lagao. Counting ka one-liner: `merge(k, 1, Integer::sum)`.
-- **`computeIfAbsent(k, fn)`** — key na ho to `fn` se value bana ke daalo, phir value return karo. Grouping ka one-liner: `computeIfAbsent(k, x -> new ArrayList<>()).add(item)`.
-- **`entrySet()`** — map ke key-value jodon ka `Set<Map.Entry<K,V>>`. Iterate karne ka sahi tarika — `keySet()` + `get()` do lookups hai, ye ek.
-- **`LinkedHashMap` / `LinkedHashSet`** — hash-based, par entries ke beech ek extra doubly-linked list rakhti hain, to iteration **insertion order** mein hoti hai. Lookup abhi bhi O(1). **Sorted nahi** — randomness hatana sorting nahi hai.
+- `getOrDefault(k, d)` — key na hone pe `null` ki jagah `d` deta hai. Counting mein unboxing NPE se bachata hai.
+- `merge(k, v, fn)` — key nahi hai to `v` daalo, hai to purani value aur `v` pe `fn` lagao. Counting ka one-liner: `merge(k, 1, Integer::sum)`.
+- `computeIfAbsent(k, fn)` — key na ho to `fn` se value bana ke daalo, phir value return karo. Grouping ka one-liner: `computeIfAbsent(k, x -> new ArrayList<>()).add(item)`.
+- `entrySet()` — map ke key-value jodon ka `Set<Map.Entry<K,V>>`. Iterate karne ka sahi tarika — `keySet()` + `get()` do lookups hai, ye ek.
+- `LinkedHashMap` **/** `LinkedHashSet` — hash-based, par entries ke beech ek extra doubly-linked list rakhti hain, to iteration **insertion order** mein hoti hai. Lookup abhi bhi O(1). **Sorted nahi** — randomness hatana sorting nahi hai.
+
+
 
 ## Phase 3.4–3.7 — Sorting, generics, wildcards
 
-- **`Comparable<T>`** — class ka apna "natural order", ek method `int compareTo(T other)`. Ek class = ek order. Return ka sirf **sign** matter karta hai (negative → `this` pehle, 0 → barabar, positive → baad mein).
-- **`Comparator<T>`** — order ek **alag object** ke roop mein, class ke bahar. Ek hi class ke kai comparators ho sakte hain; library ki class ke liye bhi likh sakte ho.
+- `Comparable<T>` — class ka apna "natural order", ek method `int compareTo(T other)`. Ek class = ek order. Return ka sirf **sign** matter karta hai (negative → `this` pehle, 0 → barabar, positive → baad mein).
+- `Comparator<T>` — order ek **alag object** ke roop mein, class ke bahar. Ek hi class ke kai comparators ho sakte hain; library ki class ke liye bhi likh sakte ho.
 - **Natural ordering** — jo `compareTo` kehta hai. `String` alphabetical, numbers numeric, `enum` declaration order.
 - **Tie-breaker** — `thenComparing(...)` — primary order barabar ho to aage kis field se decide karein. `TreeSet`/`TreeMap` mein zaroori (warna element girta hai) aur jab input order random ho (jaise `HashMap.entrySet()`).
 - **Red-black tree** — self-balancing binary search tree; `TreeMap`/`TreeSet` ka internal structure. Isi se O(log n) aur sorted order aata hai.
 - **Binary heap** — `PriorityQueue` ka internal structure: array mein store kiya tree jiska **ek hi** rule hai — parent apne children se chhota. Poora array sorted **nahi** hota, isliye iteration sorted nahi hoti.
 - **Range query** — "is value se chhoti sabse badi key" type sawaal (`floorKey`, `ceilingKey`, `subMap`, `headSet`). `TreeMap` ki asli wajah; `HashMap` ye de hi nahi sakta.
 - **Fail-fast iterator** — iterator jo collection badalne pe turant `ConcurrentModificationException` phenk de, galat chalne ke bajaye. `modCount` vs `expectedModCount` ke comparison se.
-- **`modCount`** — collection ka counter jo har **structural** change (add/remove) pe badhta hai. `set(i, x)` structural nahi hai.
+- `modCount` — collection ka counter jo har **structural** change (add/remove) pe badhta hai. `set(i, x)` structural nahi hai.
 - **Structural modification** — size badalne wala change (add/remove). Element replace karna structural nahi.
 - **View vs copy** — `Collections.unmodifiableList(x)` ek **view** hai (original badla to dikhega); `List.copyOf(x)` ek **copy** hai (nahi dikhega). Getters ke liye copy default.
 - **Type parameter** — `<T>` jaisa placeholder jo type rakhta hai, value nahi. Conventions: `T` Type, `E` Element, `K`/`V` Key/Value, `R` Return.
@@ -181,5 +187,13 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Heap pollution** — typed collection mein galat type ka object ghus jaana. Crash injection site pe nahi, us jagah hota hai jahan javac ne apna chhipa cast daala tha — isliye debug karna mushkil.
 - **Invariance** — `String` `Object` ka subtype hai, par `List<String>` `List<Object>` ka subtype **nahi**. Isse hi wildcards ki zaroorat paida hoti hai.
 - **Wildcard** — `?` — "koi type, pata nahi kaunsa". `? extends T` (upper bound), `? super T` (lower bound), ya akela `?`.
-- **Capture (`CAP#1`)** — javac ka invent kiya hua type variable jab wo `?` dekhta hai: bound pata hai, identity nahi. Isliye `? extends` wali list mein write reject hota hai (`null` ke alawa).
+- **Capture (**`CAP#1`**)** — javac ka invent kiya hua type variable jab wo `?` dekhta hai: bound pata hai, identity nahi. Isliye `? extends` wali list mein write reject hota hai (`null` ke alawa).
 - **PECS** — **P**roducer **E**xtends, **C**onsumer **S**uper. Parameter se padhna hai → `? extends T`; usme daalna hai → `? super T`; dono → plain `List<T>`.
+
+
+## Phase 4 — Modern Java
+- **Functional interface** — sirf **ek abstract method** wala interface (`Comparator`, `Function`, `Predicate`, …). Lambda isi ka implementation hota hai. `@FunctionalInterface` optional hai, bas javac se rule enforce karwata hai.
+- **Lambda expression** — `(params) -> body`; ek functional interface ke us ek method ka chhota implementation. Iska apna type nahi hota.
+- **Target type** — jis interface mein lambda assign/pass hota hai; wahi decide karta hai ki lambda kya implement kar raha hai aur params/return ka shape kya hoga.
+- **Effectively final** — local variable jo `final` likha na ho par initialise hone ke baad kabhi reassign na hua ho. Lambda sirf aise locals ko capture kar sakta hai (wo value ki copy leta hai).
+- **`Function` / `Predicate` / `Supplier` / `Consumer`** — `java.util.function` ke chaar core shapes: T→R `apply`, T→boolean `test`, ()→T `get`, T→void `accept`.
