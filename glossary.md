@@ -197,3 +197,7 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Target type** — jis interface mein lambda assign/pass hota hai; wahi decide karta hai ki lambda kya implement kar raha hai aur params/return ka shape kya hoga.
 - **Effectively final** — local variable jo `final` likha na ho par initialise hone ke baad kabhi reassign na hua ho. Lambda sirf aise locals ko capture kar sakta hai (wo value ki copy leta hai).
 - **`Function` / `Predicate` / `Supplier` / `Consumer`** — `java.util.function` ke chaar core shapes: T→R `apply`, T→boolean `test`, ()→T `get`, T→void `accept`.
+- **Method reference** — `Class::method` / `obj::method` / `Class::new`; ek lambda ka chhota rup jab lambda sirf ek existing method ko forward karta hai.
+- **Bound vs unbound method reference** — bound (`obj::m`): receiver object abhi fix ho jaata hai (null ho to turant NPE). Unbound (`Type::m`): receiver baad mein pehle argument ke roop mein aata hai.
+- **Receiver** — wo object jis par method call hota hai (`s.length()` mein `s`).
+- **Key extractor** — `Function` jo object se compare karne wali value nikalta hai, jaise `Comparator.comparing(Order::amountPaise)` mein.

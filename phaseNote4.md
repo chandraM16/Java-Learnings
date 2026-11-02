@@ -40,3 +40,38 @@ Common library entry points: `list.removeIf(Predicate)`, `list.forEach(Consumer)
 - Wrong method name on the interface (`predicate.apply(x)` instead of `.test(x)`) → `cannot find symbol`.
 - Wrong arity / shape for the target type (`Supplier` given a parameter) → `incompatible parameter types in lambda expression`.
 - javac reports errors in waves: fixing the first batch can reveal more.
+
+---
+
+## 4.2 Method references
+
+A method reference is a shorter lambda for when the lambda **only calls one existing method**. `Class::method` / `obj::method` — no parentheses, no arguments.
+
+| Kind | Form | Same as lambda |
+|---|---|---|
+| Static | `Integer::parseInt` | `s -> Integer.parseInt(s)` |
+| Bound instance (specific object) | `prefix::concat`, `System.out::println` | `s -> prefix.concat(s)` |
+| Unbound instance (any object of the type) | `String::length`, `String::compareTo` | `s -> s.length()`, `(a, b) -> a.compareTo(b)` |
+| Constructor | `ArrayList::new`, `Order::new` | `() -> new ArrayList<>()`, `(id, amt) -> new Order(id, amt)` |
+
+- **Unbound rule:** the **first parameter becomes the receiver** (the object the method is called on), the rest become arguments. That's why `String::compareTo` fits `BiFunction<String,String,Integer>` / `Comparator<String>`.
+- Which overload / constructor gets picked is decided by the **target type**, same as lambdas.
+- `Comparator.comparing(Order::amountPaise)` — `comparing` takes a key-extractor `Function`; chain `.reversed()`, `.thenComparing(...)`.
+
+### Bound receiver is evaluated ONCE, when the reference is created (≠ lambda)
+```java
+String p = "X-";
+Function<String,String> a = p::concat;   // receiver "X-" captured now
+p = "Y-";                                 // compiles! no effectively-final rule for the receiver
+a.apply("2");                             // "X-2" — still the old object
+
+String none = null;
+Supplier<String> g = () -> none.concat("x");  // fine: nothing evaluated until g.get()
+Function<String,String> f = none::concat;      // NPE right HERE, at creation (Objects.requireNonNull)
+```
+- Same trap with collections: `Consumer<String> c = list::add; list = new ArrayList<>();` → `c` keeps adding to the **old** list; the new one stays empty. Silent bug.
+
+### When to use which
+- Use a method reference when it's *just* forwarding to a method: `System.out::println`, `Order::id`.
+- Keep the lambda when there's any extra logic (`o -> o.amountPaise() / 100`), or when the reference would be less readable than the lambda.
+- Wrong class → `invalid method reference ... cannot find symbol` (e.g. `String::parseInt` — `parseInt` lives on `Integer`).
