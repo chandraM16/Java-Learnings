@@ -1,6 +1,6 @@
 # Phase 3 — Collections & Generics — Notes
 
-Concise revision notes for this phase only. Updated as topics are learned. See `notes.md` for the index of all phases.
+Revision notes for this phase. Every concept: **theory first**, **then a code snippet**, then an **example / gotcha** with real output (`// →`) or the exact error message. All outputs verified on JDK 25. See `notes.md` for the index of all phases.
 
 ---
 
@@ -15,6 +15,15 @@ Map (separate family) — key → value                          → HashMap, Li
 ```
 - JS rough equivalents: `List` ≈ `Array`, `Set` ≈ `Set`, `Map` ≈ `Map`. Java gives several implementations of each, with different performance trade-offs.
 
+```java
+List<String> orders = new ArrayList<>();          // ordered, duplicates OK
+Set<String> tags = new HashSet<>();               // unique
+Map<String, Integer> stock = new HashMap<>();     // key → value
+Deque<String> jobs = new ArrayDeque<>();          // queue / stack
+```
+
+---
+
 ## `List` / `ArrayList`
 
 - Declare as the **interface**, create the **implementation**: `List<String> names = new ArrayList<>();` (same idea as composition in 2.7 — depend on the interface).
@@ -23,20 +32,42 @@ Map (separate family) — key → value                          → HashMap, Li
   - Return type `List<T>` lets you change what you return without touching callers — e.g. `return List.copyOf(items);` (a read-only copy) compiles only if the return type is `List`, because `List.copyOf` doesn't return an `ArrayList`.
   - Same idea as `private final Notifier notifier` (2.7): callers depend on the contract, not the implementation.
   - Use `ArrayList` as a type only when you need an `ArrayList`-only method (e.g. `ensureCapacity`) — almost never.
-- `<String>` = **generics**: the list only holds Strings, checked at compile time (`names.add(42)` → compile error). `<>` (diamond) infers the type on the right.
-- Core methods:
+
 ```java
-list.add("PAID");          // append
-list.add(0, "NEW");        // insert at index (shifts the rest right)
-list.get(1);               // read by index — IndexOutOfBoundsException if out of range
-list.set(1, "SHIPPED");    // replace at index
-list.size();               // NOT .length (arrays) and NOT .length() (String)
-list.contains("PAID");     // uses equals() — your own classes need equals() (2.3)
-list.indexOf("PAID");      // first index, or -1
-list.remove("NEW");        // by value → returns boolean
-list.remove(0);            // by index → returns the removed element
-list.isEmpty();
-System.out.println(list);  // [NEW, PAID] — readable, unlike arrays' [I@1b6d3586
+static long total(ArrayList<Long> amounts) { ... }
+total(List.of(100L, 200L));           // ❌ compile error — List.of isn't an ArrayList
+
+static long total(List<Long> amounts) { ... }
+total(List.of(100L, 200L));           // ✅ any List works
+
+public List<CartItem> items() {
+    return List.copyOf(items);        // ✅ only possible because the return type is List
+}
+```
+
+- `<String>` = **generics**: the list only holds Strings, checked at compile time. `<>` (diamond) infers the type on the right.
+
+```java
+List<String> names = new ArrayList<>();
+names.add(42);        // ❌ error: incompatible types: int cannot be converted to String
+```
+
+- Core methods:
+
+```java
+List<String> statuses = new ArrayList<>();
+statuses.add("PAID");           // [PAID]                    append
+statuses.add("PENDING");        // [PAID, PENDING]
+statuses.add(0, "NEW");         // [NEW, PAID, PENDING]      insert at index (shifts the rest right)
+statuses.get(1);                // → PAID                    IndexOutOfBoundsException if out of range
+statuses.set(1, "SHIPPED");     // [NEW, SHIPPED, PENDING]   replace at index
+statuses.size();                // → 3      NOT .length (arrays) and NOT .length() (String)
+statuses.contains("PENDING");   // → true   uses equals() — your own classes need equals() (2.3)
+statuses.indexOf("PENDING");    // → 2      first index, or -1
+statuses.remove("NEW");         // [SHIPPED, PENDING]        by value → returns boolean
+statuses.remove(0);             // [PENDING]                 by index → returns the removed element
+statuses.isEmpty();             // → false
+System.out.println(statuses);   // → [PENDING]   readable, unlike arrays' [I@1b6d3586
 ```
 
 | Array | `ArrayList` |
@@ -47,33 +78,86 @@ System.out.println(list);  // [NEW, PAID] — readable, unlike arrays' [I@1b6d35
 | primitives allowed (`int[]`) | objects only (`List<Integer>`) |
 | prints `[I@...` | prints `[a, b, c]` |
 
+---
+
 ## Primitives → wrapper classes, autoboxing
 
-- Generics only take objects: `List<int>` → compile error `unexpected type`. Use the wrapper: `int→Integer`, `long→Long`, `double→Double`, `boolean→Boolean`, `char→Character`.
+- Generics only take objects. Use the wrapper: `int→Integer`, `long→Long`, `double→Double`, `boolean→Boolean`, `char→Character`.
 - **Autoboxing**: `nums.add(5)` silently becomes `nums.add(Integer.valueOf(5))`. **Unboxing**: `int x = nums.get(0)`.
-- **Trap 1 — `==` on wrappers**: `Integer a = 127, b = 127; a == b` → `true`, but `128 == 128` → `false`. Java caches `Integer` objects only for −128..127. Same accident as the String pool → always `.equals()`.
-- **Trap 2 — `remove` overloads on `List<Integer>`**: `ids.remove(1)` removes **index** 1 (exact `int` match wins). To remove the value 1: `ids.remove(Integer.valueOf(1))`.
-- **Trap 3**: unboxing `null` → `NullPointerException` (`Integer x = null; int y = x;`).
+
+```java
+List<int> nums;                       // ❌ error: unexpected type
+List<Integer> nums = new ArrayList<>();
+nums.add(5);                          // boxing
+int first = nums.get(0);              // unboxing → 5
+```
+
+- **Trap 1 — `==` on wrappers**: Java caches `Integer` objects only for −128..127. Same accident as the String pool → always `.equals()`.
+
+```java
+Integer a = 127, b = 127;
+a == b          // → true    (cached — luck)
+Integer c = 128, d = 128;
+c == d          // → false   ❌
+c.equals(d)     // → true    ✅
+```
+
+- **Trap 2 — `remove` overloads on `List<Integer>`**: `ids.remove(1)` removes **index** 1 (the exact `int` match wins). To remove the value: `ids.remove(Integer.valueOf(1))`.
+
+```java
+List<Integer> ids = new ArrayList<>(List.of(1, 2, 3));
+ids.remove(1);                     // → [1, 3]   index 1 (the value 2) removed!
+ids.remove(Integer.valueOf(1));    // → [3]      value 1 removed
+```
+
+- **Trap 3**: unboxing `null` → `NullPointerException`.
+
+```java
+Integer x = null;
+int y = x;        // → NullPointerException
+```
+
+---
 
 ## Immutable lists
 
 - `List.of("UPI", "CARD")` — fixed, unmodifiable. `add`/`remove`/`set` → `UnsupportedOperationException` at **run time** (compiles fine). Its `getMessage()` is `null`.
 - Mutable copy: `new ArrayList<>(List.of(...))`.
-- Defensive copy for a getter (2.2): `return List.copyOf(items);` — caller can't modify your internal list.
+- Defensive copy for a getter (2.2): `return List.copyOf(items);` — the caller can't modify your internal list.
+
+```java
+List<String> methods = List.of("UPI", "CARD");
+methods.add("WALLET");     // → java.lang.UnsupportedOperationException   (getMessage() → null)
+
+List<String> mutable = new ArrayList<>(methods);
+mutable.add("WALLET");     // → [UPI, CARD, WALLET]
+```
+
+---
 
 ## Iterating
 
+- for-each when you just need the elements; index loop when you need the position.
+- Don't add/remove from a list while for-each-ing over it → `ConcurrentModificationException` (details in 3.5).
+
 ```java
-for (String s : list) { ... }                       // for-each
-for (int i = 0; i < list.size(); i++) { list.get(i); }
+for (String s : list) { ... }                          // for-each
+for (int i = 0; i < list.size(); i++) { list.get(i); } // index
 ```
-- Don't add/remove from a list while for-each-ing over it → `ConcurrentModificationException` (details 3.5).
+
+---
 
 ## `ArrayList` vs `LinkedList` (3.2)
 
 - `ArrayList` = growable `Object[]` + a `size` counter. Full hone pe `newCapacity = old + (old >> 1)` (~1.5x), naya array allocate, `System.arraycopy`, purana GC ko.
 - `LinkedList` = doubly-linked `Node` chain (value + prev + next), sirf `first`/`last` pakde hue.
-- **size ≠ capacity.** `new ArrayList<>(3)` → `size()` is 0. `get(0)` → `IndexOutOfBoundsException: Index 0 out of bounds for length 0`, kyunki `get` index ko **size** se check karta hai, capacity se nahi. Khaali slots "null values" nahi hain.
+- **size ≠ capacity.** `get` index ko **size** se check karta hai, capacity se nahi. Khaali slots "null values" nahi hain.
+
+```java
+List<String> list = new ArrayList<>(3);   // capacity 3, size 0
+list.size();     // → 0
+list.get(0);     // → java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+```
 
 | Operation | `ArrayList` | `LinkedList` |
 |---|---|---|
@@ -100,11 +184,44 @@ C  20k add(0, x)      14             0
 - **Decision rule — asymmetry, not who wins:** galat jagah `LinkedList` = +2587 ms (disaster); galat jagah `ArrayList` = +14 ms (nobody notices). Isliye **default `ArrayList`**, hamesha. `LinkedList` sirf pure-both-ends access pe, aur wahan bhi `ArrayDeque` better (3.5).
 - **#1 Java perf bug:** `LinkedList` + `for (int i...) list.get(i)` → O(n²). `for-each` (Iterator, pichla node yaad rakhta hai) O(n) hai. Same loop, same output, 1000x slower.
 
+```java
+List<Order> orders = new LinkedList<>(...);
+for (int i = 0; i < orders.size(); i++) {
+    process(orders.get(i));        // ❌ each get(i) walks from the start → O(n²)
+}
+for (Order o : orders) {
+    process(o);                    // ✅ iterator remembers its position → O(n)
+}
+```
+
+---
+
 ## Benchmarking Java (seekha 3.2 mein)
+
 - **Dead-code elimination**: loop ka result use na ho to JIT poora loop hata deta hai → 0 ms naapte reh jaoge. Result ek static field (`blackhole`) mein jama karo.
 - **JIT warm-up**: JVM pehle interpreted chalta hai, kuch hazaar calls ke baad machine code compile karta hai. Warm-up round ke bina jo test *pehle* chalta hai wo apne aap slow dikhta hai.
 - Hand-rolled benchmarks sirf **bade** farak ke liye (1 ms vs 2587 ms). 10%-type differences ke liye **JMH** (Java Microbenchmark Harness) use hota hai — warm-up, DCE aur statistics khud handle karta hai.
 - Timed loop ke andar `"TRK-" + i` jaisa kaam mat karo — wo string-building naapega, list nahi. Constant use karo.
+
+```java
+static long blackhole;
+
+static long timeGets(List<Integer> list) {
+    long start = System.nanoTime();
+    long sum = 0;
+    for (int i = 0; i < 20_000; i++) {
+        sum += list.get(list.size() / 2);        // the thing being measured
+    }
+    blackhole += sum;                            // ✅ result used → JIT can't delete the loop
+    return (System.nanoTime() - start) / 1_000_000;
+}
+
+timeGets(arrayList); timeGets(linkedList);       // warm-up round, ignore results
+long a = timeGets(arrayList);                    // measured round
+long l = timeGets(linkedList);
+```
+
+---
 
 ## `HashMap` / `HashSet` internals (3.3)
 
@@ -115,6 +232,14 @@ C  20k add(0, x)      14             0
 - **Collision** = do keys ka same bucket. Bucket mein ek chain (linked list) banti hai. Java 8+: ek bucket mein >8 nodes aur table ≥64 → chain **red-black tree** ban jaati hai → worst case O(n) ki jagah **O(log n)**.
 - `get(k)` ka flow: `hashCode()` → bucket index → us bucket ki chain pe chalo → har node pe `equals()` → match ya `null`.
 
+```java
+int h = "apple".hashCode();          // → 93029210
+int spread = h ^ (h >>> 16);
+int bucket = spread & (16 - 1);      // → 1   "apple" lives in bucket 1 of 16
+
+Integer.valueOf(5).hashCode() & 15   // → 5   small Integers land in "their own" bucket
+```
+
 > **`hashCode()` batata hai kis bucket mein jaana hai. `equals()` batata hai us bucket mein kaunsa element sahi hai.** Dono chahiye, dono ka kaam alag.
 
 ### Load factor & resize
@@ -124,27 +249,84 @@ C  20k add(0, x)      14             0
 - **Natija:** iteration order = bucket order, aur resize pe **badal jaata hai**. Us order pe kabhi depend mat karo.
 - Trap: chhote `Integer` keys ke saath order *sorted dikhta* hai (`Integer.hashCode()` wahi number hai, `5 & 15 = 5`). Sanyog hai, guarantee nahi.
 
+```java
+Map<Integer, String> small = new HashMap<>();
+for (int i : new int[] {9, 3, 7, 1}) small.put(i, "x");
+small.keySet()     // → [1, 3, 7, 9]   looks sorted — coincidence, NOT a guarantee
+
+Map<String, Integer> big = new HashMap<>(1000);   // pre-sized → fewer resizes
+```
+
 ### equals/hashCode contract (2.3 ka asli kaaran)
 - `equals` se equal objects ka `hashCode` **bhi** equal hona chahiye. Warna → alag bucket → `equals` ka mauka hi nahi aata → **object map mein hai par pahunch se bahar**, bina kisi error ke.
-- `equals` likha par `hashCode` nahi → `Object` ka identity-based default milta hai → har naya object alag bucket. `m.put(new K(42), v); m.get(new K(42))` → `null`, par `size()` → 1.
+- `equals` likha par `hashCode` nahi → `Object` ka identity-based default milta hai → har naya object alag bucket.
+
+```java
+final class K {
+    final int id;
+    K(int id) { this.id = id; }
+    @Override public boolean equals(Object o) { return o instanceof K k && k.id == id; }
+    // no hashCode()!
+}
+
+Map<K, String> m = new HashMap<>();
+m.put(new K(42), "answer");
+m.get(new K(42))     // → null   ❌ looked in a different bucket
+m.size()             // → 1      it IS in there
+```
+
 - Ulta safe hai: same `hashCode` + `equals` false → sirf collision (slow, galat nahi). Isliye `hashCode` "approximate" ho sakta hai, `equals` ke saath **inconsistent** nahi.
 - Dono mein **wahi** fields use karo. `Objects.hash(a, b)` / `Objects.equals(x, y)`.
 - **Mutable key trap:** key daal ke uska hash-wala field badal diya → entry purane bucket mein, lookup naye bucket mein → `get` `null`, `containsKey` `false`, nikaalna bhi mushkil. **Map keys immutable rakho** (`String`, `Integer`, `enum`, `final`-fields class).
 
-### API
 ```java
-map.get(k);                       // nahi mila → null, exception NAHI
-map.getOrDefault(k, 0);           // null handling ka saaf tarika
-map.put(k, v);                    // purani key pe REPLACE karta hai, size nahi badhta;
-                                  // return = purani value (ya null agar key nayi thi)
-map.putIfAbsent(k, v);
-map.merge(k, 1, Integer::sum);                              // counting
-map.computeIfAbsent(k, x -> new ArrayList<>()).add(item);    // grouping
-for (Map.Entry<K,V> e : map.entrySet()) { e.getKey(); e.getValue(); }   // iterate — yahi use karo
+MutKey key = new MutKey("A1");        // equals/hashCode on a NON-final field `code`
+map.put(key, "v");
+key.code = "B2";                      // hash changes after insertion
+map.get(key)            // → null
+map.containsKey(key)    // → false
+map.size()              // → 1        stuck in the old bucket
 ```
+
+### API
+- `get` on a missing key returns `null` — no exception.
+- `put` on an existing key **replaces** the value (size doesn't change) and returns the old value.
+- Counting ka classic bug: `map.put(k, map.get(k) + 1)` → pehli baar `get` `null` → unboxing NPE (3.1 Trap 3). `getOrDefault(k, 0)` ya `merge` use karo.
 - `keySet()` pe loop + andar `get(key)` = **do** lookups. `entrySet()` ek mein dono deta hai.
 - `HashMap`: ek `null` key + kitni bhi `null` values allowed. (`ConcurrentHashMap` nahi.)
-- Counting ka classic bug: `map.put(k, map.get(k) + 1)` → pehli baar `get` `null` → unboxing NPE (3.1 Trap 3). `getOrDefault(k, 0)` ya `merge` use karo.
+
+```java
+Map<String, Integer> m = new HashMap<>();
+m.put("a", 1)                // → null   (key was new)
+m.put("a", 2)                // → 1      (old value returned, REPLACED)
+m.size()                     // → 1
+m                            // → {a=2}
+m.get("zzz")                 // → null
+m.getOrDefault("zzz", 0)     // → 0
+m.putIfAbsent("a", 99);      // no change, "a" exists
+```
+```java
+counts.put("pen", counts.get("pen") + 1);     // ❌ first time → NullPointerException
+
+Map<String, Integer> counts = new TreeMap<>();
+for (String w : List.of("pen", "book", "pen", "pen")) {
+    counts.merge(w, 1, Integer::sum);         // ✅ counting
+}
+counts                                        // → {book=1, pen=3}
+
+Map<String, List<String>> byCategory = new TreeMap<>();
+byCategory.computeIfAbsent("food", k -> new ArrayList<>()).add("pizza");    // ✅ grouping
+byCategory.computeIfAbsent("travel", k -> new ArrayList<>()).add("cab");
+byCategory.computeIfAbsent("food", k -> new ArrayList<>()).add("tea");
+byCategory                                    // → {food=[pizza, tea], travel=[cab]}
+
+for (Map.Entry<String, Integer> e : counts.entrySet()) {   // ✅ iterate — one lookup
+    System.out.println(e.getKey() + "=" + e.getValue());   // → book=1   pen=3
+}
+
+Map<String, Integer> withNull = new HashMap<>();
+withNull.put(null, 1);                        // → {null=1}   allowed in HashMap
+```
 
 ### `HashSet` = `HashMap` with dummy values (literally)
 ```java
@@ -154,6 +336,14 @@ public boolean add(E e) { return map.put(e, PRESENT) == null; }
 ```
 - Isliye: duplicates nahi (= key uniqueness), `contains` **O(1)** (vs `List` ki O(n)), koi order nahi, aur `equals`/`hashCode` ki wahi zaroorat.
 - **`Map` ki keys ek `Set` hai** — isliye method ka naam `keySet()` hai. Set ka duplicate-reject karna aur Map ka key pe replace karna **ek hi** rule hai.
+
+```java
+Set<String> set = new HashSet<>();
+set.add("PAID")          // → true    (new)
+set.add("PAID")          // → false   (duplicate rejected — map.put returned an old value)
+set.size()               // → 1
+set.contains("PAID")     // → true    O(1)
+```
 
 ### Order: teen cheezein alag hain
 | | order | lookup | kab |
@@ -166,6 +356,13 @@ public boolean add(E e) { return map.put(e, PRESENT) == null; }
 - **`LinkedHashMap` ≠ sorted.** Insertion order aur sorted order do alag cheezein hain — randomness hatana sorting nahi hai.
 - `LinkedHashSet` = duplicate-free **aur** insertion-ordered. Map ki value ke roop mein grouping ke liye perfect.
 
+```java
+// insert PAID, SHIPPED, CANCELLED into each:
+HashMap        → [CANCELLED, PAID, SHIPPED]   no promised order
+LinkedHashMap  → [PAID, SHIPPED, CANCELLED]   insertion order
+TreeMap        → [CANCELLED, PAID, SHIPPED]   sorted (here it happens to match HashMap — coincidence)
+```
+
 ### Manual sorting (3.4 tak)
 ```java
 List<Integer> keys = new ArrayList<>(map.keySet());
@@ -174,8 +371,15 @@ for (int k : keys) { System.out.println(k + " -> " + map.get(k)); }
 ```
 
 ### Parsing note (Ex 3 se)
-- `line.split(" ")` multiple spaces pe khaali strings deta hai (`"GET  /users"` → `["GET", "", "/users"]`). **`split("\\s+")`** use karo.
+- `line.split(" ")` multiple spaces pe khaali strings deta hai. **`split("\\s+")`** use karo.
 - Sabak: test data jaan-boojh ke ganda rakho (extra spaces, mixed casing) — chhote saaf dataset ne is bug ko chhupa diya tha.
+
+```java
+"GET  /users".split(" ")       // → [GET, , /users]   ❌ empty string in the middle
+"GET  /users".split("\\s+")    // → [GET, /users]     ✅
+```
+
+---
 
 ## `TreeMap`/`TreeSet`, `Comparable`/`Comparator` (3.4)
 
@@ -184,37 +388,83 @@ for (int k : keys) { System.out.println(k + " -> " + map.get(k)); }
 - `get`/`put`/`contains` **O(log n)** (vs `HashMap` ki O(1)) — to `TreeMap` tabhi lo jab order ya range queries ki asli zaroorat ho.
 - `null` key → **NPE** (compare kis se karega?). `HashMap` ek null key allow karta hai. Fark chubhta hai.
   - Exception: `new TreeMap<>(Comparator.nullsFirst(Comparator.naturalOrder()))` null key allow kar deta hai. Sirf tab jab `null` ka business matlab ho (jaise "no expiry"), galti chhupane ke liye nahi.
-- Comparable class na ho aur comparator bhi na do → **doosre** `add` pe `ClassCastException` (pehle pe compare karne ki zaroorat nahi hoti).
+- Comparable class na ho aur comparator bhi na do → **pehle hi** `add` pe `ClassCastException`. (Correction 2026-11-03: purane notes mein "doosre add pe" likha tha — JDK 25 mein khaali tree mein pehla element daalte waqt bhi `compare(key, key)` chalta hai, verified.)
+
+```java
+new TreeMap<String, Integer>().put(null, 1);   // → NullPointerException
+new HashMap<String, Integer>().put(null, 1);   // → fine, {null=1}
+
+class NotComparable { }
+Set<NotComparable> bad = new TreeSet<>();
+bad.add(new NotComparable());
+// → ClassCastException: class NotComparable cannot be cast to class java.lang.Comparable   (FIRST add)
+```
 
 ### Range queries — `TreeMap` ki asli wajah
-```java
-tiers.firstKey(); tiers.lastKey();
-tiers.floorKey(3000);      // 3000 se chhoti ya barabar sabse BADI key
-tiers.ceilingKey(3000);    // 3000 se badi ya barabar sabse CHHOTI key
-tiers.higherKey(k); tiers.lowerKey(k);     // strictly bada / chhota
-tiers.headMap(20);         // 20 se pehle sab — upper bound EXCLUSIVE
-tiers.tailMap(20);         // 20 se aage sab — lower bound INCLUSIVE
-tiers.subMap(10, 30);      // 10 <= k < 30
-tiers.descendingMap(); tiers.pollFirstEntry();
-```
 - **Asymmetric bounds** (Java ka har jagah ka pattern, jaise `substring`/`subList`/`i < n`): shuruaat shaamil, ant nahi. Override: `headMap(20, true)`.
 - `floorKey`/`ceilingKey` **`null` de sakte hain** jab kuch qualify na kare → `floorEntry(x).getValue()` pe NPE. Hamesha check karo.
 - `TreeSet` ke paas wahi: `first()`, `last()`, `floor()`, `ceiling()`, `higher()`, `lower()`, `headSet()`, `tailSet()`, `subSet()`, `descendingSet()`, `pollFirst()`.
 - Backend use cases: price/rate tiers, time-series ("is timestamp se pehle ka last event"), rate-limit windows, version ranges.
 
-### `Comparable` — natural order, class ke andar
 ```java
-class Student implements Comparable<Student> {
-    public int compareTo(Student other) { return Integer.compare(this.marks, other.marks); }
-}
+TreeMap<Integer, String> tiers = new TreeMap<>(Map.of(
+        0, "Bronze", 1000, "Silver", 5000, "Gold", 20000, "Platinum"));
+// → {0=Bronze, 1000=Silver, 5000=Gold, 20000=Platinum}   always sorted
+
+tiers.firstKey()              // → 0
+tiers.lastKey()               // → 20000
+tiers.floorKey(3000)          // → 1000    biggest key <= 3000
+tiers.ceilingKey(3000)        // → 5000    smallest key >= 3000
+tiers.floorKey(5000)          // → 5000    (inclusive)
+tiers.higherKey(5000)         // → 20000   strictly bigger
+tiers.floorKey(-1)            // → null    ⚠️ nothing qualifies
+tiers.floorEntry(3000).getValue()   // → Silver   "which tier is 3000 points?"
+
+tiers.headMap(5000)           // → {0=Bronze, 1000=Silver}               upper bound EXCLUSIVE
+tiers.headMap(5000, true)     // → {0=Bronze, 1000=Silver, 5000=Gold}
+tiers.tailMap(5000)           // → {5000=Gold, 20000=Platinum}           lower bound INCLUSIVE
+tiers.subMap(1000, 20000)     // → {1000=Silver, 5000=Gold}              1000 <= k < 20000
+tiers.descendingMap(); tiers.pollFirstEntry();
 ```
+
+### `Comparable` — natural order, class ke andar
 - Return value ka **number matter nahi karta, sirf sign**: negative → `this` pehle; zero → barabar; positive → `this` baad mein.
 - Padhne ka trick: `a.compareTo(b)` ko `a - b` padho. (Likhne ka tarika **nahi** — neeche dekho.)
 - Ek baar likha → `Collections.sort`, `TreeSet`, `TreeMap`, `list.sort(null)`, `PriorityQueue` sab chal gaye.
 - Already `Comparable`: `String`, `Integer`/`Long`/`Double`, `Character`, `LocalDate`/`LocalDateTime`, aur **`enum`** (declaration order).
-- **KABHI subtraction se compare mat karo.** `Integer.MAX_VALUE - (-10)` → overflow → `-2147483639` → sign ulta → pura order ulta, bina error. `Integer.compare(a, b)` andar `(a<b)?-1:((a==b)?0:1)` hai — koi arithmetic nahi, overflow ka sawaal nahi. `double` ke liye `Double.compare` (`NaN`/`-0.0` bhi handle karta hai).
+
+```java
+class Student implements Comparable<Student> {
+    final String name;
+    final int marks;
+    // constructor, toString → "Asha(82)"
+
+    @Override
+    public int compareTo(Student other) {
+        return Integer.compare(this.marks, other.marks);
+    }
+}
+
+List<Student> st = new ArrayList<>(List.of(
+        new Student("Asha", 82), new Student("Ravi", 67), new Student("Meera", 91)));
+Collections.sort(st);
+st                  // → [Ravi(67), Asha(82), Meera(91)]
+```
+
+- **KABHI subtraction se compare mat karo.** Overflow → sign ulta → pura order ulta, bina error. `Integer.compare(a, b)` andar `(a<b)?-1:((a==b)?0:1)` hai — koi arithmetic nahi, overflow ka sawaal nahi. `double` ke liye `Double.compare` (`NaN`/`-0.0` bhi handle karta hai).
+
+```java
+int big = Integer.MAX_VALUE, small = -10;
+big - small                    // → -2147483639   ❌ says "big < small"
+Integer.compare(big, small)    // → 1             ✅
+```
 
 ### `Comparator` — order bahar se, kai ho sakte hain
+- `TreeSet`/`TreeMap` ko comparator de do → class ka `compareTo` **bilkul ignore** ho jaata hai.
+- Comparators ko `private static final` constants banao — naam se code padha jaata hai.
+- **Kab kaunsa:** ek obvious default order → `Comparable`. Kai orders / class aapki nahi / order business rule hai → `Comparator`. Dono saath ho sakte hain.
+- **Tie-breaker kab zaroori hai:** `List.sort` Java mein **stable** hai, to same input order pe output deterministic hota hai bina breaker ke bhi. Breaker tab chahiye jab (a) `TreeSet`/`TreeMap` ho — wahan barabar element **gir** jaata hai, ya (b) **input order hi random ho** — jaise `HashMap.entrySet()` se aaya data.
+
 ```java
 Comparator.comparing(Player::getName)          // object field
 Comparator.comparingInt(Player::getScore)      // int — boxing bachata hai
@@ -223,24 +473,45 @@ Comparator.comparingInt(Player::getScore)      // int — boxing bachata hai
 Comparator.naturalOrder() / nullsFirst(...) / nullsLast(...)
 list.sort(cmp);  new TreeSet<>(cmp);  new TreeMap<>(cmp);
 ```
-- `TreeSet`/`TreeMap` ko comparator de do → class ka `compareTo` **bilkul ignore** ho jaata hai.
-- Comparators ko `private static final` constants banao — naam se code padha jaata hai.
-- **Kab kaunsa:** ek obvious default order → `Comparable`. Kai orders / class aapki nahi / order business rule hai → `Comparator`. Dono saath ho sakte hain.
-- **Tie-breaker kab zaroori hai:** `List.sort` Java mein **stable** hai, to same input order pe output deterministic hota hai bina breaker ke bhi. Breaker tab chahiye jab (a) `TreeSet`/`TreeMap` ho — wahan barabar element **gir** jaata hai, ya (b) **input order hi random ho** — jaise `HashMap.entrySet()` se aaya data.
+```java
+private static final Comparator<Player> LEADERBOARD =
+        Comparator.comparingInt(Player::getScore).reversed()
+                  .thenComparing(Player::getName);
+
+List<Player> ps = new ArrayList<>(List.of(
+        new Player("ravi", 50), new Player("asha", 90), new Player("meera", 50)));
+ps.sort(LEADERBOARD);
+ps                  // → [asha:90, meera:50, ravi:50]   score desc, then name
+ps.sort(Comparator.comparing(Player::getName));
+ps                  // → [asha:90, meera:50, ravi:50]   by name
+```
 
 ### THE TRAP — `TreeSet` `equals()` use NAHI karta
-`equals` naam+score dekhe, `compareTo` sirf score dekhe → class apne aap se ulta keh rahi hai:
-```
-alice.equals(bob)    = false   <- ALAG hain
-alice.compareTo(bob) = 0       <- BARABAR hain
-
-HashSet : [bob(50), alice(50)]  size 2     <- sahi
-TreeSet : [alice(50)]           size 1     <- bob CHUP-CHAAP gir gaya
-tree.contains(bob) = true                  <- 'hai' bola, par andar alice hai
-tree.remove(bob)   = true  -> []            <- ALICE delete ho gayi, bob ke naam pe
-```
+- `equals` naam+score dekhe, `compareTo` sirf score dekhe → class apne aap se ulta keh rahi hai.
 - `TreeSet` tree mein chalte hue compare karta hai; `compareTo == 0` hi uske liye "duplicate" ki definition hai. `equals` ko bulata hi nahi.
 - **Fix:** `compareTo == 0` sirf tab jab `equals == true`. Practically — `compareTo` mein **wahi fields** jo `equals` mein hain, tie-breakers ke roop mein.
+
+```java
+// equals/hashCode: name + score.   compareTo: score only.
+P alice = new P("alice", 50), bob = new P("bob", 50);
+
+alice.equals(bob)              // → false   ALAG hain
+alice.compareTo(bob)           // → 0       BARABAR hain
+
+new HashSet<>(List.of(alice, bob)).size()   // → 2           sahi
+TreeSet<P> tree = new TreeSet<>(); tree.add(alice); tree.add(bob);
+tree                           // → [alice(50)]  bob CHUP-CHAAP gir gaya
+tree.contains(bob)             // → true         'hai' bola, par andar alice hai
+tree.remove(bob);
+tree                           // → []           ALICE delete ho gayi, bob ke naam pe
+```
+```java
+@Override
+public int compareTo(P o) {                       // ✅ same fields as equals, as tie-breakers
+    int byScore = Integer.compare(score, o.score);
+    return byScore != 0 ? byScore : name.compareTo(o.name);
+}
+```
 
 | Collection | duplicate kaise decide | tootne pe |
 |---|---|---|
@@ -263,6 +534,8 @@ Dono mein common: **koi exception nahi aati** — isliye production tak pahunch 
 - Modern Java (14+) **helpful NullPointerException**: message variable ka naam batata hai — `Cannot invoke "Comparable.compareTo(Object)" because "k1" is null`.
 - Crash ko chhupao mat, crash ki wajah hatao. `TreeMap` ka NPE bata raha tha ki data mein `null` aa raha hai — use accept karna sikhana usse silent bug bana deta hai. (Phase 1 L3 ke `/ by zero` → `Infinity` wala sabak, dobara.)
 
+---
+
 ## `ArrayDeque`, `PriorityQueue`, CME, immutable collections (3.5)
 
 ### `Queue` / `Deque` / `ArrayDeque`
@@ -270,6 +543,19 @@ Dono mein common: **koi exception nahi aati** — isliye production tak pahunch 
 - `ArrayDeque` andar **circular array** hai, `head` aur `tail` index ke saath. Front se nikaalne pe kuch shift **nahi** hota — bas `head` aage badhta hai, aur index array ke end pe wrap ho jaata hai. **Dono sire O(1)**, aur array hone ki wajah se cache-friendly bhi.
 - Yahi 3.2 ka jawab: `ArrayList.remove(0)` O(n) tha (shifting), `ArrayDeque.pollFirst()` O(1) hai — aur `LinkedList` se bhi tezz, kyunki pointer chasing nahi.
 - **`ArrayDeque` lo; `Stack` aur `LinkedList` mat lo.** `Stack` Java 1.0 legacy hai — har method `synchronized` (single-thread mein bekaar overhead) aur uska iteration order **ulta** (bottom→top). Oracle docs khud `ArrayDeque` recommend karti hain.
+
+```java
+Deque<String> queue = new ArrayDeque<>();      // FIFO
+queue.offer("job1"); queue.offer("job2"); queue.offer("job3");
+queue.poll()        // → job1   (first in, first out)
+queue.peek()        // → job2   (look, don't remove)
+queue               // → [job2, job3]
+
+Deque<String> stack = new ArrayDeque<>();      // LIFO
+stack.push("a"); stack.push("b"); stack.push("c");
+stack.pop()         // → c      (last in, first out)
+stack               // → [b, a]
+```
 
 **Do method families — har operation ke do version:**
 | Kaam | Exception phenkta hai | Special value deta hai |
@@ -280,11 +566,31 @@ Dono mein common: **koi exception nahi aati** — isliye production tak pahunch 
 - Khaali hona **normal** hai → `poll`/`peek`. Khaali hona **bug** hai → `remove`/`element`, taaki turant pata chale.
 - `push`/`pop` = `addFirst`/`pollFirst` (stack ki tarah).
 
+```java
+Deque<String> empty = new ArrayDeque<>();
+empty.poll()        // → null
+empty.peek()        // → null
+empty.remove()      // → NoSuchElementException
+```
+
 ### `PriorityQueue`
 - Sabse **chhota** element pehle nikalta hai (`compareTo`/`Comparator` se decide), chahe kab daala gaya ho. Comparator se reverse: `new PriorityQueue<>(Comparator.reverseOrder())`.
 - Andar ek **binary heap** — array mein store kiya tree, jiska **ek hi** guarantee hai: *har parent apne children se chhota hai.* Poora array sorted **nahi** hota.
 - `add`/`poll` **O(log n)**, `peek` **O(1)** (sabse chhota hamesha index 0).
 - **THE TRAP — iteration/`toString` sorted NAHI hoti.** Sirf `poll()` ka order sorted hai (har poll heap ko dobara arrange karta hai).
+
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+for (int i : new int[] {5, 1, 9, 2}) pq.add(i);
+pq                       // → [1, 2, 9, 5]    ❌ NOT sorted (heap layout)
+while (!pq.isEmpty()) {
+    System.out.print(pq.poll() + " ");   // → 1 2 5 9    ✅ poll order is sorted
+}
+
+PriorityQueue<Integer> maxFirst = new PriorityQueue<>(Comparator.reverseOrder());
+maxFirst.addAll(List.of(5, 1, 9, 2));
+maxFirst.poll()          // → 9
+```
 ```
 add: email/5, payment/1, report/9, alert/2
 array: [payment/p1, alert/p2, report/p9, email/p5]
@@ -304,6 +610,27 @@ for-each index order pe chalta hai → p1, p2, p9, p5
 - Mechanism: `ArrayList` ek `modCount` field rakhta hai jo har **structural** change (add/remove) pe badhta hai. For-each andar ek `Iterator` banata hai jo shuru mein `expectedModCount` ki copy rakhta hai; har `next()` pe `checkForComodification()` dono ko compare karta hai, mismatch → exception.
 - **Ye feature hai, bug nahi** — ise **fail-fast** kehte hain. Check na hota to elements chup-chaap skip hote (3.2 ke `dropCancelled` wala silent bug, jo index loop mein hua tha kyunki wahan koi iterator hi nahi tha).
 - **Structural = size badalna** (add/remove). **`set(i, x)` structural nahi** → CME nahi aayega. `Map` mein purani key pe `put` (replace) bhi structural nahi; nayi key daalna hai.
+- **Trap (verified 2026-11-03):** **second-last** element hatao to CME **nahi** aata — `remove` ke baad size ghat jaata hai, `hasNext()` false ho jaata hai, aur loop `next()` (jahan check hota hai) se pehle hi khatam. Last element silently skip. Isliye "mere test mein CME nahi aaya" ka matlab "code sahi hai" nahi.
+
+```java
+List<String> a = new ArrayList<>(List.of("t1-skip", "t2", "t3"));
+for (String t : a) {
+    if (t.endsWith("-skip")) a.remove(t);   // → ConcurrentModificationException
+}
+
+List<String> b = new ArrayList<>(List.of("t1", "t2-skip", "t3"));
+for (String t : b) {
+    if (t.endsWith("-skip")) b.remove(t);   // → NO exception (second-last) → [t1, t3], t3 never checked
+}
+
+for (String t : list) list.set(0, "z");     // ✅ set is not structural → no CME
+
+List<String> d = new ArrayList<>(List.of("a-skip", "b-skip", "c"));
+for (int i = 0; i < d.size(); i++) {
+    if (d.get(i).endsWith("-skip")) d.remove(i);   // ❌ forward index loop
+}
+d                                           // → [b-skip, c]   silently skipped one
+```
 
 **Char fixes:**
 ```java
@@ -312,6 +639,16 @@ Iterator<String> it = pending.iterator();                     // 2. remove ke sa
 while (it.hasNext()) { if (...) it.remove(); }                //    it.remove() dono counters update karta hai
 for (String t : new ArrayList<>(pending)) { pending.remove(t); }  // 3. copy pe iterate
 for (int i = pending.size() - 1; i >= 0; i--) { ... }         // 4. index loop ULTA
+```
+```java
+List<String> p = new ArrayList<>(List.of("t1", "t2-skip", "t3", "t4-skip"));
+p.removeIf(t -> t.endsWith("-skip"));      // → [t1, t3]
+
+List<String> e = new ArrayList<>(List.of("a-skip", "b-skip", "c"));
+for (int i = e.size() - 1; i >= 0; i--) {
+    if (e.get(i).endsWith("-skip")) e.remove(i);
+}
+e                                          // → [c]   ✅ backwards: removals don't shift what's left to check
 ```
 
 ### Immutable collections — **view** vs **copy**
@@ -326,15 +663,33 @@ List.copyOf(internal)                    // COPY  — photo
 | `new ArrayList<>(x)` | ✅ (apni copy) | ❌ |
 - **Getter ke liye `List.copyOf` default.** View tabhi jab live data *chahiye* ho — aur tab document karo.
 
-**Factory gotchas:**
 ```java
-List.of("a", null)        // NPE — null allowed nahi
-Set.of("a", "a")          // IllegalArgumentException: duplicate element — RUN time
-Map.of(k,v, ...)          // max 10 jode; zyada ke liye Map.ofEntries(entry(...), ...)
-Map.of(...)               // order per-JVM-run randomized, HashMap se bhi zyada random
+List<String> internal = new ArrayList<>(List.of("x"));
+List<String> view = Collections.unmodifiableList(internal);
+List<String> snap = List.copyOf(internal);
+internal.add("y");
+view     // → [x, y]   window: sees the change
+snap     // → [x]      photo: frozen
 ```
+
+**Factory gotchas:**
 - `Arrays.asList(arr)` = **array ke upar wrapper**. Size fixed → `add` UOE; par `set` chalta hai **aur wo write asli array mein jaata hai**. `List.of` nahi hai — legacy code mein milega, naya code mein `List.of`.
 - **Compile vs run time test:** *"javac ko ye jaanne ke liye code chalana padega?"* Haan → run time (`Set.of` duplicate, `List.of` null). Sirf types/syntax se pata chal jaata → compile time (`List.of(42)` ko `List<String>` mein daalna).
+
+```java
+List.of("a", null)        // → NullPointerException — null allowed nahi
+Set.of("a", "a")          // → IllegalArgumentException: duplicate element: a   (RUN time)
+Map.of(k,v, ...)          // max 10 jode; zyada ke liye Map.ofEntries(entry(...), ...)
+Map.of(...)               // order per-JVM-run randomized, HashMap se bhi zyada random
+
+String[] arr = {"a", "b"};
+List<String> asList = Arrays.asList(arr);
+asList.set(0, "Z");
+arr[0]                    // → Z    the write went into the array
+asList.add("c");          // → UnsupportedOperationException
+```
+
+---
 
 ## Generics (3.6)
 
@@ -342,33 +697,71 @@ Map.of(...)               // order per-JVM-run randomized, HashMap se bhi zyada 
 - **Ek line:** run-time `ClassCastException` ko **compile-time error** bana dena, aur casts hatana.
 - Asli faayda casts bachana nahi — galti **wahan pakdi jaaye jahan ki gayi**, 20 min debugging ke baad doosri file mein nahi.
 
-### Generic class / method
 ```java
-class Box<T> { private T value; void set(T v){} T get(){ return value; } }
-class Pair<K, V> { ... }
+List names = new ArrayList();            // raw, pre-2004 style
+names.add(42);                           // accepted
+String s = (String) names.get(0);        // → ClassCastException, far from the add
 
-public static <T> List<T> firstTwo(List<T> items) { ... }   // <T> RETURN TYPE SE PEHLE
+List<String> names2 = new ArrayList<>();
+names2.add(42);                          // ❌ compile error, right where the mistake is
+String s2 = names2.get(0);               // no cast needed
 ```
+
+### Generic class / method
 - Conventions: `T` Type, `E` Element, `K`/`V` Key/Value, `R` Return. (Sirf convention, par code inhi se padha jaata hai.)
 - Type javac **infer** karta hai argument se — wahi inference jo `new ArrayList<>()` ke diamond mein hai.
 - **`static` method class ka `T` use nahi kar sakta** — `T` instance pe decide hota hai (`new Box<String>()`), static instance ke bina chalta hai. Apna parameter declare karo: `static <U> U identity(U x)`.
 
+```java
+class Box<T> {
+    private T value;
+    void set(T v) { value = v; }
+    T get() { return value; }
+}
+class Pair<K, V> { ... }
+
+Box<String> box = new Box<>();
+box.set("hi");
+box.get().toUpperCase()      // → HI   no cast
+
+public static <T> List<T> firstTwo(List<T> items) { ... }   // <T> RETURN TYPE SE PEHLE
+firstTwo(List.of("a", "b", "c"))    // T inferred as String
+
+class Box<T> {
+    static T make() { ... }   // ❌ error: non-static type variable T cannot be referenced from a static context
+}
+```
+
 ### Bounded type parameters
+- Bina bound `T` javac ke liye **`Object`** hai → `item.compareTo(...)` → `cannot find symbol`. Bound hi wo cheez hai jo `T` pe methods kholti hai.
+- Generics mein interface ke liye bhi **`extends`** likha jaata hai (`implements` keyword nahi hota).
+- Bound utna tight rakho jitna zaroori — na khaali `<T>` (kaam nahi karega), na bina wajah `<T extends Number>`.
+
 ```java
 <T extends Comparable<T>>            // apne aap se compare ho sake
 <T extends Number>                   // Number ya subclass
 <T extends Number & Comparable<T>>   // DONO — class pehle, interfaces baad mein
 ```
-- Bina bound `T` javac ke liye **`Object`** hai → `item.compareTo(...)` → `cannot find symbol`. Bound hi wo cheez hai jo `T` pe methods kholti hai.
-- Generics mein interface ke liye bhi **`extends`** likha jaata hai (`implements` keyword nahi hota).
-- Bound utna tight rakho jitna zaroori — na khaali `<T>` (kaam nahi karega), na bina wajah `<T extends Number>`.
+```java
+static <T> T largest(List<T> items) {
+    ... if (item.compareTo(best) > 0) ...      // ❌ error: cannot find symbol (T is just Object)
+}
+
+static <T extends Comparable<T>> T largest(List<T> items) {
+    T best = items.get(0);
+    for (T item : items) if (item.compareTo(best) > 0) best = item;
+    return best;
+}
+largest(List.of(3, 9, 5))                   // → 9
+largest(List.of("pear", "apple", "zebra"))  // → zebra
+```
 
 ### Type erasure — sabse important
 > `<String>` ek **instruction hai javac ke liye**, `.class` file mein ek **property nahi**. javac padhta hai, check karta hai, cast daalta hai, aur **mita deta hai**. JVM ko kabhi pata nahi chalta.
 
 ```java
-new ArrayList<String>().getClass() == new ArrayList<Integer>().getClass()   // true
-new ArrayList<String>().getClass().getName()                               // java.util.ArrayList
+new ArrayList<String>().getClass() == new ArrayList<Integer>().getClass()   // → true
+new ArrayList<String>().getClass().getName()                               // → java.util.ArrayList
 ```
 ```java
 // aapne likha                          // bytecode mein (effectively)
@@ -382,14 +775,30 @@ String s = l.get(0);                    String s = (String) l.get(0);   // cast 
 ```java
 T[] arr = new T[10];                 // error: generic array creation
 if (x instanceof List<String>)       // error: Object cannot be safely cast to List<String>
-void f(List<String>); void f(List<Integer>);   // error: name clash ... same erasure
+void f(List<String> a); void f(List<Integer> a);   // error: name clash: f(List<Integer>) and f(List<String>) have the same erasure
 T.class  /  new T()  /  catch (MyEx<T> e)  /  static field of type T    // sab illegal
 ```
 Ek hi wajah chaaron ke liye: run time pe `T` ka koi nishaan nahi bachta.
 
 ### Raw types & heap pollution
-- `List list = new ArrayList();` legal hai (purane code ke liye) par saari safety chali jaati hai. javac: `warning: [unchecked] ...` = *"main is call ki type-safety check nahi kar paaya, tum apne risk pe ho."*
+- `List list = new ArrayList();` legal hai (purane code ke liye) par saari safety chali jaati hai. Default javac sirf ek **Note** deta hai; `-Xlint:unchecked` se poori warning:
+```
+Note: Raw.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+$ javac -Xlint:unchecked Raw.java
+warning: [unchecked] unchecked call to add(E) as a member of the raw type List
+```
+  Matlab: *"main is call ki type-safety check nahi kar paaya, tum apne risk pe ho."*
 - **Heap pollution** = typed collection mein galat type ka object ghus jaana. Crash **injection site pe nahi**, us jagah hota hai jahan javac ne apna chhipa cast daala tha (jaise for-each ke andar):
+
+```java
+List raw = new ArrayList<String>();
+raw.add(42);                        // bug injected here — no error
+List<String> typed = raw;
+typed.size()                        // → 1   still no error
+for (String s : typed) { }          // → ClassCastException: class java.lang.Integer cannot be cast to class java.lang.String
+```
 ```
 line 8:  keys.add(42);        <- bug yahan inject, koi error nahi
 line 16: for (String k : ...) <- crash yahan, 8 line door, aur 2 element process hone ke BAAD
@@ -416,41 +825,63 @@ TypedCache<String, String> c;  c.put("age", 30);    // error: int cannot be conv
 
 ### Invariance (3.7 ka pul)
 - `String` `Object` ka subtype **hai**, par `List<String>` `List<Object>` ka subtype **NAHI** hai.
+- Java pehle step pe rok deta hai taaki teesra kabhi na aaye. Safe hal: `? extends` / `? super` (3.7).
+
 ```java
-List<Object> objs = names;   // AGAR allowed hota...
-objs.add(42);                // ...ye legal hota
+List<Object> b = new ArrayList<String>();   // ❌ error: incompatible types: ArrayList<String> cannot be converted to List<Object>
+
+// why: AGAR allowed hota...
+List<Object> objs = names;   // ...ye legal hota
+objs.add(42);                // ...ye bhi
 String s = names.get(0);     // ...aur yahan CCE
 ```
-Java pehle step pe rok deta hai taaki teesra kabhi na aaye. Safe hal: `? extends` / `? super` (3.7).
 
 ### TS comparison
 TS generics bhi **erased** hain (`Array<string>`/`Array<number>` runtime pe dono `Array`), to basic model wahi hai. Farak: TS structural + optional, `any` se kahin bhi nikal sakte ho; Java nominal + mandatory, aur raw type (`any` ka kareeb) pe javac **warning** deta hai — chup-chaap jaane nahi deta.
+
+---
 
 ## Wildcards, `? extends`/`? super`, PECS (3.7)
 
 ### Problem — invariance
 `List<Integer>` `List<Number>` ka subtype **nahi** hai, to `sum(List<Number>)` `List<Integer>` accept nahi karega. Teen copies likhne ki jagah wildcard lagao.
 
-### `? extends T` — PRODUCER (nal 🚰)
 ```java
-List<? extends Number> prod = ints;
-Number n = prod.get(0);    // ✅ jo bhi ho, Number to hai
-prod.add(7);               // ❌ error: int cannot be converted to CAP#1
-prod.add((Integer) 7);     // ❌ wahi error — cast se bhi nahi
-prod.add(null);            // ✅ sirf null
+static double sum(List<Number> nums) { ... }
+List<Integer> ints = new ArrayList<>(List.of(1, 2, 3));
+sum(ints);        // ❌ error: incompatible types: List<Integer> cannot be converted to List<Number>
+
+static double sum(List<? extends Number> nums) {
+    double total = 0;
+    for (Number n : nums) total += n.doubleValue();
+    return total;
+}
+sum(ints)                    // → 6.0   ✅
+sum(List.of(1.5, 2.5))       // → 4.0   ✅ same method, Doubles
 ```
+
+### `? extends T` — PRODUCER (nal 🚰)
 - Padho: *"kisi **ek** aise type ki list jo `Number` ya uska subclass hai — par pata nahi kaunsa."*
 - **`CAP#1` kya hai:** javac `? extends Number` dekh ke ek **capture** type variable banata hai jiske baare mein use sirf itna pata hai "ye `Number` extend karta hai"; **identity pata nahi**. To `add(7)` pe sochta hai *"CAP#1 `Integer` ho sakta hai, `Double`, ya `BigDecimal` — nahi pata, to reject."* `null` chalta hai kyunki wo har reference type mein fit hota hai.
 
+```java
+List<? extends Number> prod = ints;
+Number n = prod.get(0);    // ✅ jo bhi ho, Number to hai
+prod.add(7);               // ❌ error: incompatible types: int cannot be converted to CAP#1
+prod.add((Integer) 7);     // ❌ wahi error — cast se bhi nahi
+prod.add(null);            // ✅ sirf null
+```
+
 ### `? super T` — CONSUMER (dustbin 🗑️)
+- Padho: *"`Integer` ya uska superclass — `Integer`, `Number`, ya `Object`."*
+- Likhna safe hai kyunki `Integer` teeno mein fit hota hai. Padhna restricted hai kyunki guaranteed common type sirf `Object` hai.
+
 ```java
 List<? super Integer> cons = new ArrayList<Number>();
 cons.add(7);               // ✅ Integer, Number/Object dono mein fit hota hai
 Object o = cons.get(0);    // ✅ sirf Object
-Integer i = cons.get(0);   // ❌ error: CAP#1 cannot be converted to Integer
+Integer i = cons.get(0);   // ❌ error: incompatible types: CAP#1 cannot be converted to Integer
 ```
-- Padho: *"`Integer` ya uska superclass — `Integer`, `Number`, ya `Object`."*
-- Likhna safe hai kyunki `Integer` teeno mein fit hota hai. Padhna restricted hai kyunki guaranteed common type sirf `Object` hai.
 
 ### PECS
 > **P**roducer → **E**xtends, **C**onsumer → **S**uper
@@ -467,6 +898,11 @@ Sawaal: *"ye parameter mujhe data **de** raha hai ya **le** raha hai?"*
 public static <T> void copyAll(List<? super T> dest, List<? extends T> src) {
     for (T item : src) dest.add(item);     // src produce, dest consume
 }
+
+List<Number> dest = new ArrayList<>();
+copyAll(dest, List.of(1, 2));        // Integers into a List<Number>
+copyAll(dest, List.of(3.5));         // Doubles too
+dest                                 // → [1, 2, 3.5]
 ```
 Dono ulte likh do to **kuch bhi** compile nahi hoga.
 
@@ -479,24 +915,40 @@ static <T> T max(Collection<? extends T> coll, Comparator<? super T> comp)
 ```
 `sort(Comparator<? super E>)` ka concrete faayda: `List<Integer>` ko `Comparator<Number>` se sort kar sakte ho. `Comparator<E>` hota to sirf `Comparator<Integer>` chalta.
 
-### `?` akela (unbounded)
 ```java
-List<?> any = someList;    // "kisi bhi cheez ki list"
-any.size();                // ✅ element type ki parwah nahi
-any.add("x");              // ❌ CAP#1
-any.add(null);             // ✅
+List<Integer> nums = new ArrayList<>(List.of(30, 10, 20));
+Comparator<Number> byDouble = Comparator.comparingDouble(Number::doubleValue);
+nums.sort(byDouble);       // ✅ a Comparator<Number> sorts a List<Integer>
+nums                       // → [10, 20, 30]
 ```
+
+### `?` akela (unbounded)
 - Kab: jab element ka type **chahiye hi nahi** — `size()`, `isEmpty()`, `clear()`, printing.
 - **`List<?>` ≠ `List<Object>`**: `List<?> a = new ArrayList<String>();` ✅ par `List<Object> b = new ArrayList<String>();` ❌ (invariance). `List<?>` "koi bhi list", `List<Object>` "specifically Objects ki list".
 
-### Wildcard vs type parameter
 ```java
-public static double sum(List<? extends Number> nums)              // wildcard — type ka naam nahi chahiye
-public static <T extends Number> T first(List<T> nums)             // <T> — naam chahiye (return mein use hua)
+List<?> any = List.of("x", "y");   // "kisi bhi cheez ki list"
+any.size();                // → 2   ✅ element type ki parwah nahi
+any.add("x");              // ❌ CAP#1
+any.add(null);             // ✅
+
+static void printSize(List<?> list) {        // accepts List<String>, List<Integer>, ...
+    System.out.println(list.size());
+}
 ```
+
+### Wildcard vs type parameter
 - **Rule:** type ko **ek se zyada jagah** reference karna hai (parameter + return, ya do parameters ko tie karna) → type parameter `<T>`. Sirf ek parameter mein ek baar → wildcard `?`.
 - **Return type mein wildcard mat likho** — `public List<? extends Number> getAll()` caller ko dard deta hai (wo usme kuch daal nahi sakta, aur wildcard uske code mein phailta jaata hai). `List<Number>` likho.
 - Wildcards **public API** par matter karte hain; private helper mein `List<Integer>` theek hai.
+
+```java
+public static double sum(List<? extends Number> nums)              // wildcard — type ka naam nahi chahiye
+public static <T extends Number> T first(List<T> nums)             // <T> — naam chahiye (return mein use hua)
+
+public List<? extends Number> getAll()    // ❌ wildcard leaks into every caller
+public List<Number> getAll()              // ✅
+```
 
 ### Correction (2026-10-19)
 `HashMap` ke "order nahi hota" ka example chunte waqt dhyaan rakho: chhote key-sets pe wo **sanyog se** insertion order jaisa dikh sakta hai. Verified:
@@ -507,3 +959,21 @@ insertion [PAID, SHIPPED, CANCELLED]   -> HashMap [CANCELLED, PAID, SHIPPED] <- 
 insertion [alpha, beta, gamma, delta]  -> HashMap [alpha, delta, beta, gamma]
 ```
 Sabak dono taraf ka hai: order ki **koi guarantee nahi** — na insertion, aur na "definitely different". Isliye us order pe depend karna bug hai, aur usse *test* karna bhi bharosemand nahi.
+
+---
+
+## Mistakes I keep making (check these first)
+
+```java
+javac CartApp.java                       // ❌ from inside the package folder → javac -d out src/.../*.java
+ids.remove(1)  // meant the value 1      // ❌ removes INDEX 1 → ids.remove(Integer.valueOf(1))
+integerA == integerB                     // ❌ cache luck → integerA.equals(integerB)
+items.set(idx, newItem)  // merge        // ❌ replaces, loses the old quantity → combine first, then set
+return items;                            // ❌ live list leaks → return List.copyOf(items);
+map.put(k, map.get(k) + 1);              // ❌ NPE first time → map.merge(k, 1, Integer::sum)
+map.put(k, v)  // expecting "add"        // ❌ REPLACES an existing key's value
+LinkedHashMap  // expecting sorted       // ❌ insertion order ≠ sorted → TreeMap / list.sort
+for (String t : list) list.remove(t);    // ❌ CME (or a silent skip) → list.removeIf(...)
+compareTo using only some fields         // ❌ TreeSet silently drops "equal" items → same fields as equals
+return a - b;  // in compareTo           // ❌ overflow → Integer.compare(a, b)
+```

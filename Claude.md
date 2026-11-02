@@ -81,6 +81,7 @@ Difficulty levels: 1 Beginner, 2 Practice, 3 Applied, 4 Advanced, 5 Production, 
 
 ## 10. Observed strengths / struggles
 
+- **Notes style (2026-11-02, corrected same day):** learner found `phaseNote2.md` "sirf theory, lot of words, boring" and asked for code snippets. First attempt cut the theory down to 1–2 lines — **wrong**: learner wants "theory ke sath code snippet aur example bhi". **All `phaseNoteN.md` files:** keep the full theory (what / why / how it works, as bullets), and directly under each concept add a code snippet and a concrete example with real output (`// →`), plus ❌/✅ pairs for gotchas. Theory + code together, never one instead of the other. End each file with a "Mistakes I keep making" code block.
 - **Language (2026-10-10): talk to the learner in Hinglish** (Hindi + English, Roman script) — lessons, reviews, explanations, all chat. Code, identifiers, Java/Spring technical terms and error messages stay in English. The learning files (`progress.md`, `phaseNoteN.md`, `glossary.md`, etc.) stay in English unless the learner asks otherwise.
 
 - Strengths: follows hands-on steps accurately; honest about gaps ("idk") instead of guessing — good, keep encouraging it.
