@@ -179,3 +179,55 @@ record Order(String id, String customer, long amountPaise, String status, List<S
 - Anything that may find nothing (`findFirst`, `max`, `min`, `average`) returns an **`Optional`** — handled properly in 4.5.
 - Want a `Map` back → `collect(Collectors.groupingBy/toMap/…)` — 4.4.
 - `distinct()` only works as expected if the element type has proper `equals`/`hashCode` (Phase 2.3). Records get them automatically.
+
+---
+
+## 4.4 Collectors: `groupingBy`, `partitioningBy`, `toMap`, downstream collectors
+
+- `stream.collect(Collector)` — a **collector** is a recipe for building a result container (map, list, string) from the elements. `Collectors` holds the ready-made ones.
+- Replaces the Phase 3 hand-written `computeIfAbsent` / `merge` loops. (Project 1 still requires writing those by hand once — know both.)
+
+### `groupingBy` — many groups, `Map<K, …>`
+```java
+groupingBy(Order::customer)                                   // Map<String, List<Order>>
+groupingBy(Order::customer, counting())                       // Map<String, Long>   ← Long, not Integer!
+groupingBy(Order::city, summingLong(Order::amountPaise))      // Map<String, Long>
+groupingBy(Order::customer, mapping(Order::id, toList()))     // Map<String, List<String>>
+groupingBy(Order::customer, TreeMap::new, counting())         // sorted keys
+```
+- 1-arg form = `List` of the whole elements per key. 2nd arg = **downstream collector**: what to do *inside* each group.
+- Default map is a **`HashMap` → no key order**. Need sorted output → pass `TreeMap::new` as the middle argument (3-arg form).
+- Groups only exist for keys that actually appeared — no empty groups.
+
+### Downstream collectors (used inside `groupingBy` / `partitioningBy`)
+| Collector | Per group gives | Note |
+|---|---|---|
+| `counting()` | `Long` | assigning to `Map<K, Integer>` → compile error (`incompatible equality constraints Integer,Long`) |
+| `summingLong(f)` / `summingInt(f)` | sum | |
+| `averagingLong(f)` | `Double` | |
+| `mapping(f, toList())` | the mapped values | "ids per customer" instead of whole orders |
+| `toSet()` | unique values | |
+| `maxBy(Comparator)` / `minBy` | `Optional<T>` | group may be... never empty here, but the type is still `Optional` |
+
+### `partitioningBy` — exactly two groups
+```java
+partitioningBy(o -> o.amountPaise() >= 100000)               // Map<Boolean, List<Order>>
+partitioningBy(pred, mapping(Order::id, toList()))           // with downstream
+```
+- **Always has both `false` and `true` keys**, even if one list is empty. `groupingBy(w -> bool)` only has the keys that occurred.
+
+### `toMap` — one key, one value
+```java
+toMap(Order::id, Order::amountPaise)                         // keys must be unique!
+toMap(Order::customer, Order::amountPaise, Long::sum)        // 3rd arg = merge function for duplicate keys
+toMap(k, v, Long::sum, TreeMap::new)                         // + map type
+```
+- Duplicate key without a merge function → **run time** `IllegalStateException: Duplicate key meera (attempted merging values 49900 and 275000)`. Not caught by javac. Classic production bug: works in testing with unique data, crashes on real data.
+- A `null` value → `NullPointerException` (unlike `HashMap.put`).
+- `toMap` vs `groupingBy`: unique key → `toMap`; many elements per key → `groupingBy` (or `toMap` with a merge fn when you're combining numbers).
+
+### Other
+- `joining(", ")`, `joining("|", "<", ">")` → `"<apple|avocado|banana>"`.
+- `toList()` on the stream (16+) is shorter than `collect(Collectors.toList())`; the stream method's list is unmodifiable.
+- Generic inference errors (`inference variable V has incompatible equality constraints Integer,D,Long`) look scary — read the last line: it lists the two types that disagree (`Integer` vs `Long`).
+- `import static java.util.stream.Collectors.*;` lets you write `groupingBy(...)` without the `Collectors.` prefix.

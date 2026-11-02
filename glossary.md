@@ -209,3 +209,10 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`flatMap`** — har element ko ek stream mein badalta hai aur sab streams ko ek flat stream mein jod deta hai (list of lists → ek list).
 - **`reduce`** — saare elements ko ek value mein fold karta hai: `reduce(identity, (acc, x) -> …)`. Identity neutral honi chahiye (sum ke liye 0).
 - **Primitive stream** — `IntStream`/`LongStream`/`DoubleStream`; boxing nahi, aur `sum()`/`average()` jaise methods milte hain.
+- **Collector** — `collect(...)` ko diya jaane wala recipe: result container (map/list/string) kaise banana hai. `Collectors` class mein ready-made hain.
+- **Downstream collector** — `groupingBy`/`partitioningBy` ka doosra argument; har group ke *andar* kya karna hai (`counting()`, `summingLong`, `mapping`…).
+- **`groupingBy`** — key function se elements ko groups mein baantta hai → `Map<K, …>`. Default `HashMap` (no order).
+- **`partitioningBy`** — predicate se exactly do groups → `Map<Boolean, …>`, dono keys hamesha present.
+- **`toMap`** — har element se ek key → ek value. Duplicate key par merge function nahi diya to run-time `IllegalStateException`.
+- **Merge function** — `toMap` ka teesra argument; same key ki do values ko kaise milaana hai (`Long::sum`).
+- **Static import** — `import static pkg.Class.*;` — class ke static members bina class naam ke use karo (`groupingBy` instead of `Collectors.groupingBy`).

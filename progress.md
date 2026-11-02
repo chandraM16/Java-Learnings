@@ -5,7 +5,7 @@ _Last updated: 2026-11-02 (Session 19)_
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
 ## Current Phase
-**Phase 4 — Modern Java** started 2026-10-31 (Session 19), **Checkpoint 3 still open — learner will do it in parallel with Phase 4** (their decision; consistent with the §9 pattern). 4.1 and 4.2 done (Practiced, 2026-11-01); 4.3 done (Practiced, 2026-11-02). **Next: 4.4 Collectors.** Notes in `phaseNote4.md`.
+**Phase 4 — Modern Java** started 2026-10-31 (Session 19), **Checkpoint 3 still open — learner will do it in parallel with Phase 4** (their decision; consistent with the §9 pattern). 4.1 and 4.2 done (Practiced, 2026-11-01); 4.3 done (Practiced, 2026-11-02). **Now on 4.4 Collectors** (`exercies/phase4/lesson4/`: `CollectorsDemo.java`, required debug `OrderSummary.java`). Notes in `phaseNote4.md`.
 
 **Phase 3 — Collections & Generics** (started 2026-10-10). **All 7 lessons of Phase 3 are complete (3.1–3.7).** **Checkpoint 3 issued 2026-10-19** (`assessments/checkpoint-3.md`, 40 points: A predict 10, B javac-reject 6, C debug 12, D collection choice 6, E explain 6). Deliberately has **no build part** — per the 2026-10-15 format decision, build work lives in Project 1, which carries 8 folded requirements. Pass bar: 32/40, ≥8/12 on Part C, Part E done. Answer keys for A and B were computed and verified by running them; not stored in the repo per Claude.md §4.
 After CP3: **Project 1 (Ledger CLI)**.
@@ -83,6 +83,7 @@ History: Checkpoint 1 was deferred 2026-09-22 (provisional ~34/42, blocked on Pa
 | 4.1 Lambdas & functional interfaces | Practiced | 2026-10-31: Ex1 8/8 (all four method names, wrong-arity lambda, effectively-final rule named exactly); didn't answer *which line* javac flags — it's the lambda's use of `base`, not `base = 20`. Ex2 `OrderRules` exact output 2026-11-01 (loop + effectively-final copy). |
 | 4.2 Method references | Practiced | 2026-11-01: Ex1 8/8 incl. both traps (bound receiver captured at creation → `X-2`; NPE at `none::concat` creation vs lazy lambda). Ex2 `OrderReport` 3/3, exact output. |
 | 4.3 Streams: pipelines, laziness, map/filter/reduce/flatMap | Practiced | 2026-11-02: Ex1 ~8/9 on substance — no-terminal-op → nothing runs ✅, short-circuit stops before `fig` ✅, single-use ISE + UOE as run time ✅. Literal slips returned (`Checking` for `check`, `10, 20, 30` without brackets) and omitted `before` from (5). Ex2 `OrderStats` 3/3 first pass, exact output, unused imports removed unprompted. |
+| 4.4 Collectors | Introduced | 2026-11-02: lesson delivered; Ex1 predictions + Ex2 `OrderSummary` debug pending |
 
 ### Phases 5–19
 Not Started (see `roadmap.md`).
