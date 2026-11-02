@@ -1,11 +1,11 @@
 # Learning Progress
 
-_Last updated: 2026-11-01 (Session 19)_
+_Last updated: 2026-11-02 (Session 19)_
 
 Status scale: Not Started → Introduced → Practiced → Comfortable → Mastered
 
 ## Current Phase
-**Phase 4 — Modern Java** started 2026-10-31 (Session 19), **Checkpoint 3 still open — learner will do it in parallel with Phase 4** (their decision; consistent with the §9 pattern). 4.1 and 4.2 done (Practiced, 2026-11-01). **Next: 4.3 Streams.** Notes in `phaseNote4.md`.
+**Phase 4 — Modern Java** started 2026-10-31 (Session 19), **Checkpoint 3 still open — learner will do it in parallel with Phase 4** (their decision; consistent with the §9 pattern). 4.1 and 4.2 done (Practiced, 2026-11-01); 4.3 done (Practiced, 2026-11-02). **Next: 4.4 Collectors.** Notes in `phaseNote4.md`.
 
 **Phase 3 — Collections & Generics** (started 2026-10-10). **All 7 lessons of Phase 3 are complete (3.1–3.7).** **Checkpoint 3 issued 2026-10-19** (`assessments/checkpoint-3.md`, 40 points: A predict 10, B javac-reject 6, C debug 12, D collection choice 6, E explain 6). Deliberately has **no build part** — per the 2026-10-15 format decision, build work lives in Project 1, which carries 8 folded requirements. Pass bar: 32/40, ≥8/12 on Part C, Part E done. Answer keys for A and B were computed and verified by running them; not stored in the repo per Claude.md §4.
 After CP3: **Project 1 (Ledger CLI)**.
@@ -82,6 +82,7 @@ History: Checkpoint 1 was deferred 2026-09-22 (provisional ~34/42, blocked on Pa
 |---|---|---|
 | 4.1 Lambdas & functional interfaces | Practiced | 2026-10-31: Ex1 8/8 (all four method names, wrong-arity lambda, effectively-final rule named exactly); didn't answer *which line* javac flags — it's the lambda's use of `base`, not `base = 20`. Ex2 `OrderRules` exact output 2026-11-01 (loop + effectively-final copy). |
 | 4.2 Method references | Practiced | 2026-11-01: Ex1 8/8 incl. both traps (bound receiver captured at creation → `X-2`; NPE at `none::concat` creation vs lazy lambda). Ex2 `OrderReport` 3/3, exact output. |
+| 4.3 Streams: pipelines, laziness, map/filter/reduce/flatMap | Practiced | 2026-11-02: Ex1 ~8/9 on substance — no-terminal-op → nothing runs ✅, short-circuit stops before `fig` ✅, single-use ISE + UOE as run time ✅. Literal slips returned (`Checking` for `check`, `10, 20, 30` without brackets) and omitted `before` from (5). Ex2 `OrderStats` 3/3 first pass, exact output, unused imports removed unprompted. |
 
 ### Phases 5–19
 Not Started (see `roadmap.md`).
@@ -131,6 +132,8 @@ Not Started (see `roadmap.md`).
 | Date | Exercise | Result | Notes |
 |---|---|---|---|
 | 2026-10-31 | L4.1 Ex1 lambda predictions | ✅ 8/8 | Values exact incl. `OK` uppercase; (5) `test` vs `apply` → cannot find symbol ✅; (6) arity mismatch → compile error with correct reason (actual text: `incompatible parameter types in lambda expression`); (7) exact error message. Sub-question (which line gets flagged) skipped — answer: the lambda line, caret under `base`. |
+| 2026-11-02 | L4.3 Ex2 OrderStats (REQUIRED) | ✅ 3/3 first pass | (1) single-use ISE → two separate `orders.stream()` pipelines. (2) `ArrayList`+`peek` (no terminal op, never ran) → `filter(isPaid).map(Order::id).toList()` — no outside mutation, as asked. (3) `map(Order::items).flatMap(List::stream)` — correct, method-ref style (equivalent to `flatMap(o -> o.items().stream())`). Removed the now-unused `ArrayList`/`Stream` imports unprompted; `-Xlint:all` clean. Exception text and the (2) one-liner not sent — not chased, Ex1 (4) already showed the no-terminal-op rule. |
+| 2026-11-02 | L4.3 Ex1 stream predictions | ✅ ~8/9 substance, ⚠️ literals | (1)(2)(3)(7) exact. (4) correctly said the `peek` prints nothing (no terminal op). (5) right sequence `apple, kiwi, banana` then `banana`, correctly stopping before `fig` — but wrote `Checking` for the literal `check` and left out the `before` line that prints first. (6) `10, 20, 30` — values right, brackets dropped. (8) ISE run time ✅, (9) UOE run time ✅, and unprompted noted (9) is unreachable once (8) throws — correct. **Exact-literal precision slipped again (2 items)** after looking resolved in L3.4. |
 | 2026-11-01 | L4.2 Ex2 OrderReport (REQUIRED) | ✅ 3/3 first pass | (1) `String::parseInt` → `Integer::parseInt` (compile). (2) added `.reversed()` (silent wrong order). (3) deleted the `paidIds = new ArrayList<>()` reassignment so the bound `paidIds::add` and the printed list are the same object (silent empty list). Error text and the (3) one-liner not sent — not chased: Ex1 (5) already showed the bound-receiver mechanism is understood. Blank line left where the deleted line was. |
 | 2026-11-01 | L4.2 Ex1 method-ref predictions | ✅ 8/8 | All values exact. Got the two lesson traps: (5) `X-2` after reassigning `p` (bound receiver fixed at creation) and (7)/(8) lambda line safe vs NPE at `none::concat`. (6) gave the reason ("Integer has no length") without the category word — it's compile-time `invalid method reference`. (7) said "compiles" — right; also doesn't throw at run time. |
 | 2026-11-01 | L4.1 Ex2 OrderRules (REQUIRED) | ✅ exact output | `apply`→`test` ✅, `Supplier` param removed ✅. Capture error solved by replacing `forEach` lambda with an enhanced `for` (mutation outside any lambda) + copying into `final long total1` for the footer lambda — valid; `final` keyword itself redundant (effectively final suffices). Pasted round-1 errors (one was a self-inflicted `reached end of file while parsing` from a mid-edit brace). Q1 ✅ in substance ("total har iteration pe badal raha hai"). Q2 (JS comparison) not answered — code demonstrates the fix, not chased per §10. Left the unused `paidCount` local. |

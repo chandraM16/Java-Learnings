@@ -75,3 +75,107 @@ Function<String,String> f = none::concat;      // NPE right HERE, at creation (O
 - Use a method reference when it's *just* forwarding to a method: `System.out::println`, `Order::id`.
 - Keep the lambda when there's any extra logic (`o -> o.amountPaise() / 100`), or when the reference would be less readable than the lambda.
 - Wrong class → `invalid method reference ... cannot find symbol` (e.g. `String::parseInt` — `parseInt` lives on `Integer`).
+
+---
+
+## 4.3 Streams: pipelines, laziness, `map`/`filter`/`reduce`/`flatMap`
+
+### Shape of a pipeline
+```java
+long total = orders.stream()                  // source (collection, array, Stream.of, IntStream.range…)
+        .filter(o -> o.status().equals("PAID"))   // intermediate — lazy, returns a new Stream
+        .mapToLong(Order::amountPaise)            // intermediate
+        .sum();                                   // terminal — runs the whole pipeline, returns a result
+```
+- A **stream** is not a data structure. It holds no data of its own, and it **never modifies the source**.
+- **Intermediate ops** (`filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`, `peek`) only build the pipeline.
+- **Terminal ops** (`toList`, `count`, `sum`, `reduce`, `forEach`, `findFirst`, `anyMatch`, `collect`) trigger execution.
+
+### Laziness
+- No terminal op → **nothing runs at all** (a `peek`/`map` with side effects silently does nothing).
+- Elements flow **one at a time through the whole pipeline** (A1 filter → A1 map → …), not stage by stage like JS array methods.
+- **Short-circuiting** terminals (`findFirst`, `anyMatch`, `limit`) stop as soon as the answer is known — later elements are never touched.
+- JS comparison: `arr.filter().map()` is eager and builds a full intermediate array per step. Java streams behave like a lazy iterator.
+
+### Single-use
+- A stream can be consumed once. Second terminal op → `IllegalStateException: stream has already been operated upon or closed` (run time). Need it twice → call `.stream()` twice (or collect to a list first).
+
+### Core ops
+| Op | Shape | Example |
+|---|---|---|
+| `filter(Predicate)` | keep some | `.filter(o -> o.amountPaise() > 0)` |
+| `map(Function)` | 1 → 1 | `.map(Order::id)` |
+| `flatMap(Function<T, Stream<R>>)` | 1 → 0..n, flattened | `.flatMap(o -> o.items().stream())` |
+| `reduce(identity, BinaryOperator)` | many → 1 | `.reduce(0, Integer::sum)` |
+| `mapToLong`/`mapToInt` + `sum`/`average`/`max` | primitive stream, no boxing | `.mapToLong(Order::amountPaise).sum()` |
+
+- `map(Order::items)` gives a `Stream<List<String>>` (lists as elements). Wanted the items → `flatMap`.
+- `reduce` identity must be neutral for the op (`0` for sum, `1` for product). A wrong identity is a silent bug.
+- `.toList()` (Java 16+) returns an **unmodifiable** list → `add` throws `UnsupportedOperationException`.
+
+### Rule: no side effects in the pipeline
+Don't `add` to an outside list from `peek`/`map`/`forEach`. Build the result *with* the stream (`.map(...).toList()`, `sum`, collectors in 4.4). Side effects + laziness = code that silently doesn't run, and breaks under `parallel()`.
+
+---
+
+## Stream cheat sheet — most-used operations (with use cases)
+
+All examples run against this data (outputs verified on JDK 25, 2026-11-02):
+```java
+record Order(String id, String customer, long amountPaise, String status, List<String> items) {}
+// A1 meera  49900 PAID      [pen, book]
+// A2 zoya  150000 CANCELLED [laptop]
+// A3 meera 275000 PAID      [book, bag]
+// A4 arjun   9900 PAID      [pen]
+```
+
+### Sources — where a stream comes from
+| Call | Use case |
+|---|---|
+| `list.stream()` / `set.stream()` | The 95% case: process a collection. |
+| `map.entrySet().stream()` | Process a map's key/value pairs (e.g. rank customers by count). |
+| `Stream.of(a, b, c)` | Few fixed values, quick tests. |
+| `Arrays.stream(arr)` | Arrays (`int[]` gives an `IntStream`). `Arrays.stream(new int[]{3, 4}).sum()` → `7` |
+| `IntStream.range(0, n)` / `rangeClosed(1, n)` | Index-based loops without `for (int i…)`. `rangeClosed(1, 3).boxed().toList()` → `[1, 2, 3]` |
+
+### Intermediate — lazy, return a new stream
+| Op | What it does | Typical backend use case | Example → result |
+|---|---|---|---|
+| `filter(Predicate)` | keep only matching elements | only PAID orders, only active users, drop blank lines | `.filter(o -> o.status().equals("PAID")).count()` → `3` |
+| `map(Function)` | transform each element 1 → 1 | entity → DTO, order → id, trim/normalise strings | `.map(Order::id)` → `A1, A2, …` |
+| `mapToInt` / `mapToLong` / `mapToDouble` | map to a primitive stream (no boxing) | anything you'll `sum`/`average`/`max` next | `.mapToLong(Order::amountPaise).sum()` → `484800` |
+| `flatMap(Function<T, Stream<R>>)` | 1 → many, flattened | all line items across orders, all roles across users, all words across lines | `.flatMap(o -> o.items().stream()).distinct()` → `[pen, book, laptop, bag]` |
+| `distinct()` | remove duplicates (uses `equals`/`hashCode`) | unique customers, unique tags | `.map(Order::customer).distinct()` → `[meera, zoya, arjun]` |
+| `sorted()` | natural order (`Comparable`) | alphabetical names | `.map(Order::customer).distinct().sorted()` → `[arjun, meera, zoya]` |
+| `sorted(Comparator)` | custom order | biggest orders first, newest first | `.sorted(Comparator.comparingLong(Order::amountPaise).reversed())` |
+| `limit(n)` | first n only (short-circuits) | top-N report, preview of results | `…reversed()).limit(2).map(Order::id)` → `[A3, A2]` |
+| `skip(n)` | drop first n | offset-style pagination, skip a CSV header | `.skip(2).map(Order::id)` → `[A3, A4]` |
+| `takeWhile(Predicate)` | take while true, stop at first false | read a sorted log until a cutoff time | `Stream.of(5, 8, 12, 3, 20).takeWhile(n -> n < 10)` → `[5, 8]` |
+| `dropWhile(Predicate)` | drop while true, keep the rest | skip leading comment lines | same data `.dropWhile(n -> n < 10)` → `[12, 3, 20]` |
+| `boxed()` | `IntStream` → `Stream<Integer>` | when you need `toList()` / collectors on a primitive stream | see `rangeClosed` above |
+| `peek(Consumer)` | look at elements as they pass | **debugging only** — never for real side effects (may not run) | `.peek(o -> System.out.println(o))` |
+
+### Terminal — run the pipeline, produce a result
+| Op | Returns | Typical use case | Example → result |
+|---|---|---|---|
+| `toList()` | unmodifiable `List` | the default way to get a list back | `.map(Order::id).toList()` |
+| `count()` | `long` | how many match | `.filter(isPaid).count()` → `3` |
+| `sum()` / `average()` / `max()` / `min()` (primitive streams) | number / `OptionalDouble` / `OptionalLong` | totals, averages, peaks | `.average()` → `OptionalDouble[121200.0]` (empty stream has no average → Optional) |
+| `max(Comparator)` / `min(Comparator)` | `Optional<T>` | the biggest *object*, not just the number | `.max(Comparator.comparingLong(Order::amountPaise)).map(Order::id)` → `Optional[A3]` |
+| `findFirst()` | `Optional<T>` | first match, e.g. first failed payment (short-circuits) | `.filter(o -> o.amountPaise() > 100000).findFirst().map(Order::id).orElse("none")` → `A2` |
+| `anyMatch(Predicate)` | `boolean` | "is there any cancelled order?" — validation | `.anyMatch(o -> o.status().equals("CANCELLED"))` → `true` |
+| `allMatch(Predicate)` | `boolean` | "are all amounts positive?" — invariants | `.allMatch(o -> o.amountPaise() > 0)` → `true` |
+| `noneMatch(Predicate)` | `boolean` | "no blank customer names?" | `.noneMatch(o -> o.customer().isBlank())` → `true` |
+| `reduce(identity, BinaryOperator)` | `T` | custom fold when there's no ready-made op | `.map(Order::amountPaise).reduce(0L, Long::sum)` → `484800` |
+| `forEach(Consumer)` | `void` | final side effect: print, send, log | `.forEach(System.out::println)` |
+| `toArray(String[]::new)` | array | APIs that still need arrays | `.map(Order::id).toArray(String[]::new)` |
+| `collect(Collector)` | anything | grouping, maps, joining — **4.4** | `.collect(Collectors.joining(", ", "[", "]"))` → `[A1, A2, A3, A4]`; `groupingBy(Order::customer, counting())` → `{meera=2, zoya=1, arjun=1}` |
+
+### Picking the right one — quick rules
+- Want **some** elements → `filter`. Want **changed** elements → `map`. Want **inner** elements of a collection field → `flatMap`.
+- Going to add numbers → `mapToLong`/`mapToInt` first, then `sum`/`average`. `Stream<Long>` has no `sum()`.
+- Want a yes/no → `anyMatch`/`allMatch`/`noneMatch`, not `filter(...).count() > 0` (the match ops stop early).
+- Want the biggest *object* → `max(Comparator)`; want just the biggest *number* → `mapToLong(...).max()`.
+- Anything that may find nothing (`findFirst`, `max`, `min`, `average`) returns an **`Optional`** — handled properly in 4.5.
+- Want a `Map` back → `collect(Collectors.groupingBy/toMap/…)` — 4.4.
+- `distinct()` only works as expected if the element type has proper `equals`/`hashCode` (Phase 2.3). Records get them automatically.

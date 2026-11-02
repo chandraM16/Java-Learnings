@@ -201,3 +201,11 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **Bound vs unbound method reference** — bound (`obj::m`): receiver object abhi fix ho jaata hai (null ho to turant NPE). Unbound (`Type::m`): receiver baad mein pehle argument ke roop mein aata hai.
 - **Receiver** — wo object jis par method call hota hai (`s.length()` mein `s`).
 - **Key extractor** — `Function` jo object se compare karne wali value nikalta hai, jaise `Comparator.comparing(Order::amountPaise)` mein.
+- **Stream** — elements ki lazy pipeline jo ek source (collection, array…) se aati hai. Data store nahi karta, source ko modify nahi karta, sirf ek baar use ho sakta hai.
+- **Intermediate operation** — `filter`, `map`, `flatMap`, `sorted`, `limit`… — naya stream return karta hai, khud kuch nahi chalata (lazy).
+- **Terminal operation** — `toList`, `count`, `sum`, `reduce`, `findFirst`, `forEach`… — pipeline ko chalata hai aur result deta hai. Iske baad stream khatam.
+- **Lazy evaluation** — kaam tab tak nahi hota jab tak result maanga na jaye (terminal op).
+- **Short-circuiting** — operation jo answer milte hi ruk jaata hai (`findFirst`, `anyMatch`, `limit`), baaki elements chhoota hi nahi.
+- **`flatMap`** — har element ko ek stream mein badalta hai aur sab streams ko ek flat stream mein jod deta hai (list of lists → ek list).
+- **`reduce`** — saare elements ko ek value mein fold karta hai: `reduce(identity, (acc, x) -> …)`. Identity neutral honi chahiye (sum ke liye 0).
+- **Primitive stream** — `IntStream`/`LongStream`/`DoubleStream`; boxing nahi, aur `sum()`/`average()` jaise methods milte hain.
