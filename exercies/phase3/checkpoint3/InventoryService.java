@@ -1,8 +1,6 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,20 +9,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Checkpoint 3 — Part C (debug).
- *
- * Is file mein BAARAH bugs hain, Phase 3 ke poore range se (3.1-3.7),
- * aur ek Phase 2 ka purana wala bhi.
- * Kuch compile time pe pakde jaayenge, kuch run time pe, aur kuch
- * CHUP-CHAAP galat jawab denge (koi error nahi).
- *
- * Kaam: baarah bugs dhoondho, fix karo, aur sahi output nikaalo.
- * `main` ko badalne ki zaroorat nahi — bugs baaki code mein hain.
- */
 public class InventoryService {
 
-    /** Ek SKU (stock keeping unit). */
     static final class Sku implements Comparable<Sku> {
         private final String code;
         private final int warehouseId;
@@ -36,14 +22,23 @@ public class InventoryService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Sku other)) return false;
-            return warehouseId == other.warehouseId && Objects.equals(code, other.code);
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            Sku sku = (Sku) o;
+            return warehouseId == sku.warehouseId && Objects.equals(code, sku.code);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.warehouseId, this.code);
         }
 
         @Override
         public int compareTo(Sku other) {
-            return this.warehouseId - other.warehouseId;
+            int c = Integer.compare(warehouseId, other.warehouseId);
+            return c != 0 ? c : this.code.compareTo(other.code);
         }
 
         @Override
@@ -61,30 +56,34 @@ public class InventoryService {
             this.urgency = urgency;
         }
 
-        int getUrgency() { return urgency; }
+        int getUrgency() {
+            return urgency;
+        }
 
         @Override
-        public String toString() { return sku + "/u" + urgency; }
+        public String toString() {
+            return sku + "/u" + urgency;
+        }
     }
 
-    private final Map stockBySku = new HashMap();
-    private final List<String> auditLog = new LinkedList<>();
+    private final Map<String, Integer> stockBySku = new HashMap<>();
+    private final List<String> auditLog = new ArrayList<>();
 
     public void receive(String sku, int quantity) {
-        if (quantity < 0) {
+        if (quantity <= 0) {
             throw new IllegalArgumentException("quantity must be > 0");
         }
-        stockBySku.put(sku, quantity);
+        stockBySku.put(sku, stockBySku.getOrDefault(sku, 0) + quantity);
         auditLog.add("received " + quantity + " of " + sku);
     }
 
     public int stockOf(String sku) {
-        return (int) stockBySku.get(sku);
+        return stockBySku.get(sku);
     }
 
     /** auditLog mein se "received" wali saari lines hata do. */
     public void purgeReceipts() {
-        for (String line : auditLog) {
+        for (String line : new ArrayList<>(auditLog)) {
             if (line.startsWith("received")) {
                 auditLog.remove(line);
             }
@@ -103,15 +102,16 @@ public class InventoryService {
     }
 
     /** Restocks ko urgency order mein print karo (sabse urgent pehle). */
-    public void printRestockPlan(Queue<Restock> queue) {
+    private void printRestockPlan(Queue<Restock> queue) {
         System.out.println("restock plan:");
-        for (Restock r : queue) {
-            System.out.println("  " + r);
+        while (!queue.isEmpty()) {
+            System.out.println("  " + queue.poll());
         }
+
     }
 
     /** Kisi bhi number list ka total quantity. */
-    public static double totalQuantity(List<Number> quantities) {
+    public static double totalQuantity(List<? extends Number> quantities) {
         double total = 0;
         for (Number n : quantities) {
             total += n.doubleValue();
@@ -120,7 +120,7 @@ public class InventoryService {
     }
 
     public List<String> getAuditLog() {
-        return Collections.unmodifiableList(auditLog);
+        return List.copyOf(auditLog);
     }
 
     public static void main(String[] args) {
