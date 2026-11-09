@@ -16,17 +16,21 @@ Jo part ka jawab nahi doge, uske points 0 hain (CP2 ki tarah) — par is baar ko
 
 ## Scoring (40 points)
 
-| Part | Kya | Points |
-|---|---|---|
-| A | Predict output | 10 |
-| B | javac kaunsi lines reject karega | 6 |
-| C | Debug `InventoryService` (12 bugs) | 12 |
-| D | Sahi collection chuno | 6 |
-| E | Apne shabdon mein samjhao | 6 |
+
+| Part | Kya                                | Points |
+| ---- | ---------------------------------- | ------ |
+| A    | Predict output                     | 10     |
+| B    | javac kaunsi lines reject karega   | 6      |
+| C    | Debug `InventoryService` (12 bugs) | 12     |
+| D    | Sahi collection chuno              | 6      |
+| E    | Apne shabdon mein samjhao          | 6      |
+
 
 **Pass:** kam se kam **32/40**, **aur** Part C mein kam se kam **8/12**, **aur** Part E poora.
 
 ---
+
+
 
 ## Part A: Predict (10 points, 1 each)
 
@@ -124,6 +128,8 @@ public class PartA {
 
 ---
 
+
+
 ## Part B: javac kaunsi lines reject karega? (6 points, 1 each)
 
 **Run mat karo.** Har line ke liye: **reject** ya **ok**. (Jo reject hon, unke liye ek-do shabd mein wajah bhi.)
@@ -142,11 +148,14 @@ class Holder<T> { T[] make() { return new T[4]; } } // B6
 
 ---
 
+
+
 ## Part C: Debug `InventoryService` (12 points)
 
 File: `exercies/phase3/checkpoint3/InventoryService.java`
 
 Isme **baarah bugs** hain, Phase 3 ke poore range se (aur ek Phase 2 ka purana wala bhi). Teen category ke hain:
+
 - kuch **compile** hone hi nahi denge
 - kuch **run time** pe exception denge
 - kuch **chup-chaap galat jawab** denge — koi error nahi, bas galat number
@@ -158,6 +167,7 @@ cd "exercies/phase3/checkpoint3" && javac -Xlint:unchecked InventoryService.java
 ```
 
 Bhejo:
+
 1. Fixed file.
 2. Asli output.
 3. Har bug ke liye **ek line**: `line N — kya galat tha`. (Category ka naam likhne ki zaroorat nahi — bas kya galat tha.)
@@ -165,6 +175,7 @@ Bhejo:
 Scoring: **har bug 1 point (12 total)**. Sahi final output khud saboot hai ki fixes kaam kar gaye.
 
 **Hint, kyunki kuch bugs chup-chaap hain:** output dekh ke ye chaar sawaal poochho —
+
 - `ABC-1` ka stock 10 aur phir 3 aaya; final kya **hona** chahiye?
 - `skus` mein teen SKU daale; kitne dikhne chahiye?
 - `hashSkus` mein ek hi SKU do baar daala; size kya hona chahiye?
@@ -172,20 +183,26 @@ Scoring: **har bug 1 point (12 total)**. Sahi final output khud saboot hai ki fi
 
 ---
 
+
+
 ## Part D: Sahi collection chuno (6 points, 1 each)
 
 Har scenario ke liye ek collection + ek chhoti wajah (ek line).
 
-| # | Scenario |
-|---|---|
-| D1 | 50,000 user IDs; bas ye poochhna hai "ye ID list mein hai?" — lakhon baar |
-| D2 | HTTP request ke headers, aur response mein wahi order chahiye jisme aaye the |
-| D3 | Pricing tiers (0, 1000, 5000) aur poochhna hai "₹3000 kharch pe kaunsa tier?" |
-| D4 | Background jobs, sabse urgent pehle chalana hai |
-| D5 | Ek sliding window — naye events peeche add, purane aage se nikaalo, 100k/sec |
-| D6 | Ek config map jo service start pe bharti hai aur uske baad kabhi nahi badalti; galti se badalne ki koshish pakdi jaani chahiye |
+
+| #                                                  | Scenario                                                                                                                       |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| D1 ArrayList, easy lookup (O(1))                   | 50,000 user IDs; bas ye poochhna hai "ye ID list mein hai?" — lakhon baar                                                      |
+| D2 LinkedHash, insertion order maintain rhta hai   | HTTP request ke headers, aur response mein wahi order chahiye jisme aaye the                                                   |
+| D3 treeMap, 'range' Api milti hai                  | Pricing tiers (0, 1000, 5000) aur poochhna hai "₹3000 kharch pe kaunsa tier?"                                                  |
+| D4 Priority Queue, urgency ke base pe job chalege | Background jobs, sabse urgent pehle chalana hai                                                                                |
+| D5 Array Deque, FIFO deta hai                      | Ek sliding window — naye events peeche add, purane aage se nikaalo, 100k/sec                                                   |
+| D6 hashmap with final keyword                      | Ek config map jo service start pe bharti hai aur uske baad kabhi nahi badalti; galti se badalne ki koshish pakdi jaani chahiye |
+
 
 ---
+
+
 
 ## Part E: Apne shabdon mein (6 points, 2 each)
 
@@ -198,6 +215,8 @@ Do sentence har ek. Notes se copy nahi — apne shabdon mein.
 **E3.** `list.sort(...)` ki signature `Comparator<? super E>` hai, `Comparator<E>` nahi. PECS ke hisaab se `super` kyun — aur isse aapko kya **extra** karne ko milta hai jo `Comparator<E>` se nahi milta?
 
 ---
+
+
 
 ## Submission
 
