@@ -962,6 +962,72 @@ Sabak dono taraf ka hai: order ki **koi guarantee nahi** — na insertion, aur n
 
 ---
 
+## CP3 ke chaar naye sabak (2026-11-09)
+
+### 1. Array runtime pe apna type yaad rakhta hai — generics nahi
+
+- **Kya:** `new T[10]` illegal hai. Wajah "javac ko type nahi pata" **nahi** hai — javac ko pata hota hai, wahi generics ka point hai.
+- **Kyun:** array ko **runtime** pe apna component type chahiye (har store pe check karta hai). Erasure runtime se `T` hata deta hai. Do requirements aapas mein ulti hain.
+- **Saboot ki array ko runtime pe type pata hai:**
+
+```java
+Object[] objs = new String[2];
+objs[0] = 42;        // javac khush hai (Object[] mein Object daal rahe hain)
+// → Exception in thread "main" java.lang.ArrayStoreException: java.lang.Integer
+//    array khud jaanta hai "main String[] hoon"
+```
+
+- **Isi ek wajah se teen cheezein illegal hain:**
+
+```java
+T[] arr = new T[10];                        // ❌ generic array creation
+if (x instanceof List<String>) { }          // ❌ illegal generic type for instanceof
+void f(List<String> a) {}                   // ❌
+void f(List<Integer> a) {}                  //    same erasure → "name clash"
+```
+
+### 2. `final` immutability nahi deta — sirf reference lock karta hai
+
+- **Kya:** `final` ka matlab hai "is variable ko dobara assign nahi kar sakte". Object ke **andar** kya ho raha hai, usse koi lena-dena nahi.
+- **Kab fasta hai:** jab "config start pe bhar do, phir kabhi na badle" jaisa requirement ho — aur accidental change **pakda** jaana chahiye.
+
+```java
+private final Map<String, String> config = new HashMap<>();
+config.put("x", "y");                    // ✅ chal gaya! final ne nahi roka
+// config = new HashMap<>();             // ❌ yeh rukta hai — bas itna hi final karta hai
+
+private final Map<String, String> safe = Map.copyOf(loadFromEnv());
+safe.put("x", "y");                      // → UnsupportedOperationException ✅ pakda gaya
+```
+
+### 3. "Lookup" ke do matlab hote hain — scenario padh ke decide karo
+
+```java
+List<Long> ids = ...;      // 50,000 IDs
+ids.get(5);                // by INDEX  → O(1)   ← isse "ArrayList fast hai" ka bhram hota hai
+ids.contains(id);          // by VALUE  → O(n)   ← poora scan, 50,000 comparisons
+
+Set<Long> idSet = new HashSet<>(ids);
+idSet.contains(id);        // by VALUE  → O(1) average  ✅ hash se seedha bucket
+```
+
+**Rule:** container ka naam nahi, **operation** dekho. "Ye ID hai ya nahi?" lakhon baar = `HashSet`, hamesha.
+
+### 4. `? super E` ka asli faayda (E3)
+
+```java
+static final Comparator<Person> BY_NAME = Comparator.comparing(p -> p.name);
+
+List<Employee> emps = ...;        // Employee extends Person
+emps.sort(BY_NAME);               // ✅ chalta hai, kyunki signature Comparator<? super E> hai
+// → [alice/70, bob/80, carol/90]
+```
+
+- Comparator elements **consume** karta hai (leta hai, deta nahi) → PECS se `super`.
+- Agar signature `Comparator<E>` hoti to `Comparator<Person>` reject hota (invariance) — aur har subclass ke liye alag comparator likhna padta.
+
+---
+
 ## Mistakes I keep making (check these first)
 
 ```java
@@ -976,4 +1042,8 @@ LinkedHashMap  // expecting sorted       // ❌ insertion order ≠ sorted → T
 for (String t : list) list.remove(t);    // ❌ CME (or a silent skip) → list.removeIf(...)
 compareTo using only some fields         // ❌ TreeSet silently drops "equal" items → same fields as equals
 return a - b;  // in compareTo           // ❌ overflow → Integer.compare(a, b)
+list.contains(x)  // 50k ArrayList pe   // ❌ O(n) har call → new HashSet<>(list).contains(x)
+private final Map<..> c = new HashMap<>() // ❌ final ≠ immutable → Map.copyOf(...)
+"javac ko T ka type nahi pata"           // ❌ javac KO pata hai; JVM ko nahi (erasure)
+ek line ka ek bug fix kiya → aage badh gaya // ❌ ek line pe do bug ho sakte hain (CP3 compareTo)
 ```

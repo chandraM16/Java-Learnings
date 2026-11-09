@@ -216,3 +216,11 @@ Alphabetical. One or two lines each. Added as terms are introduced.
 - **`toMap`** — har element se ek key → ek value. Duplicate key par merge function nahi diya to run-time `IllegalStateException`.
 - **Merge function** — `toMap` ka teesra argument; same key ki do values ko kaise milaana hai (`Long::sum`).
 - **Static import** — `import static pkg.Class.*;` — class ke static members bina class naam ke use karo (`groupingBy` instead of `Collectors.groupingBy`).
+
+## Checkpoint 3 (2026-11-09)
+
+- **ArrayStoreException** — runtime exception thrown when a value of the wrong type is stored into an array. Proof that an array knows its component type at runtime (`Object[] o = new String[2]; o[0] = 42;`), which is exactly why `new T[10]` cannot work after erasure.
+- **Component type** — the element type an array object carries at runtime (`String` for a `String[]`). Generic type arguments have no runtime equivalent; that asymmetry is the whole generic-array problem.
+- **Invariance (restated)** — `List<Integer>` is not a `List<Number>`, and `Comparator<Person>` is not a `Comparator<Employee>`. Wildcards exist to re-open the door selectively: `? extends` for reading, `? super` for writing/consuming.
+- **`final` vs immutable** — `final` prevents re-assigning the *variable*; it says nothing about mutating the object it points at. For a map that must not change, publish it with `Map.copyOf(...)` so a stray `put` throws `UnsupportedOperationException`.
+- **Membership lookup vs index lookup** — `list.get(i)` is O(1) on an `ArrayList`; `list.contains(x)` is O(n). "Lookup is fast" is only true for the first one — for the second, use a `HashSet`.
