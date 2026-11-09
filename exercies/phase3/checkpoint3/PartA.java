@@ -115,3 +115,18 @@ public class PartA {
         }
     }
 }
+// A1 2 7
+// A2 0
+// A3a [10, 20, 90, 50]
+// A3b 10 20 50 90
+// A4 true
+// A5 HashMap -> Random order
+// A5 LinkedHashMap {PAID=1, SHIPPED=2, REFUNDED=3, CANCELLED=4}
+// A5 TreeMap {CANCELLED=4, PAID=1, REFUNDED=3, SHIPPED=2}
+// A6 2
+// A7a [10, 30]
+// A7b [20, 30]
+// A8 [a, b] [a]
+// A9 20 null {10=a}
+// A10a ok [X, q]
+// A10b ConcurrentModificationException
