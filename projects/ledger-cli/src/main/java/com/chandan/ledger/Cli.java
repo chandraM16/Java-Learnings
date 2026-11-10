@@ -2,6 +2,7 @@ package com.chandan.ledger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class Cli {
@@ -69,15 +70,15 @@ public class Cli {
         }
 
         try {
-            LocalDate date = LocalDate.parse(parts[0]);
-            BigDecimal amount = new BigDecimal(parts[1]);
-            Category category = Category.valueOf(parts[2].toUpperCase());
+            LocalDate date = parseDate(parts[0]);
+            BigDecimal amount = parseAmount(parts[1]);
+            Category category = parseCategory(parts[2]);
             String description = parts[3];
 
             Expense expense = ledger.add(date, amount, category, description);
             IO.println("Added #" + expense.getId() + ": " + expense.toLine());
-        } catch (RuntimeException e) {
-            IO.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            IO.println("Error: " + e.getMessage());
         }
 
     }
@@ -106,5 +107,42 @@ public class Cli {
         IO.println("  quit");
         IO.println("Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER");
 
+    }
+
+    private LocalDate parseDate(String dateStr){
+        LocalDate date;
+        try {
+            date = LocalDate.parse(dateStr);
+        }
+        catch (DateTimeParseException e){
+            throw new IllegalArgumentException("invalid date '" + dateStr + "' (expected yyyy-mm-dd)");
+        }
+        if(date.isAfter(LocalDate.now())){
+            throw new IllegalArgumentException("date is in the future: " + date);
+        }
+        return date;
+    }
+    private BigDecimal parseAmount(String amountStr){
+        BigDecimal amount;
+        try {
+            amount = new BigDecimal(amountStr);
+        }
+        catch (NumberFormatException e){
+            throw new IllegalArgumentException("invalid amount '" + amountStr +"'");
+        }
+        if(amount.signum() <= 0 || amount.stripTrailingZeros().scale() > 2 ){
+            throw new IllegalArgumentException("amount must be positive with at most 2 decimals: '" + amountStr + "'add 2026-11-05 -40 FOOD Chai");
+        }
+        return amount;
+    }
+
+    private Category parseCategory(String categoryString){
+        Category category;
+        try {
+            category = Category.valueOf(categoryString.strip().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("unknown category '"+ categoryString +"' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
+        }
+        return category;
     }
 }
