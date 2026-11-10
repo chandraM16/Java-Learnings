@@ -2,7 +2,8 @@ package com.chandan.ledger;
 
 public class Main {
     static void main() {
-        Cli cli = new Cli();
+        Ledger ledger = new Ledger();
+        Cli cli = new Cli(ledger);
         cli.run();
     }
 }

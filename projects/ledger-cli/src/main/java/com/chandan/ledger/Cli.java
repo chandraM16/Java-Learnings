@@ -1,6 +1,12 @@
 package com.chandan.ledger;
 
 public class Cli {
+    private final Ledger ledger;
+
+    public Cli(Ledger ledger) {
+        this.ledger = ledger;
+    }
+
     public void run() {
         IO.println("Ledger CLI. Type 'help' for commands.");
         while (true) {
