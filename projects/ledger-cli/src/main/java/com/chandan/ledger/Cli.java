@@ -35,7 +35,7 @@ public class Cli {
             }
             case "quit" -> false;
             default -> {
-                IO.println("Error: unknown command: '" + parts[0] + "'. Type 'Help'.");
+                IO.println("Error: unknown command '" + parts[0] + "'. Type 'help'.");
                 yield true;
             }
         };
@@ -43,11 +43,11 @@ public class Cli {
 
     private void printHelp() {
         IO.println("Commands:");
-        IO.println(" add <yyyy-mm-dd> <amount> <category> <description>");
+        IO.println("  add <yyyy-mm-dd> <amount> <category> <description>");
         IO.println("  list");
-        IO.println(" delete <id>");
-        IO.println(" help");
-        IO.println(" quit");
+        IO.println("  delete <id>");
+        IO.println("  help");
+        IO.println("  quit");
         IO.println("Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER");
 
     }
