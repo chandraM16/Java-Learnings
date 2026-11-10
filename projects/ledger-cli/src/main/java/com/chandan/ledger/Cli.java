@@ -53,6 +53,10 @@ public class Cli {
                 printList();
                 yield true;
             }
+            case "delete" -> {
+                deleteExpense(args);
+                yield true;
+            }
             case "quit" -> false;
             default -> {
                 IO.println("Error: unknown command '" + parts[0] + "'. Type 'help'.");
@@ -64,7 +68,7 @@ public class Cli {
     private void addExpense(String args) {
         String[] parts = args.split("\\s+", 4);
 
-        if(parts.length < 4){
+        if (parts.length < 4) {
             IO.println("Error: usage: add <yyyy-mm-dd> <amount> <category> <description>");
             return;
         }
@@ -81,6 +85,26 @@ public class Cli {
             IO.println("Error: " + e.getMessage());
         }
 
+    }
+
+    private void deleteExpense(String args) {
+        if (args.isBlank()) {
+            IO.println("Error: usage: delete <id>");
+            return;
+        }
+        String[] parts = args.split("\\s+", 2);
+
+        try {
+            long id = parseId(parts[0]); // taking 1st id and ignoring rest of args
+            boolean isRemoved = ledger.delete(id);
+            if (isRemoved) {
+                IO.println("Deleted #" + id);
+            } else {
+                IO.println("Error: no expense with id " + id);
+            }
+        } catch (IllegalArgumentException e) {
+            IO.println(e.getMessage());
+        }
     }
 
     private void printList() {
@@ -109,40 +133,49 @@ public class Cli {
 
     }
 
-    private LocalDate parseDate(String dateStr){
+    private LocalDate parseDate(String dateStr) {
         LocalDate date;
         try {
             date = LocalDate.parse(dateStr);
-        }
-        catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("invalid date '" + dateStr + "' (expected yyyy-mm-dd)");
         }
-        if(date.isAfter(LocalDate.now())){
+        if (date.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("date is in the future: " + date);
         }
         return date;
     }
-    private BigDecimal parseAmount(String amountStr){
+
+    private BigDecimal parseAmount(String amountStr) {
         BigDecimal amount;
         try {
             amount = new BigDecimal(amountStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("invalid amount '" + amountStr + "'");
         }
-        catch (NumberFormatException e){
-            throw new IllegalArgumentException("invalid amount '" + amountStr +"'");
-        }
-        if(amount.signum() <= 0 || amount.stripTrailingZeros().scale() > 2 ){
+        if (amount.signum() <= 0 || amount.stripTrailingZeros().scale() > 2) {
             throw new IllegalArgumentException("amount must be positive with at most 2 decimals: '" + amountStr + "'add 2026-11-05 -40 FOOD Chai");
         }
         return amount;
     }
 
-    private Category parseCategory(String categoryString){
+    private Category parseCategory(String categoryString) {
         Category category;
         try {
             category = Category.valueOf(categoryString.strip().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("unknown category '"+ categoryString +"' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
+            throw new IllegalArgumentException("unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
         }
         return category;
+    }
+
+    private long parseId(String idString) {
+        long id;
+        try {
+            id = Long.parseLong(idString);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Error: invalid id '" + idString + "'");
+        }
+        return id;
     }
 }
