@@ -1,0 +1,35 @@
+Ledger CLI. Type 'help' for commands.
+> No expenses yet.
+> Added #1: 2026-11-03 FOOD         249.50  Lunch at office
+> Added #2: 2026-11-01 RENT       18000.00  November rent
+> Added #3: 2026-11-03 TRAVEL       120.00  Metro card recharge
+> Added #4: 2026-11-02 OTHER          0.10  test
+> > #2   2026-11-01 RENT       18000.00  November rent
+#4   2026-11-02 OTHER          0.10  test
+#1   2026-11-03 FOOD         249.50  Lunch at office
+#3   2026-11-03 TRAVEL       120.00  Metro card recharge
+Total: 18369.60 (4 expenses)
+> Error: amount must be positive with at most 2 decimals: '99.999'
+> Error: amount must be positive with at most 2 decimals: '-40'
+> Error: invalid amount 'abc'
+> Error: invalid date '2026-13-01' (expected yyyy-mm-dd)
+> Error: date is in the future: 2099-01-01
+> Error: unknown category 'GROCERY' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)
+> Error: usage: add <yyyy-mm-dd> <amount> <category> <description>
+> Deleted #4
+> Error: no expense with id 4
+> Error: invalid id 'x'
+> Error: usage: delete <id>
+> #2   2026-11-01 RENT       18000.00  November rent
+#1   2026-11-03 FOOD         249.50  Lunch at office
+#3   2026-11-03 TRAVEL       120.00  Metro card recharge
+Total: 18369.50 (3 expenses)
+> Commands:
+  add <yyyy-mm-dd> <amount> <category> <description>
+  list
+  delete <id>
+  help
+  quit
+Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER
+> Error: unknown command 'foo'. Type 'help'.
+> Bye.

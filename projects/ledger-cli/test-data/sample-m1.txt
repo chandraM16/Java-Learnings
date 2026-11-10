@@ -1,0 +1,23 @@
+list
+add 2026-11-03 249.50 food Lunch at office
+add 2026-11-01 18000 RENT November rent
+add 2026-11-03 120 Travel Metro card recharge
+add 2026-11-02 0.1 OTHER test
+
+list
+add 2026-11-05 99.999 FOOD Chai
+add 2026-11-05 -40 FOOD Chai
+add 2026-11-05 abc FOOD Chai
+add 2026-13-01 40 FOOD Chai
+add 2099-01-01 40 FOOD Chai
+add 2026-11-05 40 GROCERY Milk
+add 2026-11-05 40
+delete 4
+delete 4
+delete x
+delete
+list
+help
+foo
+quit
+add 2026-11-05 40 FOOD never reached
