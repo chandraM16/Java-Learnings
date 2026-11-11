@@ -29,11 +29,11 @@ public class Ledger {
     }
 
     public Map<YearMonth, BigDecimal> totalsByMonth() {
-        Map<YearMonth, BigDecimal> monthTotoalMap = new TreeMap<>();
+        Map<YearMonth, BigDecimal> monthTotals = new TreeMap<>();
         for(Expense e : expenseMap.values()){
-            monthTotoalMap.merge(YearMonth.from(e.getDate()), e.getAmount(), BigDecimal::add);
+            monthTotals.merge(YearMonth.from(e.getDate()), e.getAmount(), BigDecimal::add);
         }
-        return monthTotoalMap;
+        return monthTotals;
     }
 
 }
