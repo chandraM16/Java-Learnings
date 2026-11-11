@@ -2,8 +2,10 @@ package com.chandan.ledger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 
 public class Cli {
     private final Ledger ledger;
@@ -45,19 +47,24 @@ public class Cli {
                 printHelp();
                 yield true;
             }
+            case "quit" -> false;
+
             case "add" -> {
                 addExpense(args);
-                yield true;
-            }
-            case "list" -> {
-                printList();
                 yield true;
             }
             case "delete" -> {
                 deleteExpense(args);
                 yield true;
             }
-            case "quit" -> false;
+            case "months" -> {
+                printMonths();
+                yield true;
+            }
+            case "list" -> {
+                printList();
+                yield true;
+            }
             default -> {
                 IO.println("Error: unknown command '" + parts[0] + "'. Type 'help'.");
                 yield true;
@@ -121,11 +128,26 @@ public class Cli {
         IO.println("Total: " + total + " (" + expenseList.size() + " " + noun + ")");
     }
 
+    private void printMonths() {
+        Map<YearMonth, BigDecimal> yearMonthTotoalAmountMap = ledger.totalsByMonth();
+        if (yearMonthTotoalAmountMap.isEmpty()) {
+            IO.println("No expenses yet.");
+            return;
+        }
+        for (Map.Entry<YearMonth, BigDecimal> entry : yearMonthTotoalAmountMap.entrySet()) {
+            IO.println(String.format("%s %12s", entry.getKey(), entry.getValue()));
+        }
+
+    }
+
     private void printHelp() {
         IO.println("Commands:");
         IO.println("  add <yyyy-mm-dd> <amount> <category> <description>");
         IO.println("  list");
         IO.println("  delete <id>");
+        IO.println("  months");
+        IO.println("  summary");
+        IO.println("  budget <yyyy-mm>");
         IO.println("  help");
         IO.println("  quit");
         IO.println("Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER");
@@ -163,8 +185,7 @@ public class Cli {
         try {
             category = Category.valueOf(categoryString.strip().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(
-                    "unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
+            throw new IllegalArgumentException("unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
         }
         return category;
     }

@@ -2,6 +2,7 @@ package com.chandan.ledger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 
 public class Ledger {
@@ -25,6 +26,14 @@ public class Ledger {
 
     public boolean delete(long id) {
         return expenseMap.remove(id) != null;
+    }
+
+    public Map<YearMonth, BigDecimal> totalsByMonth() {
+        Map<YearMonth, BigDecimal> monthTotoalMap = new TreeMap<>();
+        for(Expense e : expenseMap.values()){
+            monthTotoalMap.merge(YearMonth.from(e.getDate()), e.getAmount(), BigDecimal::add);
+        }
+        return monthTotoalMap;
     }
 
 }
