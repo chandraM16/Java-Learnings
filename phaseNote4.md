@@ -551,6 +551,86 @@ Stream.of("apple", "avocado", "banana").collect(joining("|", "<", ">"))   // →
 
 ---
 
+## Project 1 (Ledger CLI) — M1 learnings (2026-11-10 → 11)
+
+### Layers: who does what
+- `Main` only wires objects; `Cli` = controller (reads input, parses, prints); `Ledger` = service (owns data, never prints); `Expense`/`Category` = model.
+- **Dependency injection by hand**: `Cli` receives its `Ledger` via the constructor instead of `new`-ing it. Spring automates exactly this later.
+
+```java
+Ledger ledger = new Ledger();
+Cli cli = new Cli(ledger);   // Cli doesn't decide which Ledger it gets
+cli.run();
+```
+
+### Money = `BigDecimal`, never `double`
+- `double` is binary floating point → can't store 0.1 exactly. `BigDecimal` stores exact decimal digits + a *scale* (digits after the point).
+- Immutable: every operation returns a NEW value.
+
+```java
+0.1 + 0.2                                             // → 0.30000000000000004
+new BigDecimal("0.1").add(new BigDecimal("0.2"))      // → 0.3
+new BigDecimal("249.5").setScale(2)                   // → 249.50
+new BigDecimal("99.999").stripTrailingZeros().scale() // → 3  (too many decimals)
+new BigDecimal("-40").signum()                        // → -1
+total.add(x);            // ❌ result thrown away, total unchanged
+total = total.add(x);    // ✅
+new BigDecimal("2.0").equals(new BigDecimal("2.00"))  // → false (scale differs)
+new BigDecimal("2.0").compareTo(new BigDecimal("2.00")) // → 0
+```
+
+### `catch` matches the type AND all its subclasses
+```
+RuntimeException
+├── IllegalArgumentException
+│   └── NumberFormatException      ← caught by catch (IllegalArgumentException e)
+└── DateTimeException
+    └── DateTimeParseException     ← NOT caught by it (different branch)
+```
+- Catch only what you have a real answer for (bad user input). `catch (RuntimeException e)` also swallows your own bugs (NPE, index errors) and hides them.
+
+### Exception translation
+- Low-level helper catches the technical exception and rethrows one with a user-facing message; ONE catch at the top prints it.
+
+```java
+private LocalDate parseDate(String text) {
+    LocalDate date;                       // declared outside try → visible after it
+    try {
+        date = LocalDate.parse(text);
+    } catch (DateTimeParseException e) {
+        throw new IllegalArgumentException("invalid date '" + text + "' (expected yyyy-mm-dd)");
+    }
+    return date;
+}
+// caller:
+try { LocalDate d = parseDate(parts[0]); /* ... */ }
+catch (IllegalArgumentException e) { IO.println("Error: " + e.getMessage()); }
+// add 2026-13-01 ... → Error: invalid date '2026-13-01' (expected yyyy-mm-dd)
+```
+
+### Identity vs display order
+- `equals`/`hashCode`/`compareTo` all on `id` → consistent; two ₹40 chai expenses on different days stay two expenses.
+- Display orders (by date, by amount…) are separate `Comparator` constants — there can be many; natural order is only one and must agree with `equals`.
+
+```java
+Set<Expense> set = new HashSet<>(List.of(chaiMon, chaiTue)); // equals on date+amount+cat+desc?
+set.size()   // → 1  ❌ one real expense silently disappears
+// equals on id → 2 ✅
+private static final Comparator<Expense> BY_DATE_THEN_ID =
+        Comparator.comparing(Expense::getDate).thenComparingLong(Expense::getId);
+```
+
+### `Map.remove` answers "was it there?" in one O(1) lookup
+```java
+return expenseMap.remove(id) != null;     // ✅ one lookup
+if (map.containsKey(id)) { map.remove(id); return true; } // ❌ two lookups, same result
+```
+
+### Reading `diff` output
+- `12,13c12,13` → lines 12–13 of yours must **c**hange to match lines 12–13 of expected. `<` = yours, `>` = expected. Empty diff = exact match.
+
+---
+
 ## Mistakes I keep making (check these first)
 
 ```java
@@ -564,4 +644,7 @@ list = new ArrayList<>();  // after list::add // ❌ bound ref still adds to the
 stream.peek(o -> out.add(o))             // ❌ no terminal op → nothing runs → .map(...).toList()
 map(Order::items)  // wanted the items   // ❌ list of lists → flatMap(o -> o.items().stream())
 "check apple" vs "Checking apple"        // when predicting: copy literals EXACTLY, keep the brackets
+catch (RuntimeException e)               // ❌ too broad, hides bugs → catch the exact exception
+"...: '" + amount + "'"                  // ❌ shows the parsed value → show the user's raw text (amountStr)
+retyping a given string / format        // ❌ OTHERS vs OTHER, 1 vs 2 spaces → run + diff, don't eyeball
 ```

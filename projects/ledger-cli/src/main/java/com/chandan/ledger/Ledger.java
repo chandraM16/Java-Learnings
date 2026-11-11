@@ -23,13 +23,8 @@ public class Ledger {
         return expenseList;
     }
 
-    public boolean delete(Long id) {
-        if (expenseMap.containsKey(id)) {
-            expenseMap.remove(id);
-            return true;
-        } else {
-            return false;
-        }
+    public boolean delete(long id) {
+        return expenseMap.remove(id) != null;
     }
 
 }

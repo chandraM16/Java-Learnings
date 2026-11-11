@@ -2,8 +2,9 @@ package com.chandan.ledger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class Expense {
+public class Expense implements Comparable<Expense> {
     private final long id;
     private final LocalDate date;
     private final BigDecimal amount;
@@ -43,7 +44,29 @@ public class Expense {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Expense e = (Expense) obj;
+        return e.id == this.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return toLine();
+    }
+
+    @Override
+    public int compareTo(Expense o) {
+        return Long.compare(this.id, o.id);
     }
 }

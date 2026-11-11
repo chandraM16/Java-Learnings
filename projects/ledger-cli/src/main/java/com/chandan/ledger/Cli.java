@@ -88,14 +88,13 @@ public class Cli {
     }
 
     private void deleteExpense(String args) {
-        if (args.isBlank()) {
+        if (args.isBlank() || args.contains(" ")) {
             IO.println("Error: usage: delete <id>");
             return;
         }
-        String[] parts = args.split("\\s+", 2);
 
         try {
-            long id = parseId(parts[0]); // taking 1st id and ignoring rest of args
+            long id = parseId(args); // taking 1st id and ignoring rest of args
             boolean isRemoved = ledger.delete(id);
             if (isRemoved) {
                 IO.println("Deleted #" + id);
@@ -103,7 +102,7 @@ public class Cli {
                 IO.println("Error: no expense with id " + id);
             }
         } catch (IllegalArgumentException e) {
-            IO.println(e.getMessage());
+            IO.println("Error: " + e.getMessage());
         }
     }
 
@@ -154,7 +153,7 @@ public class Cli {
             throw new IllegalArgumentException("invalid amount '" + amountStr + "'");
         }
         if (amount.signum() <= 0 || amount.stripTrailingZeros().scale() > 2) {
-            throw new IllegalArgumentException("amount must be positive with at most 2 decimals: '" + amountStr + "'add 2026-11-05 -40 FOOD Chai");
+            throw new IllegalArgumentException("amount must be positive with at most 2 decimals: '" + amountStr + "'");
         }
         return amount;
     }
@@ -164,7 +163,8 @@ public class Cli {
         try {
             category = Category.valueOf(categoryString.strip().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
+            throw new IllegalArgumentException(
+                    "unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
         }
         return category;
     }
@@ -174,7 +174,7 @@ public class Cli {
         try {
             id = Long.parseLong(idString);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Error: invalid id '" + idString + "'");
+            throw new IllegalArgumentException("invalid id '" + idString + "'");
         }
         return id;
     }
