@@ -61,6 +61,10 @@ public class Cli {
                 printMonths();
                 yield true;
             }
+            case "summary" -> {
+                printSummary();
+                yield true;
+            }
             case "list" -> {
                 printList();
                 yield true;
@@ -138,6 +142,17 @@ public class Cli {
             IO.println(String.format("%s %12s", entry.getKey(), entry.getValue()));
         }
 
+    }
+
+    private void printSummary() {
+        List<CategoryStat> categoryStatSummary = ledger.summary();
+        if (categoryStatSummary.isEmpty()) {
+            IO.println("No expenses yet.");
+            return;
+        }
+        for (CategoryStat categoryStat : categoryStatSummary) {
+            IO.println(String.format("%-8s %3d %10s", categoryStat.getCategory(), categoryStat.getCount(), categoryStat.getTotal()));
+        }
     }
 
     private void printHelp() {
