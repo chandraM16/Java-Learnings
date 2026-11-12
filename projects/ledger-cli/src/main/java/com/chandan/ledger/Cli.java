@@ -65,6 +65,10 @@ public class Cli {
                 printSummary();
                 yield true;
             }
+            case "budget" -> {
+                printBudget(args);
+                yield true;
+            }
             case "list" -> {
                 printList();
                 yield true;
@@ -167,6 +171,42 @@ public class Cli {
         IO.println("  quit");
         IO.println("Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER");
 
+    }
+
+    private void printBudget(String args) {
+        if (args.isBlank() || args.contains(" ")) {
+            IO.println("Error: usage: budget <yyyy-mm>");
+            return;
+        }
+
+        YearMonth yearMonth;
+
+        try {
+            yearMonth = YearMonth.parse(args);
+        } catch (DateTimeParseException e) {
+            IO.println("Error: invalid month '" + args + "' (expected yyyy-mm)");
+            return;
+        }
+
+        Map<Category, BigDecimal> monthlySpent = ledger.spentInMonth(yearMonth);
+        Map<Category, BigDecimal> monthlyBudget = ledger.budgets();
+
+        for (Category category : Category.values()) {
+            BigDecimal spent = monthlySpent.getOrDefault(category, BigDecimal.ZERO.setScale(2));
+            BigDecimal budget = monthlyBudget.get(category);
+
+            if (budget == null) {
+                continue; // OTHER Category
+            }
+
+            String line = String.format("%-8s %10s / %10s", category, spent, budget);
+
+            if (spent.compareTo(budget) > 0) {
+                BigDecimal overSpent = spent.subtract(budget);
+                line += "  OVER by " + overSpent;
+            }
+            IO.println(line);
+        }
     }
 
     private LocalDate parseDate(String dateStr) {

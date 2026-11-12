@@ -8,6 +8,7 @@ import java.util.*;
 public class Ledger {
     private final Map<Long, Expense> expenseMap = new HashMap<>();
     private long nextId = 1;
+    private static final Map<Category, BigDecimal> MONTHLY_BUDGETS = Map.copyOf(buildBudgets());
 
     private static final Comparator<Expense> BY_DATE_THEN_ID = Comparator.comparing(Expense::getDate).thenComparingLong(Expense::getId);
 
@@ -56,6 +57,33 @@ public class Ledger {
 
         stats.sort(BY_COUNT_DESC_THEN_NAME);
         return stats;
+    }
+
+    private static Map<Category, BigDecimal> buildBudgets() {
+        Map<Category, BigDecimal> categoryBudgetMap = new HashMap<>();
+        categoryBudgetMap.put(Category.BILLS, new BigDecimal("2500.00"));
+        categoryBudgetMap.put(Category.FOOD, new BigDecimal("6000.00"));
+        categoryBudgetMap.put(Category.RENT, new BigDecimal("18000.00"));
+        categoryBudgetMap.put(Category.SHOPPING, new BigDecimal("3000.00"));
+        categoryBudgetMap.put(Category.TRAVEL, new BigDecimal("2000.00"));
+        return categoryBudgetMap;
+    }
+
+    public Map<Category, BigDecimal> budgets() {
+        return MONTHLY_BUDGETS;
+    }
+
+    public Map<Category, BigDecimal> spentInMonth(YearMonth yearMonth) {
+        Map<Category, BigDecimal> categoryTotolMap = new HashMap<>();
+
+        for (Expense e : expenseMap.values()) {
+            if (YearMonth.from(e.getDate()).equals(yearMonth)) {
+                //same month;
+                categoryTotolMap.put(e.getCategory(), categoryTotolMap.getOrDefault(e.getCategory(), BigDecimal.ZERO).add(e.getAmount()));
+//                categoryTotolMap.merge(e.getCategory(), e.getAmount(), BigDecimal::add);
+            }
+        }
+        return categoryTotolMap;
     }
 
 }
