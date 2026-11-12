@@ -631,6 +631,68 @@ if (map.containsKey(id)) { map.remove(id); return true; } // ❌ two lookups, sa
 
 ---
 
+## Project 1 (Ledger CLI) — M2 learnings (2026-11-11 → 12)
+
+### `TreeMap` = sorted keys, `HashMap` = hash order (never rely on it)
+- `TreeMap` is a self-balancing BST (red-black tree): smaller key left, bigger right, O(log n) `get`/`put`. "Smaller" = the key's `compareTo` (or a `Comparator` you pass). Iterating = in-order traversal → sorted.
+- `HashMap` order is decided by hash buckets — not random, but unpredictable and can change. Same data gave `09, 11, 10` on one run and `10, 11, 09` on another.
+
+```java
+Map<YearMonth, BigDecimal> totals = new TreeMap<>();
+totals.merge(YearMonth.from(date), amount, BigDecimal::add);   // first time: put; next: old.add(amount)
+// keys → 2026-09, 2026-10, 2026-11  (chronological, because YearMonth is Comparable)
+```
+
+### Grouping and counting with plain `Map` methods
+```java
+groups.computeIfAbsent(e.getCategory(), k -> new ArrayList<>()).add(e);  // JS: (groups[c] ??= []).push(e)
+spent.put(c, spent.getOrDefault(c, BigDecimal.ZERO).add(amount));        // same result as merge(...)
+```
+
+### Enum `compareTo` = declaration order, NOT alphabetical
+```java
+enum Category { FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER }   // ordinal 0..5
+Category.RENT.compareTo(Category.BILLS)        // → negative (1 < 4) → RENT sorts first
+.thenComparing(CategoryStat::getCategory)      // ❌ RENT before BILLS
+.thenComparing(s -> s.getCategory().name())    // ✅ String compareTo → BILLS before RENT
+```
+| Type | `compareTo` means |
+|---|---|
+| `String` | alphabetical |
+| `LocalDate` / `YearMonth` | time |
+| `BigDecimal` | numeric value (ignores scale) |
+| enum | declaration position (`ordinal()`) |
+
+### `Map.copyOf` vs `final`
+- `final` locks the variable (can't point it at another map). The map's contents are still mutable.
+- `Map.copyOf(...)` returns an immutable map → any `put` throws. Safe to return the same reference to callers — no defensive copy needed. A mutable internal map (e.g. `HashMap expenseMap`) must be copied before handing out.
+
+```java
+private static final Map<Category, BigDecimal> BUDGETS = Map.copyOf(buildBudgets());
+budgets.put(Category.OTHER, new BigDecimal("100"));
+// → UnsupportedOperationException at ImmutableCollections$AbstractImmutableMap.put
+```
+- `Map.copyOf` iteration order is unspecified → for output order, loop over `Category.values()` and look up each key.
+
+### Enums can have methods (they are classes)
+```java
+public enum Category {
+    FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER;     // ';' required when members follow
+    public static String allNames() {
+        StringJoiner j = new StringJoiner(", ");
+        for (Category c : values()) j.add(c.name());
+        return j.toString();                         // → "FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER"
+    }
+}
+```
+
+### Build gotcha: two compilers writing `target/classes`
+- `java.lang.Error: Unresolved compilation problems` = Eclipse compiler output (Cursor/VS Code Java extension), not javac. It writes `.class` files for broken code; `mvn compile` then thinks they're up to date.
+- Fix: `mvn -q clean compile`. Run Java from one tool only.
+- `there is no POM in this directory` → wrong folder; `pwd`, then `cd projects/ledger-cli`.
+
+---
+
 ## Mistakes I keep making (check these first)
 
 ```java
@@ -647,4 +709,6 @@ map(Order::items)  // wanted the items   // ❌ list of lists → flatMap(o -> o
 catch (RuntimeException e)               // ❌ too broad, hides bugs → catch the exact exception
 "...: '" + amount + "'"                  // ❌ shows the parsed value → show the user's raw text (amountStr)
 retyping a given string / format        // ❌ OTHERS vs OTHER, 1 vs 2 spaces → run + diff, don't eyeball
+.thenComparing(Stat::getCategory) // "A→Z" // ❌ enum compares by declaration order → s -> s.getCategory().name()
+mvn -q compile → "Unresolved compilation"  // ❌ stale ECJ classes → mvn -q clean compile
 ```

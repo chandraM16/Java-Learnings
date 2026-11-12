@@ -24,6 +24,7 @@ Understanding over memorization: why, how internally, when to use, when not to, 
 - macOS, Apple Silicon (arm64), zsh, Homebrew installed.
 - At course start: **no JDK installed**, no Maven, no IntelliJ.
 - Course target: **JDK 25 (current LTS)**, Maven for builds (Gradle later), IntelliJ IDEA Community (or Ultimate), Spring Boot 4.x when we get there.
+- **Editor gotcha (found 2026-11-12):** the learner also has **Cursor** open on this workspace with the Red Hat Java extension. It auto-builds with the Eclipse compiler (ECJ) into `target/classes`, and ECJ writes `.class` files even for broken code → runtime `java.lang.Error: Unresolved compilation problems: X cannot be resolved`. `mvn -q compile` then sees "up to date" classes and doesn't rebuild. Fix: `mvn -q clean compile`; long-term, run Java from IntelliJ/Maven only. Hit twice in Project 1 (Steps 4 and M2-3).
 - Workspace: this folder. Exercise code lives in `exercises/phaseN/…`, projects in `projects/…` (created as needed).
 
 ## 4. Learning files (maintain these)
