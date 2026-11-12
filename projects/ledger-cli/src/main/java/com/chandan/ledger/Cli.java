@@ -169,7 +169,7 @@ public class Cli {
         IO.println("  budget <yyyy-mm>");
         IO.println("  help");
         IO.println("  quit");
-        IO.println("Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER");
+        IO.println("Categories: " + Category.allNames());
 
     }
 
@@ -240,7 +240,7 @@ public class Cli {
         try {
             category = Category.valueOf(categoryString.strip().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("unknown category '" + categoryString + "' (valid: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER)");
+            throw new IllegalArgumentException("unknown category '" + categoryString + "' (valid: " + Category.allNames() + ")");
         }
         return category;
     }
