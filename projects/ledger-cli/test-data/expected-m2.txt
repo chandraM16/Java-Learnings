@@ -1,0 +1,50 @@
+Ledger CLI. Type 'help' for commands.
+> No expenses yet.
+> No expenses yet.
+> Added #1: 2026-10-28 SHOPPING    1200.00  Shoes
+> Added #2: 2026-10-30 FOOD         300.00  Dinner
+> Added #3: 2026-11-01 RENT       18000.00  November rent
+> Added #4: 2026-11-03 FOOD         249.50  Lunch
+> Added #5: 2026-11-03 TRAVEL       120.00  Metro
+> Added #6: 2026-11-04 SHOPPING    2500.00  Jacket
+> Added #7: 2026-11-05 SHOPPING     900.00  Headphones
+> Added #8: 2026-11-06 FOOD          40.00  Chai
+> Added #9: 2026-11-07 TRAVEL        80.00  Auto
+> Added #10: 2026-09-15 BILLS        650.00  Internet
+> 2026-09       650.00
+2026-10      1500.00
+2026-11     21889.50
+> FOOD       3     589.50
+SHOPPING   3    4600.00
+TRAVEL     2     200.00
+BILLS      1     650.00
+RENT       1   18000.00
+> FOOD         289.50 /    6000.00
+RENT       18000.00 /   18000.00
+TRAVEL       200.00 /    2000.00
+SHOPPING    3400.00 /    3000.00  OVER by 400.00
+BILLS          0.00 /    2500.00
+> FOOD         300.00 /    6000.00
+RENT           0.00 /   18000.00
+TRAVEL         0.00 /    2000.00
+SHOPPING    1200.00 /    3000.00
+BILLS          0.00 /    2500.00
+> FOOD           0.00 /    6000.00
+RENT           0.00 /   18000.00
+TRAVEL         0.00 /    2000.00
+SHOPPING       0.00 /    3000.00
+BILLS          0.00 /    2500.00
+> Error: usage: budget <yyyy-mm>
+> Error: invalid month '2026-13' (expected yyyy-mm)
+> Error: usage: budget <yyyy-mm>
+> Commands:
+  add <yyyy-mm-dd> <amount> <category> <description>
+  list
+  delete <id>
+  months
+  summary
+  budget <yyyy-mm>
+  help
+  quit
+Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER
+> Bye.

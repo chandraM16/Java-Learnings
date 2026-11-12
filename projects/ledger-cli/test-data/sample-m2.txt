@@ -1,0 +1,22 @@
+months
+summary
+add 2026-10-28 1200 SHOPPING Shoes
+add 2026-10-30 300 FOOD Dinner
+add 2026-11-01 18000 RENT November rent
+add 2026-11-03 249.50 food Lunch
+add 2026-11-03 120 TRAVEL Metro
+add 2026-11-04 2500 SHOPPING Jacket
+add 2026-11-05 900 shopping Headphones
+add 2026-11-06 40 FOOD Chai
+add 2026-11-07 80 travel Auto
+add 2026-09-15 650 BILLS Internet
+months
+summary
+budget 2026-11
+budget 2026-10
+budget 2025-01
+budget
+budget 2026-13
+budget 2026-11 extra
+help
+quit

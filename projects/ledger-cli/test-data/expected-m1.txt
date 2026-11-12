@@ -28,6 +28,9 @@ Total: 18369.50 (3 expenses)
   add <yyyy-mm-dd> <amount> <category> <description>
   list
   delete <id>
+  months
+  summary
+  budget <yyyy-mm>
   help
   quit
 Categories: FOOD, RENT, TRAVEL, SHOPPING, BILLS, OTHER

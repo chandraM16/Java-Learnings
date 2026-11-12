@@ -168,3 +168,58 @@ Production habits:
 1. **Paste the `diff` command's output** (empty = pass). If not empty, paste it anyway — we fix from there.
 2. Answers to the 3 design questions + the Big-O line for (10).
 3. Then the code (just say "done", I'll read the files).
+
+---
+
+## M2 — reports
+
+M1 commands stay exactly as they are. M2 adds three read-only reports. **Ledger computes, Cli prints** — same rule as M1.
+
+### New commands
+
+```
+months              total spent per month, oldest month first
+summary             per category: count + total, most-used category first
+budget <yyyy-mm>    spent vs monthly budget for each budgeted category
+```
+
+`help` lists them after `delete <id>` (see `expected-m2.txt`).
+
+### Output formats
+
+- `months`: one row per month, `String.format("%s %12s", yearMonth, total)`, **chronological**. Empty ledger → `No expenses yet.`
+- `summary`: one row per category that has expenses, `String.format("%-8s %3d %10s", category, count, total)`, sorted by **count descending, then category name ascending**. Empty → `No expenses yet.`
+- `budget <yyyy-mm>`: one row per category **that has a budget**, in enum order (`FOOD, RENT, TRAVEL, SHOPPING, BILLS`), `String.format("%-8s %10s / %10s", category, spent, limit)`; when spent > limit append `"  OVER by " + (spent - limit)`. Spent = 0.00 when nothing that month. Exactly at the limit is not over.
+  - no / extra args → `Error: usage: budget <yyyy-mm>`
+  - bad month → `Error: invalid month '2026-13' (expected yyyy-mm)`
+
+### Monthly budgets (fixed config)
+
+| FOOD | RENT | TRAVEL | SHOPPING | BILLS | OTHER |
+|---|---|---|---|---|---|
+| 6000.00 | 18000.00 | 2000.00 | 3000.00 | 2500.00 | — (no budget) |
+
+### Done = empty diff
+
+```bash
+mvn -q compile && java -cp target/classes com.chandan.ledger.Main < test-data/sample-m2.txt | diff - test-data/expected-m2.txt
+```
+(run from inside `projects/ledger-cli`). M1's diff must **still** be empty too.
+
+### Requirements checklist (graded in review)
+
+- [ ] **(5)** `months` is first written with a `HashMap` — run it, see the order — then switched to a `TreeMap`. Say in one line what changed and why.
+- [ ] **(6)** `summary` sorts with a `Comparator` **constant** built as `comparingInt(...).reversed().thenComparing(...)`.
+- [ ] **(8)** Written with plain loops, no streams: grouping with `computeIfAbsent`, totals with `merge`, a lookup with `getOrDefault`.
+- [ ] **(9)** Budgets live in a map published with `Map.copyOf(...)`. Once, add a deliberate `put` on it, run, paste the exception, then delete that line.
+- [ ] The category list in `help` and in the unknown-category error is built from `Category.values()`, not typed twice (M1 carry-over).
+- [ ] No streams/Collectors yet — M3 rewrites these loops with them, and the diff must stay empty.
+
+### New things you need for M2
+
+```java
+YearMonth.from(LocalDate.parse("2026-11-03"))  // → 2026-11
+YearMonth.parse("2026-11")                     // → 2026-11
+YearMonth.parse("2026-13")                     // → DateTimeParseException
+// YearMonth is Comparable → works as a TreeMap key, sorted chronologically
+```
